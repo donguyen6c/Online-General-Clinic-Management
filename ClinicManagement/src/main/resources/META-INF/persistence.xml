@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="3.0" xmlns="https://jakarta.ee/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence https://jakarta.ee/xml/ns/persistence/persistence_3_0.xsd">
+  <!-- Define Persistence Unit -->
+  <persistence-unit name="my_persistence_unit">
+    <class>com.vudo.pojo.Appointment</class>
+    <class>com.vudo.pojo.User</class>
+    <class>com.vudo.pojo.Payment</class>
+    <class>com.vudo.pojo.Doctor</class>
+    <class>com.vudo.pojo.Notification</class>
+    <class>com.vudo.pojo.Inventory</class>
+    <class>com.vudo.pojo.TestResult</class>
+    <class>com.vudo.pojo.MedicalRecordDisease</class>
+    <class>com.vudo.pojo.Prescription</class>
+    <class>com.vudo.pojo.Patient</class>
+    <class>com.vudo.pojo.Medicine</class>
+    <class>com.vudo.pojo.PrescriptionDetail</class>
+    <class>com.vudo.pojo.Disease</class>
+    <class>com.vudo.pojo.Service</class>
+    <class>com.vudo.pojo.MedicalRecord</class>
+    <class>com.vudo.pojo.Specialty</class>
+    <class>com.vudo.pojo.MedicalRecordService</class>
+    <class>com.vudo.pojo.DoctorSchedule</class>
+    <class>com.vudo.pojo.PrescribedMedicine</class>
+  </persistence-unit>
+</persistence>

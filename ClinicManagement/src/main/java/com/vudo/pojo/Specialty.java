@@ -4,6 +4,7 @@
  */
 package com.vudo.pojo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -47,6 +48,7 @@ public class Specialty implements Serializable {
     @Size(max = 65535)
     @Column(name = "description")
     private String description;
+    @JsonIgnore
     @OneToMany(mappedBy = "specialtyId")
     private Set<Doctor> doctorSet;
 

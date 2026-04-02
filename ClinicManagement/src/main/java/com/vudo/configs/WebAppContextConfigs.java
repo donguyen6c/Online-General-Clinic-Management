@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.multipart.support.StandardServletMultipartResolver;
 import org.springframework.web.servlet.config.annotation.DefaultServletHandlerConfigurer;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
@@ -35,20 +36,14 @@ public class WebAppContextConfigs implements WebMvcConfigurer {
     public void configureDefaultServletHandling(DefaultServletHandlerConfigurer configurer) {
         configurer.enable();
     }
-
-    @Bean
-    public Cloudinary cloudinary() {
-        return new Cloudinary(ObjectUtils.asMap(
-                "cloud_name", "dsijwqliw",
-                "api_key", "695988562653643",
-                "api_secret", "3jUUQnOgoY4ELKhSYV2JNucKjww",
-                "secure", true
-        ));
-    }
     
     @Bean
     public StandardServletMultipartResolver multipartResolver() {
         return new StandardServletMultipartResolver();
     }
     
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry){
+        registry.addResourceHandler("/js/**").addResourceLocations("classpath:/static/js");
+    }
 }

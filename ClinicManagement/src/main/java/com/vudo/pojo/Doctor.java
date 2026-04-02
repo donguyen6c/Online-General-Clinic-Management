@@ -4,6 +4,7 @@
  */
 package com.vudo.pojo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Basic;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -44,15 +45,17 @@ public class Doctor implements Serializable {
     @Size(max = 65535)
     @Column(name = "bio")
     private String bio;
+    @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "doctorId")
     private Set<DoctorSchedule> doctorScheduleSet;
+    @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "doctorId")
     private Set<MedicalRecord> medicalRecordSet;
     @JoinColumn(name = "specialty_id", referencedColumnName = "id")
     @ManyToOne
     private Specialty specialtyId;
     @JoinColumn(name = "user_id", referencedColumnName = "id")
-    @OneToOne(optional = false)
+    @OneToOne(cascade = CascadeType.ALL)
     private User userId;
 
     public Doctor() {

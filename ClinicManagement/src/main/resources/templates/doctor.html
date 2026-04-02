@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Quản lý Bác sĩ</title>
+    <th:block th:replace="base :: css"></th:block>
+</head>
+<body>
+    <div class="container mt-4">
+        <h2 class="text-center text-primary" th:text="${doctor.id != null ? 'CẬP NHẬT THÔNG TIN BÁC SĨ' : 'THÊM MỚI BÁC SĨ'}"></h2>
+        
+        <div th:if="${errMsg}" class="alert alert-danger" th:text="${errMsg}"></div>
+
+        <form th:action="@{/doctor/save}" th:object="${doctor}" method="post" enctype="multipart/form-data" class="mt-4 p-4 border rounded shadow-sm">
+            
+            <input type="hidden" th:field="*{id}" />
+            <input type="hidden" th:field="*{userId.id}" />
+
+            <div class="row">
+                <div class="col-md-6">
+                    <h4 class="text-info mb-3">Thông tin cơ bản</h4>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Họ và Tên (*)</label>
+                        <input type="text" th:field="*{userId.fullName}" class="form-control" required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Tên đăng nhập (*)</label>
+                        <input type="text" th:field="*{userId.username}" class="form-control" th:readonly="${doctor.id != null}" required />
+                    </div>
+
+                    <div class="mb-3" th:if="${doctor.id == null}">
+                        <label class="form-label">Mật khẩu (*)</label>
+                        <input type="password" th:field="*{userId.password}" class="form-control" required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Email (*)</label>
+                        <input type="email" th:field="*{userId.email}" class="form-control" required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Số điện thoại (*)</label>
+                        <input type="text" th:field="*{userId.phone}" class="form-control" required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Giới tính</label>
+                        <select th:field="*{userId.gender}" class="form-select">
+                            <option value="male">Nam</option>
+                            <option value="female">Nữ</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <h4 class="text-info mb-3">Thông tin chuyên môn</h4>
+
+                    <div class="mb-3">
+                        <label class="form-label">Ảnh đại diện (Avatar)</label>
+                        <input type="file" th:field="*{userId.file}" class="form-control" accept="image/*" />
+                        <div class="mt-2" th:if="${doctor.userId != null and doctor.userId.avatar != null}">
+                            <img th:src="${doctor.userId.avatar}" width="100" class="img-thumbnail" alt="Avatar hiện tại">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Chuyên khoa (*)</label>
+                        <select th:field="*{specialtyId.id}" class="form-select" required>
+                            <option value="">-- Chọn chuyên khoa --</option>
+                            <option th:each="s : ${specialty}" th:value="${s.id}" th:text="${s.name}"></option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Tiểu sử / Kinh nghiệm làm việc</label>
+                        <textarea th:field="*{bio}" class="form-control" rows="5"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center mt-4">
+                <button type="submit" class="btn btn-success px-5">LƯU THÔNG TIN</button>
+                <a th:href="@{/}" class="btn btn-secondary px-5">HỦY</a>
+            </div>
+        </form>
+    </div>
+
+    <th:block th:replace="base :: js"></th:block>
+</body>
+</html>

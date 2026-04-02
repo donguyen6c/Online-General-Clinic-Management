@@ -4,6 +4,7 @@
  */
 package com.vudo.pojo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Basic;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -18,11 +19,13 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
+import jakarta.persistence.Transient;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Set;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  *
@@ -96,15 +99,24 @@ public class User implements Serializable {
     @Column(name = "created_at")
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
+    @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "patientId")
     private Set<MedicalRecord> medicalRecordSet;
+    @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "patientId")
     private Set<Appointment> appointmentSet;
+    @JsonIgnore
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "userId")
     private Doctor doctor;
+    @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "userId")
     private Set<Notification> notificationSet;
+    @Transient
+    private MultipartFile file;
 
+    public MultipartFile getFile() { return file; }
+    public void setFile(MultipartFile file) { this.file = file; }
+    
     public User() {
     }
 

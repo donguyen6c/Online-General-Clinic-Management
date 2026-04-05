@@ -15,11 +15,9 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.NamedQueries;
 import jakarta.persistence.NamedQuery;
 import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
 import jakarta.validation.constraints.NotNull;
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalTime;
 
 /**
  *
@@ -48,13 +46,11 @@ public class DoctorWorkingPattern implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Column(name = "start_time")
-    @Temporal(TemporalType.TIME)
-    private Date startTime;
+    private LocalTime startTime;
     @Basic(optional = false)
     @NotNull
     @Column(name = "end_time")
-    @Temporal(TemporalType.TIME)
-    private Date endTime;
+    private LocalTime endTime;
     @JoinColumn(name = "doctor_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private Doctor doctorId;
@@ -66,7 +62,7 @@ public class DoctorWorkingPattern implements Serializable {
         this.id = id;
     }
 
-    public DoctorWorkingPattern(Integer id, short dayOfWeek, Date startTime, Date endTime) {
+    public DoctorWorkingPattern(Integer id, short dayOfWeek, LocalTime startTime, LocalTime endTime) {
         this.id = id;
         this.dayOfWeek = dayOfWeek;
         this.startTime = startTime;
@@ -89,19 +85,19 @@ public class DoctorWorkingPattern implements Serializable {
         this.dayOfWeek = dayOfWeek;
     }
 
-    public Date getStartTime() {
+    public LocalTime getStartTime() {
         return startTime;
     }
 
-    public void setStartTime(Date startTime) {
+    public void setStartTime(LocalTime startTime) {
         this.startTime = startTime;
     }
 
-    public Date getEndTime() {
+    public LocalTime getEndTime() {
         return endTime;
     }
 
-    public void setEndTime(Date endTime) {
+    public void setEndTime(LocalTime endTime) {
         this.endTime = endTime;
     }
 

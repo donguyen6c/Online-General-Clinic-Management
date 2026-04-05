@@ -15,12 +15,11 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.NamedQueries;
 import jakarta.persistence.NamedQuery;
 import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 /**
  *
@@ -47,14 +46,11 @@ public class DoctorSchedule implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Column(name = "work_date")
-    @Temporal(TemporalType.DATE)
-    private Date workDate;
+    private LocalDate workDate;
     @Column(name = "start_time")
-    @Temporal(TemporalType.TIME)
-    private Date startTime;
+    private LocalTime startTime;
     @Column(name = "end_time")
-    @Temporal(TemporalType.TIME)
-    private Date endTime;
+    private LocalTime endTime;
     @Size(max = 255)
     @Column(name = "note")
     private String note;
@@ -71,7 +67,7 @@ public class DoctorSchedule implements Serializable {
         this.id = id;
     }
 
-    public DoctorSchedule(Integer id, Date workDate) {
+    public DoctorSchedule(Integer id, LocalDate workDate) {
         this.id = id;
         this.workDate = workDate;
     }
@@ -84,27 +80,27 @@ public class DoctorSchedule implements Serializable {
         this.id = id;
     }
 
-    public Date getWorkDate() {
+    public LocalDate getWorkDate() {
         return workDate;
     }
 
-    public void setWorkDate(Date workDate) {
+    public void setWorkDate(LocalDate workDate) {
         this.workDate = workDate;
     }
 
-    public Date getStartTime() {
+    public LocalTime getStartTime() {
         return startTime;
     }
 
-    public void setStartTime(Date startTime) {
+    public void setStartTime(LocalTime startTime) {
         this.startTime = startTime;
     }
 
-    public Date getEndTime() {
+    public LocalTime getEndTime() {
         return endTime;
     }
 
-    public void setEndTime(Date endTime) {
+    public void setEndTime(LocalTime endTime) {
         this.endTime = endTime;
     }
 

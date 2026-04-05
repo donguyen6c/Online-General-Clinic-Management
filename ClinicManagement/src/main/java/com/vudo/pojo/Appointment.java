@@ -17,12 +17,11 @@ import jakarta.persistence.NamedQueries;
 import jakarta.persistence.NamedQuery;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Set;
 
 /**
@@ -51,18 +50,15 @@ public class Appointment implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Column(name = "appointment_date")
-    @Temporal(TemporalType.DATE)
-    private Date appointmentDate;
+    private LocalDate appointmentDate;
     @Basic(optional = false)
     @NotNull
     @Column(name = "start_time")
-    @Temporal(TemporalType.TIME)
-    private Date startTime;
+    private LocalTime startTime;
     @Basic(optional = false)
     @NotNull
     @Column(name = "end_time")
-    @Temporal(TemporalType.TIME)
-    private Date endTime;
+    private LocalTime endTime;
     @Lob
     @Size(max = 65535)
     @Column(name = "reason")
@@ -74,8 +70,7 @@ public class Appointment implements Serializable {
     @Column(name = "meeting_url")
     private String meetingUrl;
     @Column(name = "created_at")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date createdAt;
+    private LocalDate createdAt;
     @OneToMany(mappedBy = "appointmentId")
     private Set<MedicalRecord> medicalRecordSet;
     @JoinColumn(name = "doctor_id", referencedColumnName = "id")
@@ -92,7 +87,7 @@ public class Appointment implements Serializable {
         this.id = id;
     }
 
-    public Appointment(Integer id, Date appointmentDate, Date startTime, Date endTime) {
+    public Appointment(Integer id, LocalDate appointmentDate, LocalTime startTime, LocalTime endTime) {
         this.id = id;
         this.appointmentDate = appointmentDate;
         this.startTime = startTime;
@@ -107,27 +102,27 @@ public class Appointment implements Serializable {
         this.id = id;
     }
 
-    public Date getAppointmentDate() {
+    public LocalDate getAppointmentDate() {
         return appointmentDate;
     }
 
-    public void setAppointmentDate(Date appointmentDate) {
+    public void setAppointmentDate(LocalDate appointmentDate) {
         this.appointmentDate = appointmentDate;
     }
 
-    public Date getStartTime() {
+    public LocalTime getStartTime() {
         return startTime;
     }
 
-    public void setStartTime(Date startTime) {
+    public void setStartTime(LocalTime startTime) {
         this.startTime = startTime;
     }
 
-    public Date getEndTime() {
+    public LocalTime getEndTime() {
         return endTime;
     }
 
-    public void setEndTime(Date endTime) {
+    public void setEndTime(LocalTime endTime) {
         this.endTime = endTime;
     }
 
@@ -155,11 +150,11 @@ public class Appointment implements Serializable {
         this.meetingUrl = meetingUrl;
     }
 
-    public Date getCreatedAt() {
+    public LocalDate getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Date createdAt) {
+    public void setCreatedAt(LocalDate createdAt) {
         this.createdAt = createdAt;
     }
 

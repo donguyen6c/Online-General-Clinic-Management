@@ -19,6 +19,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.Date;
@@ -33,6 +34,9 @@ import java.util.Set;
 @NamedQueries({
     @NamedQuery(name = "Appointment.findAll", query = "SELECT a FROM Appointment a"),
     @NamedQuery(name = "Appointment.findById", query = "SELECT a FROM Appointment a WHERE a.id = :id"),
+    @NamedQuery(name = "Appointment.findByAppointmentDate", query = "SELECT a FROM Appointment a WHERE a.appointmentDate = :appointmentDate"),
+    @NamedQuery(name = "Appointment.findByStartTime", query = "SELECT a FROM Appointment a WHERE a.startTime = :startTime"),
+    @NamedQuery(name = "Appointment.findByEndTime", query = "SELECT a FROM Appointment a WHERE a.endTime = :endTime"),
     @NamedQuery(name = "Appointment.findByStatus", query = "SELECT a FROM Appointment a WHERE a.status = :status"),
     @NamedQuery(name = "Appointment.findByMeetingUrl", query = "SELECT a FROM Appointment a WHERE a.meetingUrl = :meetingUrl"),
     @NamedQuery(name = "Appointment.findByCreatedAt", query = "SELECT a FROM Appointment a WHERE a.createdAt = :createdAt")})
@@ -44,6 +48,21 @@ public class Appointment implements Serializable {
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "appointment_date")
+    @Temporal(TemporalType.DATE)
+    private Date appointmentDate;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "start_time")
+    @Temporal(TemporalType.TIME)
+    private Date startTime;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "end_time")
+    @Temporal(TemporalType.TIME)
+    private Date endTime;
     @Lob
     @Size(max = 65535)
     @Column(name = "reason")
@@ -59,9 +78,9 @@ public class Appointment implements Serializable {
     private Date createdAt;
     @OneToMany(mappedBy = "appointmentId")
     private Set<MedicalRecord> medicalRecordSet;
-    @JoinColumn(name = "schedule_id", referencedColumnName = "id")
-    @ManyToOne
-    private DoctorSchedule scheduleId;
+    @JoinColumn(name = "doctor_id", referencedColumnName = "id")
+    @ManyToOne(optional = false)
+    private Doctor doctorId;
     @JoinColumn(name = "patient_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private User patientId;
@@ -73,12 +92,43 @@ public class Appointment implements Serializable {
         this.id = id;
     }
 
+    public Appointment(Integer id, Date appointmentDate, Date startTime, Date endTime) {
+        this.id = id;
+        this.appointmentDate = appointmentDate;
+        this.startTime = startTime;
+        this.endTime = endTime;
+    }
+
     public Integer getId() {
         return id;
     }
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public Date getAppointmentDate() {
+        return appointmentDate;
+    }
+
+    public void setAppointmentDate(Date appointmentDate) {
+        this.appointmentDate = appointmentDate;
+    }
+
+    public Date getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(Date startTime) {
+        this.startTime = startTime;
+    }
+
+    public Date getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(Date endTime) {
+        this.endTime = endTime;
     }
 
     public String getReason() {
@@ -121,12 +171,12 @@ public class Appointment implements Serializable {
         this.medicalRecordSet = medicalRecordSet;
     }
 
-    public DoctorSchedule getScheduleId() {
-        return scheduleId;
+    public Doctor getDoctorId() {
+        return doctorId;
     }
 
-    public void setScheduleId(DoctorSchedule scheduleId) {
-        this.scheduleId = scheduleId;
+    public void setDoctorId(Doctor doctorId) {
+        this.doctorId = doctorId;
     }
 
     public User getPatientId() {

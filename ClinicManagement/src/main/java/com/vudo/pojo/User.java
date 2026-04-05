@@ -4,7 +4,6 @@
  */
 package com.vudo.pojo;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Basic;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -99,16 +98,12 @@ public class User implements Serializable {
     @Column(name = "created_at")
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
-    @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "patientId")
     private Set<MedicalRecord> medicalRecordSet;
-    @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "patientId")
     private Set<Appointment> appointmentSet;
-    @JsonIgnore
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "userId")
     private Doctor doctor;
-    @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "userId")
     private Set<Notification> notificationSet;
     @Transient
@@ -116,7 +111,7 @@ public class User implements Serializable {
 
     public MultipartFile getFile() { return file; }
     public void setFile(MultipartFile file) { this.file = file; }
-    
+
     public User() {
     }
 

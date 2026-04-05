@@ -38,22 +38,37 @@ CREATE TABLE doctor_schedule (
     id INT PRIMARY KEY AUTO_INCREMENT,
     doctor_id INT NOT NULL,
     work_date DATE NOT NULL,
+    start_time TIME,
+    end_time TIME,
+    note VARCHAR(255),
+    is_available TINYINT(1) DEFAULT 1,
+    FOREIGN KEY (doctor_id) REFERENCES doctor(id) ON DELETE CASCADE,
+    UNIQUE (doctor_id, work_date)
+);
+
+CREATE TABLE doctor_working_pattern (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    doctor_id INT NOT NULL,
+    day_of_week TINYINT NOT NULL,
     start_time TIME NOT NULL,
     end_time TIME NOT NULL,
-    is_available TINYINT(1) DEFAULT 1,
-    FOREIGN KEY (doctor_id) REFERENCES doctor(id) ON DELETE CASCADE
+    FOREIGN KEY (doctor_id) REFERENCES doctor(id) ON DELETE CASCADE,
+    UNIQUE (doctor_id, day_of_week)
 );
 
 CREATE TABLE appointment (
     id INT PRIMARY KEY AUTO_INCREMENT,
+    doctor_id INT NOT NULL,
     patient_id INT NOT NULL,
-    schedule_id INT NULL,
+    appointment_date DATE NOT NULL,
+    start_time TIME NOT NULL,
+    end_time TIME NOT NULL,
     reason TEXT,
     status ENUM('scheduled', 'completed', 'cancelled') DEFAULT 'scheduled',
     meeting_url VARCHAR(512),
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (patient_id) REFERENCES user(id) ON DELETE CASCADE,
-    FOREIGN KEY (schedule_id) REFERENCES doctor_schedule(id) ON DELETE SET NULL
+    FOREIGN KEY (doctor_id) REFERENCES doctor(id) ON DELETE CASCADE,
+    FOREIGN KEY (patient_id) REFERENCES user(id) ON DELETE CASCADE
 );
 
 CREATE TABLE medical_record (

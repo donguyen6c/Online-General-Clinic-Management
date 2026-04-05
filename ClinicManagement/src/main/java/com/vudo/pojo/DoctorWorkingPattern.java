@@ -18,7 +18,6 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -27,16 +26,14 @@ import java.util.Date;
  * @author ADMIN
  */
 @Entity
-@Table(name = "doctor_schedule")
+@Table(name = "doctor_working_pattern")
 @NamedQueries({
-    @NamedQuery(name = "DoctorSchedule.findAll", query = "SELECT d FROM DoctorSchedule d"),
-    @NamedQuery(name = "DoctorSchedule.findById", query = "SELECT d FROM DoctorSchedule d WHERE d.id = :id"),
-    @NamedQuery(name = "DoctorSchedule.findByWorkDate", query = "SELECT d FROM DoctorSchedule d WHERE d.workDate = :workDate"),
-    @NamedQuery(name = "DoctorSchedule.findByStartTime", query = "SELECT d FROM DoctorSchedule d WHERE d.startTime = :startTime"),
-    @NamedQuery(name = "DoctorSchedule.findByEndTime", query = "SELECT d FROM DoctorSchedule d WHERE d.endTime = :endTime"),
-    @NamedQuery(name = "DoctorSchedule.findByNote", query = "SELECT d FROM DoctorSchedule d WHERE d.note = :note"),
-    @NamedQuery(name = "DoctorSchedule.findByIsAvailable", query = "SELECT d FROM DoctorSchedule d WHERE d.isAvailable = :isAvailable")})
-public class DoctorSchedule implements Serializable {
+    @NamedQuery(name = "DoctorWorkingPattern.findAll", query = "SELECT d FROM DoctorWorkingPattern d"),
+    @NamedQuery(name = "DoctorWorkingPattern.findById", query = "SELECT d FROM DoctorWorkingPattern d WHERE d.id = :id"),
+    @NamedQuery(name = "DoctorWorkingPattern.findByDayOfWeek", query = "SELECT d FROM DoctorWorkingPattern d WHERE d.dayOfWeek = :dayOfWeek"),
+    @NamedQuery(name = "DoctorWorkingPattern.findByStartTime", query = "SELECT d FROM DoctorWorkingPattern d WHERE d.startTime = :startTime"),
+    @NamedQuery(name = "DoctorWorkingPattern.findByEndTime", query = "SELECT d FROM DoctorWorkingPattern d WHERE d.endTime = :endTime")})
+public class DoctorWorkingPattern implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -46,34 +43,34 @@ public class DoctorSchedule implements Serializable {
     private Integer id;
     @Basic(optional = false)
     @NotNull
-    @Column(name = "work_date")
-    @Temporal(TemporalType.DATE)
-    private Date workDate;
+    @Column(name = "day_of_week")
+    private short dayOfWeek;
+    @Basic(optional = false)
+    @NotNull
     @Column(name = "start_time")
     @Temporal(TemporalType.TIME)
     private Date startTime;
+    @Basic(optional = false)
+    @NotNull
     @Column(name = "end_time")
     @Temporal(TemporalType.TIME)
     private Date endTime;
-    @Size(max = 255)
-    @Column(name = "note")
-    private String note;
-    @Column(name = "is_available")
-    private Boolean isAvailable;
     @JoinColumn(name = "doctor_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private Doctor doctorId;
 
-    public DoctorSchedule() {
+    public DoctorWorkingPattern() {
     }
 
-    public DoctorSchedule(Integer id) {
+    public DoctorWorkingPattern(Integer id) {
         this.id = id;
     }
 
-    public DoctorSchedule(Integer id, Date workDate) {
+    public DoctorWorkingPattern(Integer id, short dayOfWeek, Date startTime, Date endTime) {
         this.id = id;
-        this.workDate = workDate;
+        this.dayOfWeek = dayOfWeek;
+        this.startTime = startTime;
+        this.endTime = endTime;
     }
 
     public Integer getId() {
@@ -84,12 +81,12 @@ public class DoctorSchedule implements Serializable {
         this.id = id;
     }
 
-    public Date getWorkDate() {
-        return workDate;
+    public short getDayOfWeek() {
+        return dayOfWeek;
     }
 
-    public void setWorkDate(Date workDate) {
-        this.workDate = workDate;
+    public void setDayOfWeek(short dayOfWeek) {
+        this.dayOfWeek = dayOfWeek;
     }
 
     public Date getStartTime() {
@@ -106,22 +103,6 @@ public class DoctorSchedule implements Serializable {
 
     public void setEndTime(Date endTime) {
         this.endTime = endTime;
-    }
-
-    public String getNote() {
-        return note;
-    }
-
-    public void setNote(String note) {
-        this.note = note;
-    }
-
-    public Boolean getIsAvailable() {
-        return isAvailable;
-    }
-
-    public void setIsAvailable(Boolean isAvailable) {
-        this.isAvailable = isAvailable;
     }
 
     public Doctor getDoctorId() {
@@ -142,10 +123,10 @@ public class DoctorSchedule implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof DoctorSchedule)) {
+        if (!(object instanceof DoctorWorkingPattern)) {
             return false;
         }
-        DoctorSchedule other = (DoctorSchedule) object;
+        DoctorWorkingPattern other = (DoctorWorkingPattern) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
@@ -154,7 +135,7 @@ public class DoctorSchedule implements Serializable {
 
     @Override
     public String toString() {
-        return "com.vudo.pojo.DoctorSchedule[ id=" + id + " ]";
+        return "com.vudo.pojo.DoctorWorkingPattern[ id=" + id + " ]";
     }
     
 }

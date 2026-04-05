@@ -4,7 +4,6 @@
  */
 package com.vudo.pojo;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Basic;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -45,17 +44,19 @@ public class Doctor implements Serializable {
     @Size(max = 65535)
     @Column(name = "bio")
     private String bio;
-    @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "doctorId")
     private Set<DoctorSchedule> doctorScheduleSet;
-    @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "doctorId")
     private Set<MedicalRecord> medicalRecordSet;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "doctorId")
+    private Set<Appointment> appointmentSet;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "doctorId")
+    private Set<DoctorWorkingPattern> doctorWorkingPatternSet;
     @JoinColumn(name = "specialty_id", referencedColumnName = "id")
     @ManyToOne
     private Specialty specialtyId;
     @JoinColumn(name = "user_id", referencedColumnName = "id")
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(optional = false)
     private User userId;
 
     public Doctor() {
@@ -95,6 +96,22 @@ public class Doctor implements Serializable {
 
     public void setMedicalRecordSet(Set<MedicalRecord> medicalRecordSet) {
         this.medicalRecordSet = medicalRecordSet;
+    }
+
+    public Set<Appointment> getAppointmentSet() {
+        return appointmentSet;
+    }
+
+    public void setAppointmentSet(Set<Appointment> appointmentSet) {
+        this.appointmentSet = appointmentSet;
+    }
+
+    public Set<DoctorWorkingPattern> getDoctorWorkingPatternSet() {
+        return doctorWorkingPatternSet;
+    }
+
+    public void setDoctorWorkingPatternSet(Set<DoctorWorkingPattern> doctorWorkingPatternSet) {
+        this.doctorWorkingPatternSet = doctorWorkingPatternSet;
     }
 
     public Specialty getSpecialtyId() {

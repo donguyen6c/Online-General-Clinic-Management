@@ -6,6 +6,8 @@ package com.vudo.services.impl;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
+import com.vudo.dto.UserDTO;
+import com.vudo.mapper.UserMapper;
 import com.vudo.pojo.User;
 import com.vudo.repositories.UserRepository;
 import com.vudo.services.UserService;
@@ -21,7 +23,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -39,22 +40,25 @@ public class UserServiceImpl implements UserService {
     private Cloudinary cloudinary;
 
     @Autowired
-    private BCryptPasswordEncoder PasswordEncoder;
+    private BCryptPasswordEncoder passwordEncoder;
 
     @Override
-    public User getUserByUsername(String username) {
-        return this.userRepo.getUserByUsername(username);
+    public UserDTO getUserByUsername(String username) {
+        User u = this.userRepo.getUserByUsername(username);
+        if (u == null)
+            return null;
+        return UserMapper.toDTO(u);
     }
 
     @Override
-    public User addUser(Map<String, String> params, MultipartFile avatar) {
+    public UserDTO addUser(Map<String, String> params, MultipartFile avatar) {
         User u = new User();
         u.setFullName(params.get("fullName"));
         u.setEmail(params.get("email"));
         u.setPhone(params.get("phone"));
         u.setGender(params.get("gender"));
         u.setUsername(params.get("username"));
-        u.setPassword(PasswordEncoder.encode(params.get("password")));
+        u.setPassword(passwordEncoder.encode(params.get("password")));
         u.setRole("patient");
         u.setProvider("local");
 
@@ -67,7 +71,7 @@ public class UserServiceImpl implements UserService {
                 Logger.getLogger(UserServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-        return this.userRepo.addUser(u);
+        return UserMapper.toDTO(this.userRepo.addUser(u));
     }
 
     @Override

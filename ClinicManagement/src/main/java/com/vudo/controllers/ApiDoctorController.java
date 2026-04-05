@@ -4,7 +4,7 @@
  */
 package com.vudo.controllers;
 
-import com.vudo.pojo.Doctor;
+import com.vudo.dto.DoctorDTO;
 import com.vudo.services.DoctorService;
 import java.util.List;
 import java.util.Map;
@@ -26,17 +26,25 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api")
 public class ApiDoctorController {
+
     @Autowired
     private DoctorService docService;
-    
+
     @GetMapping("/doctors")
-    public ResponseEntity<List<Doctor>> list(@RequestParam Map<String,String> params){
-        return new ResponseEntity<>(this.docService.getDoctors(params),HttpStatus.OK);
+    public ResponseEntity<List<DoctorDTO>> list(@RequestParam Map<String, String> params) {
+        return new ResponseEntity<>(this.docService.getDoctors(params), HttpStatus.OK);
     }
-    
+
     @DeleteMapping("/doctors/{doctorId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable(value="doctorId") int id){
+    public void delete(@PathVariable(value = "doctorId") int id) {
         this.docService.deleteDoctor(id);
+    }
+
+    @GetMapping("/doctors/{id}")
+    public ResponseEntity<DoctorDTO> getDoctorById(@PathVariable(value = "id") int id) {
+        DoctorDTO d = docService.getDoctorById(id);
+
+        return new ResponseEntity<>(d, HttpStatus.OK);
     }
 }

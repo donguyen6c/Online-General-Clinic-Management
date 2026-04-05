@@ -4,10 +4,13 @@
  */
 package com.vudo.services.impl;
 
+import com.vudo.dto.SpecialtyDTO;
+import com.vudo.mapper.SpecialtyMapper;
 import com.vudo.pojo.Specialty;
 import com.vudo.repositories.SpecialtyRepository;
 import com.vudo.services.SpecialtyService;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,7 +24,15 @@ public class SpecialtyServiceImpl implements SpecialtyService{
     private SpecialtyRepository specRepo;
 
     @Override
-    public List<Specialty> getSpec() {
+    public List<SpecialtyDTO> getSpec() {
+        List<Specialty> specs = this.specRepo.getSpec();
+
+        return specs.stream().map(SpecialtyMapper::toDTO).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Specialty> getSpecEntity() {
         return this.specRepo.getSpec();
     }
+    
 }

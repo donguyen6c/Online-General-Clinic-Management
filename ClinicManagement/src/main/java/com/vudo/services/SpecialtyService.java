@@ -4,6 +4,7 @@
  */
 package com.vudo.services;
 
+import com.vudo.dto.SpecialtyDTO;
 import com.vudo.pojo.Specialty;
 import java.util.List;
 
@@ -12,5 +13,6 @@ import java.util.List;
  * @author ASUS
  */
 public interface SpecialtyService {
-    List<Specialty> getSpec();
+    List<SpecialtyDTO> getSpec();
+    List<Specialty> getSpecEntity();
 }

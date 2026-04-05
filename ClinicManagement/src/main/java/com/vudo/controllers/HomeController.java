@@ -34,14 +34,14 @@ public class HomeController {
     
     @RequestMapping("/")
     public String index(Model model, @RequestParam Map<String,String> params){
-        model.addAttribute("specialty", this.specService.getSpec());
-        model.addAttribute("doctors", this.docService.getDoctors(params));
+        model.addAttribute("specialty", this.specService.getSpecEntity());
+        model.addAttribute("doctors", this.docService.getDoctorEntities(params));
         return "index";
     }
     
     @GetMapping("/doctor/{doctorId}")
     public String updateView(Model model,@PathVariable(value="doctorId") int id){
-        model.addAttribute("doctor", this.docService.getDoctorById(id));
+        model.addAttribute("doctor", this.docService.getDoctorEntityById(id));
         return "doctors";
     }
     
@@ -51,25 +51,25 @@ public class HomeController {
         newDoctor.setUserId(new User());
         
         model.addAttribute("doctor", newDoctor);
-        model.addAttribute("specialty", this.specService.getSpec());
+        model.addAttribute("specialty", this.specService.getSpecEntity());
         return "doctor";
     }
 
     @GetMapping("/doctor/edit/{doctorId}")
     public String editDoctorView(Model model, @PathVariable(value="doctorId") int id) {
-        model.addAttribute("doctor", this.docService.getDoctorById(id));
-        model.addAttribute("specialty", this.specService.getSpec());
+        model.addAttribute("doctor", this.docService.getDoctorEntityById(id));
+        model.addAttribute("specialty", this.specService.getSpecEntity());
         return "doctor";
     }
 
     @PostMapping("/doctor/save")
     public String saveDoctor(@ModelAttribute(value = "doctor") Doctor doctor, Model model) {
         try {
-            this.docService.addOrUpdateDoctor(doctor);
+            this.docService.addOrUpdateDoctorEntity(doctor);
             return "redirect:/";
         } catch (IllegalArgumentException ex) {
             model.addAttribute("errMsg", ex.getMessage());
-            model.addAttribute("specialty", this.specService.getSpec());
+            model.addAttribute("specialty", this.specService.getSpecEntity());
             return "doctor"; 
         } catch (Exception ex) {
             model.addAttribute("errMsg", "Đã có lỗi hệ thống xảy ra: " + ex.getMessage());

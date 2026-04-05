@@ -13,4 +13,5 @@ import com.vudo.pojo.User;
 public interface UserRepository {
     User getUserByUsername(String username);
     User addUser(User u);
+    
 }

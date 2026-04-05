@@ -6,6 +6,8 @@ package com.vudo.services.impl;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
+import com.vudo.dto.DoctorDTO;
+import com.vudo.mapper.DoctorMapper;
 import com.vudo.pojo.Doctor;
 import com.vudo.pojo.User;
 import com.vudo.repositories.DoctorRepository;
@@ -15,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,13 +34,19 @@ public class DoctorServiceImpl implements DoctorService{
     private Cloudinary cloudinary;
 
     @Override
-    public List<Doctor> getDoctors(Map<String, String> params) {
-        return this.docRepo.getDoctors(params);
+    public List<DoctorDTO> getDoctors(Map<String, String> params) {
+        return this.docRepo.getDoctors(params).stream().map(DoctorMapper::toDTO)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public Doctor getDoctorById(int id) {
-        return this.docRepo.getDoctorById(id);
+    public DoctorDTO getDoctorById(int id) {
+        Doctor doctor = this.docRepo.getDoctorById(id);
+        if (doctor == null) {
+            return null;
+        }
+
+        return DoctorMapper.toDTO(doctor);
     }
 
     @Override
@@ -46,7 +55,7 @@ public class DoctorServiceImpl implements DoctorService{
     }
 
     @Override
-    public void addOrUpdateDoctor(Doctor d) {
+    public void addOrUpdateDoctorEntity(Doctor d) {
         User user = d.getUserId();
         
         if (user.getFile() != null && !user.getFile().isEmpty()) {
@@ -75,5 +84,16 @@ public class DoctorServiceImpl implements DoctorService{
         }
         this.docRepo.addOrUpdateDoctor(d);
     }
-    
+
+    @Override
+    public List<Doctor> getDoctorEntities(Map<String, String> params) {
+        return this.docRepo.getDoctors(params);
+    }
+
+    @Override
+    public Doctor getDoctorEntityById(int id) {
+        return this.docRepo.getDoctorById(id);
+    }
+
+
 }

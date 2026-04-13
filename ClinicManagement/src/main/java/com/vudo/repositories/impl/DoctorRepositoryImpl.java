@@ -64,11 +64,18 @@ public class DoctorRepositoryImpl implements DoctorRepository {
     public void addOrUpdateDoctor(Doctor doctor) {
         Session session = this.factory.getObject().getCurrentSession();
 
-        // Nếu doctor có ID hợp lệ -> Cập nhật (Update)
+        User user = doctor.getUserId();
+        if (user != null) {
+            if (user.getId() == null) {
+                session.persist(user); 
+            } else {
+                session.merge(user); 
+            }
+        }
+
         if (doctor.getId() != null && doctor.getId() > 0) {
             session.merge(doctor);
         } else {
-            // Ngược lại chưa có ID -> Thêm mới (Add)
             session.persist(doctor);
         }
     }

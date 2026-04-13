@@ -12,6 +12,7 @@ import jakarta.persistence.criteria.Root;
 import java.time.LocalDate;
 import java.util.List;
 import org.hibernate.Session;
+import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import org.springframework.stereotype.Repository;
@@ -45,6 +46,21 @@ public class AppointmentRepositoryImpl implements AppointmentRepository {
         );
 
         return session.createQuery(cq).getResultList();
+    }
+
+    @Override
+    public List<Appointment> getAppointmentsByPatientId(int patientId) {
+        Session session = this.factory.getObject().getCurrentSession();
+        CriteriaBuilder cb = session.getCriteriaBuilder();
+        CriteriaQuery<Appointment> cq = cb.createQuery(Appointment.class);
+        Root<Appointment> root = cq.from(Appointment.class);
+
+        cq.where(cb.equal(root.get("patientId").get("id"), patientId));
+
+        cq.orderBy(cb.desc(root.get("appointmentDate")), cb.desc(root.get("startTime")));
+
+        Query<Appointment> query = session.createQuery(cq);
+        return query.getResultList();
     }
 
 }

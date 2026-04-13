@@ -4,9 +4,11 @@
  */
 package com.vudo.services.impl;
 
+import com.vudo.dto.AppointmentResponseDTO;
 import com.vudo.dto.AvailableSlotsResponseDTO;
 import com.vudo.dto.TimeSlotDTO;
 import com.vudo.dto.WorkingTimeDTO;
+import com.vudo.mapper.AppointmentMapper;
 import com.vudo.pojo.Appointment;
 import com.vudo.pojo.DoctorSchedule;
 import com.vudo.pojo.DoctorWorkingPattern;
@@ -18,8 +20,10 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 /**
  *
  * @author ADMIN
@@ -106,8 +110,16 @@ public class AppointmentServiceImpl implements AppointmentService {
         res.setDoctorId(doctorId);
         res.setDate(date);
         res.setAvailable(false);
-        res.setWorkingTime(null);
+        res.setWorkingTime(null);   
         res.setAvailableSlots(new ArrayList<>());
         return res;
+    }
+
+    @Override
+    @Transactional
+    public List<AppointmentResponseDTO> getPatientAppointments(int patientId) {
+        List<Appointment> appointments = appointmentRepo.getAppointmentsByPatientId(patientId);
+        return appointments.stream().map(appointment -> AppointmentMapper.toDTO(appointment))
+                .collect(Collectors.toList());
     }
 }

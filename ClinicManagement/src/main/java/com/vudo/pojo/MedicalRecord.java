@@ -218,5 +218,5 @@ public class MedicalRecord implements Serializable {
     public String toString() {
         return "com.vudo.pojo.MedicalRecord[ id=" + id + " ]";
     }
-    
+        
 }

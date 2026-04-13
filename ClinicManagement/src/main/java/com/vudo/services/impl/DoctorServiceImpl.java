@@ -35,7 +35,7 @@ public class DoctorServiceImpl implements DoctorService{
 
     @Override
     public List<DoctorDTO> getDoctors(Map<String, String> params) {
-        return this.docRepo.getDoctors(params).stream().map(DoctorMapper::toDTO)
+        return this.docRepo.getDoctors(params).stream().map(doctor -> DoctorMapper.toDTO(doctor))
                 .collect(Collectors.toList());
     }
 

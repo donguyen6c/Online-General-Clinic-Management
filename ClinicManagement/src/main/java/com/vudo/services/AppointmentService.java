@@ -13,6 +13,6 @@ import java.util.List;
  * @author ADMIN
  */
 public interface AppointmentService {
-    AvailableSlotsResponseDTO getAvailableSlots(int doctorId, String date);
+    AvailableSlotsResponseDTO getSlots(int doctorId, String date);
     List<AppointmentResponseDTO> getPatientAppointments(int patientId);
 }

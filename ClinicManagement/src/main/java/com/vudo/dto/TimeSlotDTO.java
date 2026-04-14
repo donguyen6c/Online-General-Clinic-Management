@@ -13,10 +13,12 @@ import java.time.LocalTime;
 public class TimeSlotDTO {
     private String startTime;
     private String endTime;
-
-    public TimeSlotDTO(String startTime, String endTime) {
+    private boolean available;
+    
+    public TimeSlotDTO(String startTime, String endTime, boolean available) {
         this.startTime = startTime;
         this.endTime = endTime;
+        this.available = available;
     }
     
     
@@ -47,6 +49,20 @@ public class TimeSlotDTO {
      */
     public void setEndTime(String endTime) {
         this.endTime = endTime;
+    }
+
+    /**
+     * @return the available
+     */
+    public boolean isAvailable() {
+        return available;
+    }
+
+    /**
+     * @param available the available to set
+     */
+    public void setAvailable(boolean available) {
+        this.available = available;
     }
     
     

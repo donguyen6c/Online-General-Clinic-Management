@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 /**
  *
  * @author ADMIN
@@ -41,7 +42,7 @@ public class AppointmentServiceImpl implements AppointmentService {
     private AppointmentRepository appointmentRepo;
 
     @Override
-    public AvailableSlotsResponseDTO getAvailableSlots(int doctorId, String dateStr) {
+    public AvailableSlotsResponseDTO getSlots(int doctorId, String dateStr) {
         LocalDate date = LocalDate.parse(dateStr);
 
         DoctorSchedule schedule = doctorScheduleRepo.getByDoctorIdAndWorkDate(doctorId, date);
@@ -88,9 +89,11 @@ public class AppointmentServiceImpl implements AppointmentService {
                 }
             }
 
-            if (!overlapped) {
-                availableSlots.add(new TimeSlotDTO(current.toString(), next.toString()));
-            }
+            availableSlots.add(new TimeSlotDTO(
+                    current.toString(),
+                    next.toString(),
+                    !overlapped
+            ));
 
             current = next;
         }
@@ -110,7 +113,7 @@ public class AppointmentServiceImpl implements AppointmentService {
         res.setDoctorId(doctorId);
         res.setDate(date);
         res.setAvailable(false);
-        res.setWorkingTime(null);   
+        res.setWorkingTime(null);
         res.setAvailableSlots(new ArrayList<>());
         return res;
     }

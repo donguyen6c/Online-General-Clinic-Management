@@ -27,10 +27,10 @@ public class ApiAppointmentController {
     @Autowired
     private AppointmentService appointmentService;
 
-    @GetMapping("/doctors/{doctorId}/available-slots")
+    @GetMapping("/doctors/{doctorId}/slots")
     public ResponseEntity<AvailableSlotsResponseDTO> getAvailableSlots(
             @PathVariable("doctorId") int doctorId, @RequestParam("date") String date) {
-        AvailableSlotsResponseDTO sl = appointmentService.getAvailableSlots(doctorId, date);
+        AvailableSlotsResponseDTO sl = appointmentService.getSlots(doctorId, date);
         return new ResponseEntity<>(sl, HttpStatus.OK);
     }
 }

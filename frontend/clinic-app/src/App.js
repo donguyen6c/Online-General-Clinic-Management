@@ -11,7 +11,7 @@ import Pharmacist from "./screens/Pharmacist/Pharmacist";
 import Doctor from "./screens/Doctor/Doctor";
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-function App() {
+const App = () => {
   return (
     <BrowserRouter>
     <Header/>

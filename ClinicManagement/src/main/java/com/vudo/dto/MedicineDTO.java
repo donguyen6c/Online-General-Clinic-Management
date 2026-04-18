@@ -23,11 +23,6 @@ public class MedicineDTO {
     @NotNull(message = "Giá thuốc không được để trống")
     @Min(value = 0, message = "Giá thuốc không được là số âm")
     private BigDecimal price;
-    
-    private Integer inventoryId; 
-    @Min(value = 0, message = "Số lượng tồn kho không được là số âm")
-    private Integer quantity;
-    private Date expiryDate;
 
     /**
      * @return the id
@@ -83,47 +78,5 @@ public class MedicineDTO {
      */
     public void setPrice(BigDecimal price) {
         this.price = price;
-    }
-
-    /**
-     * @return the inventoryId
-     */
-    public Integer getInventoryId() {
-        return inventoryId;
-    }
-
-    /**
-     * @param inventoryId the inventoryId to set
-     */
-    public void setInventoryId(Integer inventoryId) {
-        this.inventoryId = inventoryId;
-    }
-
-    /**
-     * @return the quantity
-     */
-    public Integer getQuantity() {
-        return quantity;
-    }
-
-    /**
-     * @param quantity the quantity to set
-     */
-    public void setQuantity(Integer quantity) {
-        this.quantity = quantity;
-    }
-
-    /**
-     * @return the expiryDate
-     */
-    public Date getExpiryDate() {
-        return expiryDate;
-    }
-
-    /**
-     * @param expiryDate the expiryDate to set
-     */
-    public void setExpiryDate(Date expiryDate) {
-        this.expiryDate = expiryDate;
     }
 }

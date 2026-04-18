@@ -13,4 +13,5 @@ import java.util.List;
  */
 public interface MedicalRecordRepository {
     List<MedicalRecord> getByPatientId(int patientId);
+    MedicalRecord getMedicalRecordById(int id);
 }

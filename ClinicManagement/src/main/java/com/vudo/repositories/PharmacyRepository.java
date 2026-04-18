@@ -4,7 +4,9 @@
  */
 package com.vudo.repositories;
 
+import com.vudo.dto.InventoryDTO;
 import com.vudo.dto.MedicineDTO;
+import com.vudo.pojo.Notification;
 import java.util.List;
 import java.util.Map;
 
@@ -14,6 +16,15 @@ import java.util.Map;
  */
 public interface PharmacyRepository {
     List<MedicineDTO> getMedicines(Map<String, String> params);
-    boolean addMedicine(MedicineDTO medicineDTO);
-    boolean updateMedicine(int medicineId, MedicineDTO medicineDTO);
+    List<InventoryDTO> getInventories(Map<String, String> params);
+    void addMedicine(MedicineDTO medicineDTO);
+    void addInventory(int medicineId, InventoryDTO dto);
+    void updateMedicine(int medicineId, MedicineDTO dto);
+    void updateInventory(int inventoryId, InventoryDTO dto);
+    void deleteMedicine(int medicineId);
+    void deleteInventory(int inventoryId);
+    List<InventoryDTO> getExpiringInventories();
+    List<InventoryDTO> getLowStockInventories();
+    void dispenseMedicine(int prescriptionId);
+    void addNotification(Notification n);
 }

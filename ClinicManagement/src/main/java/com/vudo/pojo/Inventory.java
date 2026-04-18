@@ -19,6 +19,7 @@ import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import java.io.Serializable;
 import java.util.Date;
+import org.hibernate.annotations.CreationTimestamp;
 
 /**
  *
@@ -45,8 +46,8 @@ public class Inventory implements Serializable {
     @Column(name = "expiry_date")
     @Temporal(TemporalType.DATE)
     private Date expiryDate;
+    @CreationTimestamp
     @Column(name = "created_at")
-    @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
     @JoinColumn(name = "medicine_id", referencedColumnName = "id")
     @ManyToOne(optional = false)

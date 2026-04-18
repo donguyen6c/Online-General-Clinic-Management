@@ -39,5 +39,11 @@ public class MedicalRecordRepositoryImpl implements MedicalRecordRepository{
         cq.orderBy(cb.desc(root.get("createdAt")));
         return session.createQuery(cq).getResultList();
     }
+
+    @Override
+    public MedicalRecord getMedicalRecordById(int id) {
+        Session session = this.factory.getObject().getCurrentSession();
+        return session.get(MedicalRecord.class, id);
+    }
     
 }

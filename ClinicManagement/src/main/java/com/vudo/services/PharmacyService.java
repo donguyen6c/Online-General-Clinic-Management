@@ -4,6 +4,7 @@
  */
 package com.vudo.services;
 
+import com.vudo.dto.InventoryDTO;
 import com.vudo.dto.MedicineDTO;
 import java.util.List;
 import java.util.Map;
@@ -14,6 +15,14 @@ import java.util.Map;
  */
 public interface PharmacyService {
     List<MedicineDTO> getMedicines(Map<String, String> params);
-    boolean addMedicine(MedicineDTO medicineDTO);
-    boolean updateMedicine(int id, MedicineDTO medicineDTO);
+    List<InventoryDTO> getInventories(Map<String, String> params);
+    void addMedicine(MedicineDTO medicineDTO);
+    void updateMedicine(int id, MedicineDTO medicineDTO);
+    void addInventory(int medicineId, InventoryDTO dto);
+    void updateInventory(int inventoryId, InventoryDTO dto);
+    void deleteMedicine(int medicineId);
+    void deleteInventory(int inventoryId);
+    List<InventoryDTO> getExpiringInventories();
+    List<InventoryDTO> getLowStockInventories();
+    void dispenseMedicine(int medicalRecordId);
 }

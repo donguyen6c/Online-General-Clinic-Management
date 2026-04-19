@@ -21,6 +21,7 @@ import com.vudo.repositories.DoctorScheduleRepository;
 import com.vudo.repositories.DoctorWorkingPatternRepository;
 import com.vudo.repositories.UserRepository;
 import com.vudo.services.AppointmentService;
+import com.vudo.services.NotificationService;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -52,6 +53,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     @Autowired
     private DoctorRepository doctorRepo;
+
+    @Autowired
+    private NotificationService notificationService;
 
     @Override
     public AvailableSlotsResponseDTO getSlots(int doctorId, String dateStr) {
@@ -139,6 +143,7 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
     @Override
+    @Transactional
     public AppointmentResponseDTO createAppointment(int doctorId, AppointmentRequestDTO request) {
         AvailableSlotsResponseDTO slotsResponse = this.getSlots(doctorId, request.getDate());
 
@@ -160,6 +165,11 @@ public class AppointmentServiceImpl implements AppointmentService {
         Doctor doctor = doctorRepo.getDoctorById(doctorId);
         Appointment appointment = AppointmentMapper.toEntity(request, doctor, patient);
         Appointment saved = appointmentRepo.add(appointment);
+        notificationService.createBookingNotification(
+                patient,
+                doctor.getUserId().getFullName(),
+                request.getDate()+ " " + request.getStartTime()
+        );
         return AppointmentMapper.toDTO(saved);
     }
 }

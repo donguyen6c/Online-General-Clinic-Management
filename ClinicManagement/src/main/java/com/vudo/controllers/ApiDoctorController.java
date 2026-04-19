@@ -5,9 +5,7 @@
 package com.vudo.controllers;
 
 import com.vudo.dto.DoctorDTO;
-import com.vudo.dto.DoctorsDTO;
 import com.vudo.services.DoctorService;
-import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

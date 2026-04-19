@@ -4,8 +4,13 @@
  */
 package com.vudo.mapper;
 
+import com.vudo.dto.AppointmentRequestDTO;
 import com.vudo.dto.AppointmentResponseDTO;
 import com.vudo.pojo.Appointment;
+import com.vudo.pojo.Doctor;
+import com.vudo.pojo.User;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 /**
  *
@@ -40,4 +45,24 @@ public class AppointmentMapper {
 
         return dto;
     }
+    
+    public static Appointment toEntity(AppointmentRequestDTO dto, Doctor doctor, User patient) {
+        if (dto == null) {
+            return null;
+        }
+
+        Appointment ap = new Appointment();
+
+        ap.setAppointmentDate(LocalDate.parse(dto.getDate()));
+        ap.setStartTime(LocalTime.parse(dto.getStartTime()));
+        ap.setEndTime(LocalTime.parse(dto.getEndTime()));
+        ap.setReason(dto.getReason());
+
+        ap.setDoctorId(doctor);
+        ap.setPatientId(patient);
+        ap.setStatus("scheduled");
+
+        return ap;
+    }
+
 }

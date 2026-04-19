@@ -4,17 +4,22 @@
  */
 package com.vudo.services.impl;
 
+import com.vudo.dto.AppointmentRequestDTO;
 import com.vudo.dto.AppointmentResponseDTO;
 import com.vudo.dto.AvailableSlotsResponseDTO;
 import com.vudo.dto.TimeSlotDTO;
 import com.vudo.dto.WorkingTimeDTO;
 import com.vudo.mapper.AppointmentMapper;
 import com.vudo.pojo.Appointment;
+import com.vudo.pojo.Doctor;
 import com.vudo.pojo.DoctorSchedule;
 import com.vudo.pojo.DoctorWorkingPattern;
+import com.vudo.pojo.User;
 import com.vudo.repositories.AppointmentRepository;
+import com.vudo.repositories.DoctorRepository;
 import com.vudo.repositories.DoctorScheduleRepository;
 import com.vudo.repositories.DoctorWorkingPatternRepository;
+import com.vudo.repositories.UserRepository;
 import com.vudo.services.AppointmentService;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -22,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,6 +46,12 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     @Autowired
     private AppointmentRepository appointmentRepo;
+
+    @Autowired
+    private UserRepository userRepo;
+
+    @Autowired
+    private DoctorRepository doctorRepo;
 
     @Override
     public AvailableSlotsResponseDTO getSlots(int doctorId, String dateStr) {
@@ -103,7 +115,7 @@ public class AppointmentServiceImpl implements AppointmentService {
         res.setDate(dateStr);
         res.setAvailable(true);
         res.setWorkingTime(new WorkingTimeDTO(start.toString(), end.toString()));
-        res.setAvailableSlots(availableSlots);
+        res.setSlots(availableSlots);
 
         return res;
     }
@@ -114,7 +126,7 @@ public class AppointmentServiceImpl implements AppointmentService {
         res.setDate(date);
         res.setAvailable(false);
         res.setWorkingTime(null);
-        res.setAvailableSlots(new ArrayList<>());
+        res.setSlots(new ArrayList<>());
         return res;
     }
 
@@ -124,5 +136,30 @@ public class AppointmentServiceImpl implements AppointmentService {
         List<Appointment> appointments = appointmentRepo.getAppointmentsByPatientId(patientId);
         return appointments.stream().map(appointment -> AppointmentMapper.toDTO(appointment))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public AppointmentResponseDTO createAppointment(int doctorId, AppointmentRequestDTO request) {
+        AvailableSlotsResponseDTO slotsResponse = this.getSlots(doctorId, request.getDate());
+
+        if (!slotsResponse.isAvailable()) {
+            throw new IllegalArgumentException("Bác sĩ không làm việc trong ngày này");
+        }
+
+        boolean validSlot = slotsResponse.getSlots().stream().anyMatch(slot
+                -> slot.getStartTime().equals(request.getStartTime())
+                && slot.getEndTime().equals(request.getEndTime())
+                && slot.isAvailable()
+        );
+        if (!validSlot) {
+            throw new IllegalArgumentException("Khung giờ này không khả dụng");
+        }
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        User patient = userRepo.getUserByUsername(username);
+        Doctor doctor = doctorRepo.getDoctorById(doctorId);
+        Appointment appointment = AppointmentMapper.toEntity(request, doctor, patient);
+        Appointment saved = appointmentRepo.add(appointment);
+        return AppointmentMapper.toDTO(saved);
     }
 }

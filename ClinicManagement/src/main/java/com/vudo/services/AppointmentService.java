@@ -4,6 +4,7 @@
  */
 package com.vudo.services;
 
+import com.vudo.dto.AppointmentRequestDTO;
 import com.vudo.dto.AppointmentResponseDTO;
 import com.vudo.dto.AvailableSlotsResponseDTO;
 import java.util.List;
@@ -15,4 +16,5 @@ import java.util.List;
 public interface AppointmentService {
     AvailableSlotsResponseDTO getSlots(int doctorId, String date);
     List<AppointmentResponseDTO> getPatientAppointments(int patientId);
+    AppointmentResponseDTO createAppointment(int doctorId, AppointmentRequestDTO request);
 }

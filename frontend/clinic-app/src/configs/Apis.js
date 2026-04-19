@@ -6,9 +6,13 @@ export const endpoints = {
     'users': '/users',
     'login': '/login',
     'profile': '/secure/profile',
-    'logout' : '/logout'
+    'logout' : '/logout',
+    'doctor-detail': doctorId => `/doctors/${doctorId}`,
+    'slots': (doctorId, date) => `/doctors/${doctorId}/slots?date=${date}`,
+    'booking': doctorId => `/secure/doctors/${doctorId}/appointments`,
 }
 
 export default axios.create({
-    baseURL:"http://localhost:8080/ClinicManagement/api/"
+    baseURL:"http://localhost:8081/ClinicManagement/api/"
 })
+

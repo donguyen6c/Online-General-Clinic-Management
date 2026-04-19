@@ -13,6 +13,7 @@ import com.vudo.pojo.User;
 import com.vudo.repositories.DoctorRepository;
 import com.vudo.services.DoctorService;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -26,17 +27,29 @@ import org.springframework.stereotype.Service;
  * @author ASUS
  */
 @Service
-public class DoctorServiceImpl implements DoctorService{
+public class DoctorServiceImpl implements DoctorService {
+
     @Autowired
     private DoctorRepository docRepo;
-    
+
     @Autowired
     private Cloudinary cloudinary;
 
     @Override
-    public List<DoctorDTO> getDoctors(Map<String, String> params) {
-        return this.docRepo.getDoctors(params).stream().map(doctor -> DoctorMapper.toDTO(doctor))
+    public Map<String, Object> getDoctors(Map<String, String> params) {
+        Map<String, Object> repoData = this.docRepo.getDoctors(params);
+
+        List<Doctor> doctors = (List<Doctor>) repoData.get("data");
+        boolean hasNext = (boolean) repoData.get("hasNext");
+
+        List<DoctorDTO> dtos = doctors.stream().map(DoctorMapper::toDTO)
                 .collect(Collectors.toList());
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("data", dtos);
+        result.put("hasNext", hasNext);
+
+        return result;
     }
 
     @Override
@@ -57,26 +70,26 @@ public class DoctorServiceImpl implements DoctorService{
     @Override
     public void addOrUpdateDoctorEntity(Doctor d) {
         User user = d.getUserId();
-        
+
         if (user.getFile() != null && !user.getFile().isEmpty()) {
-                try {
-                    Map res = this.cloudinary.uploader().upload(user.getFile().getBytes(), 
-                            ObjectUtils.asMap("resource_type", "auto"));
-                    
-                    user.setAvatar(res.get("secure_url").toString());
-                    
-                } catch (IOException ex) {
-                    Logger.getLogger(DoctorServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
-                    throw new RuntimeException("Lỗi khi tải ảnh đại diện lên server!");
-                }
+            try {
+                Map res = this.cloudinary.uploader().upload(user.getFile().getBytes(),
+                        ObjectUtils.asMap("resource_type", "auto"));
+
+                user.setAvatar(res.get("secure_url").toString());
+
+            } catch (IOException ex) {
+                Logger.getLogger(DoctorServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+                throw new RuntimeException("Lỗi khi tải ảnh đại diện lên server!");
             }
-        
+        }
+
         if (user != null) {
             String phoneRegex = "^\\d{9}$";
             if (user.getPhone() == null || !user.getPhone().matches(phoneRegex)) {
                 throw new IllegalArgumentException("Số điện thoại không hợp lệ! Vui lòng nhập đúng 9 chữ số.");
             }
-            
+
             String emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$";
             if (user.getEmail() == null || !user.getEmail().matches(emailRegex)) {
                 throw new IllegalArgumentException("Email không đúng định dạng.");
@@ -87,13 +100,12 @@ public class DoctorServiceImpl implements DoctorService{
 
     @Override
     public List<Doctor> getDoctorEntities(Map<String, String> params) {
-        return this.docRepo.getDoctors(params);
+        return this.docRepo.getAllDoctors(params);
     }
 
     @Override
     public Doctor getDoctorEntityById(int id) {
         return this.docRepo.getDoctorById(id);
     }
-
 
 }

@@ -15,7 +15,7 @@ public class AvailableSlotsResponseDTO {
     private String date;
     private boolean available;
     private WorkingTimeDTO workingTime;
-    private List<TimeSlotDTO> availableSlots;
+    private List<TimeSlotDTO> slots;
 
     /**
      * @return the doctorId
@@ -76,15 +76,15 @@ public class AvailableSlotsResponseDTO {
     /**
      * @return the availableSlots
      */
-    public List<TimeSlotDTO> getAvailableSlots() {
-        return availableSlots;
+    public List<TimeSlotDTO> getSlots() {
+        return slots;
     }
 
     /**
      * @param availableSlots the availableSlots to set
      */
-    public void setAvailableSlots(List<TimeSlotDTO> availableSlots) {
-        this.availableSlots = availableSlots;
+    public void setSlots(List<TimeSlotDTO> availableSlots) {
+        this.slots = availableSlots;
     }
     
     

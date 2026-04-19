@@ -5,6 +5,7 @@
 package com.vudo.services;
 
 import com.vudo.dto.DoctorDTO;
+import com.vudo.dto.DoctorsDTO;
 import com.vudo.pojo.Doctor;
 import java.util.List;
 import java.util.Map;
@@ -14,7 +15,7 @@ import java.util.Map;
  * @author ASUS
  */
 public interface DoctorService {
-    List<DoctorDTO> getDoctors(Map<String, String> params);
+    public Map<String, Object> getDoctors(Map<String, String> params);
     List<Doctor> getDoctorEntities(Map<String, String> params);
     DoctorDTO getDoctorById(int id);
     Doctor getDoctorEntityById(int id);

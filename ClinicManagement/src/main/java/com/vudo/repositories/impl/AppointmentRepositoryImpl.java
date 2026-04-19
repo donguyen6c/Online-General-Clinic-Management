@@ -22,7 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
  *
  * @author ADMIN
  */
-
 @Repository
 @Transactional
 public class AppointmentRepositoryImpl implements AppointmentRepository {
@@ -61,6 +60,13 @@ public class AppointmentRepositoryImpl implements AppointmentRepository {
 
         Query<Appointment> query = session.createQuery(cq);
         return query.getResultList();
+    }
+
+    @Override
+    public Appointment add(Appointment appointment) {
+        Session session = this.factory.getObject().getCurrentSession();
+        session.persist(appointment);
+        return appointment;
     }
 
 }

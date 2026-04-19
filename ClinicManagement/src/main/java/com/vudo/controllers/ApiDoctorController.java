@@ -5,6 +5,7 @@
 package com.vudo.controllers;
 
 import com.vudo.dto.DoctorDTO;
+import com.vudo.dto.DoctorsDTO;
 import com.vudo.services.DoctorService;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +32,7 @@ public class ApiDoctorController {
     private DoctorService docService;
 
     @GetMapping("/doctors")
-    public ResponseEntity<List<DoctorDTO>> list(@RequestParam Map<String, String> params) {
+    public ResponseEntity<?> list(@RequestParam Map<String, String> params) {
         return new ResponseEntity<>(this.docService.getDoctors(params), HttpStatus.OK);
     }
 

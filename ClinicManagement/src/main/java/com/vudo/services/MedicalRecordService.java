@@ -4,6 +4,7 @@
  */
 package com.vudo.services;
 
+import com.vudo.dto.MedicalRecordRequestDTO;
 import com.vudo.dto.MedicalRecordResponseDTO;
 import java.util.List;
 
@@ -14,4 +15,5 @@ import java.util.List;
 public interface MedicalRecordService {
     public List<MedicalRecordResponseDTO> getPatientHistory(int patientId);
     MedicalRecordResponseDTO getMedicalRecordDetail(int patientId, int recordId);
+    MedicalRecordResponseDTO create(MedicalRecordRequestDTO request);
 }

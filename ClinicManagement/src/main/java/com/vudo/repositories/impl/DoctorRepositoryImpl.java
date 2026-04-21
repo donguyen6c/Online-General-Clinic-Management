@@ -152,4 +152,21 @@ public class DoctorRepositoryImpl implements DoctorRepository {
             }
         }
     }
+
+    @Override
+    public Doctor getDoctorByUserName(String username) {
+        Session session = this.factory.getObject().getCurrentSession();
+        CriteriaBuilder b = session.getCriteriaBuilder();
+        CriteriaQuery<Doctor> q = b.createQuery(Doctor.class);
+        Root<Doctor> root = q.from(Doctor.class);
+
+        q.select(root);
+
+        Predicate p = b.equal(root.get("userId").get("username"), username);
+        q.where(p);
+
+        List<Doctor> results = session.createQuery(q).getResultList();
+
+        return results.isEmpty() ? null : results.get(0);
+    }
 }

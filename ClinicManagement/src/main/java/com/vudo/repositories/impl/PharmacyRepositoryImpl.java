@@ -272,12 +272,6 @@ public class PharmacyRepositoryImpl implements PharmacyRepository{
             }
         }    
     }
-    
-    @Override
-    public void addNotification(Notification n) {
-        Session session = this.factory.getObject().getCurrentSession();
-        session.persist(n);
-    }
 }
     
 

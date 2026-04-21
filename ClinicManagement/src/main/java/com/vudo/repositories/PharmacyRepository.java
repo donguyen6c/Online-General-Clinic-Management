@@ -26,5 +26,4 @@ public interface PharmacyRepository {
     List<InventoryDTO> getExpiringInventories();
     List<InventoryDTO> getLowStockInventories();
     void dispenseMedicine(int prescriptionId);
-    void addNotification(Notification n);
 }

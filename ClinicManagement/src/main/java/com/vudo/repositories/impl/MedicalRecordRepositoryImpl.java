@@ -4,6 +4,7 @@
  */
 package com.vudo.repositories.impl;
 
+import com.vudo.dto.MedicalRecordResponseDTO;
 import com.vudo.pojo.MedicalRecord;
 import com.vudo.repositories.MedicalRecordRepository;
 import jakarta.persistence.criteria.CriteriaBuilder;

@@ -11,6 +11,7 @@ import com.vudo.pojo.Notification;
 import com.vudo.pojo.User;
 import com.vudo.repositories.MedicalRecordRepository;
 import com.vudo.repositories.PharmacyRepository;
+import com.vudo.services.NotificationService;
 import com.vudo.services.PharmacyService;
 import java.util.Date;
 import java.util.List;
@@ -30,6 +31,9 @@ public class PharmacyServiceImpl implements PharmacyService{
 
     @Autowired
     private MedicalRecordRepository medicalRecordRepo;
+    
+    @Autowired
+    private NotificationService notificationService;
     
     @Override
     public List<MedicineDTO> getMedicines(Map<String, String> params) {
@@ -87,18 +91,9 @@ public class PharmacyServiceImpl implements PharmacyService{
         pharmacyRepo.dispenseMedicine(medicalRecordId);
 
         MedicalRecord mr = medicalRecordRepo.getMedicalRecordById(medicalRecordId);
-
         User patient = mr.getPatientId(); 
-
-        Notification n = new Notification();
-        n.setUserId(patient);
-        n.setTitle("Đơn thuốc");
-        n.setMessage("Thuốc của đơn hàng #" + medicalRecordId + " đã chuẩn bị xong.");
-        n.setType("Medicines");
-        n.setCreatedAt(new Date());
-        n.setIsRead(false);
-
-        pharmacyRepo.addNotification(n);
+        String currentTime = new java.util.Date().toString();
+        notificationService.createMedicinesNotification(patient, mr, currentTime);
     }
 
 }

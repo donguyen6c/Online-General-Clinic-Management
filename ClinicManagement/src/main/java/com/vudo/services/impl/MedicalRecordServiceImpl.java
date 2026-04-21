@@ -31,6 +31,18 @@ public class MedicalRecordServiceImpl implements MedicalRecordService {
         List<MedicalRecord> records = medicalRecordRepo.getByPatientId(patientId);
         return records.stream().map(record -> MedicalRecordMapper.toDTO(record)).collect(Collectors.toList());
     }
+
+    @Override
+    @Transactional
+    public MedicalRecordResponseDTO getMedicalRecordDetail(int patientId, int recordId) {
+        MedicalRecord record = medicalRecordRepo.getMedicalRecordById(recordId);
+
+        if (record == null || record.getPatientId().getId() != patientId) {
+            return null;
+        }
+
+        return MedicalRecordMapper.toDTO(record);
+    }
 }
 
 

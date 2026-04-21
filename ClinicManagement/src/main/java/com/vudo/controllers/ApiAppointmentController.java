@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author ADMIN
  */
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/secure")
 public class ApiAppointmentController {
 
     @Autowired

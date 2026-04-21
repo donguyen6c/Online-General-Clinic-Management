@@ -5,11 +5,16 @@
 package com.vudo.controllers;
 
 import com.vudo.dto.DoctorDTO;
+import com.vudo.dto.MedicalRecordResponseDTO;
 import com.vudo.services.DoctorService;
+import com.vudo.services.MedicalRecordService;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,11 +28,14 @@ import org.springframework.web.bind.annotation.RestController;
  * @author ASUS
  */
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/secure")
 public class ApiDoctorController {
 
     @Autowired
     private DoctorService docService;
+    
+    @Autowired
+    private MedicalRecordService medicalRecordService;
 
     @GetMapping("/doctors")
     public ResponseEntity<?> list(@RequestParam Map<String, String> params) {
@@ -45,5 +53,33 @@ public class ApiDoctorController {
         DoctorDTO d = docService.getDoctorById(id);
 
         return new ResponseEntity<>(d, HttpStatus.OK);
+    }
+    
+    @GetMapping("/{patientId}/medical-records")
+    @PreAuthorize("hasAuthority('doctor')")
+    public ResponseEntity<List<MedicalRecordResponseDTO>> getHistory(@PathVariable("patientId") int patientId) {
+        
+        List<MedicalRecordResponseDTO> history = medicalRecordService.getPatientHistory(patientId);
+        
+        if (history == null || history.isEmpty()) {
+            return new ResponseEntity<>(new ArrayList<>(), HttpStatus.OK);
+        }
+        
+        return new ResponseEntity<>(history, HttpStatus.OK);
+    }
+    
+    @GetMapping("/{patientId}/medical-records/{recordId}")
+    @PreAuthorize("hasAuthority('doctor')")
+    public ResponseEntity<MedicalRecordResponseDTO> getMedicalRecordDetail(
+            @PathVariable("patientId") int patientId,
+            @PathVariable("recordId") int recordId) {
+        
+        MedicalRecordResponseDTO recordDetail = medicalRecordService.getMedicalRecordDetail(patientId, recordId);
+        
+        if (recordDetail == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        
+        return new ResponseEntity<>(recordDetail, HttpStatus.OK);
     }
 }

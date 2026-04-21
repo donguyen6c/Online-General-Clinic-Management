@@ -13,4 +13,5 @@ import java.util.List;
  */
 public interface MedicalRecordService {
     public List<MedicalRecordResponseDTO> getPatientHistory(int patientId);
+    MedicalRecordResponseDTO getMedicalRecordDetail(int patientId, int recordId);
 }

@@ -4,6 +4,7 @@
  */
 package com.vudo.repositories;
 
+import com.vudo.dto.MedicalRecordResponseDTO;
 import com.vudo.pojo.MedicalRecord;
 import java.util.List;
 

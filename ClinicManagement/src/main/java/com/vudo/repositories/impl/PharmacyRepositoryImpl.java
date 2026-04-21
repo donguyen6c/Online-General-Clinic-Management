@@ -26,6 +26,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -231,8 +232,6 @@ public class PharmacyRepositoryImpl implements PharmacyRepository{
     @Transactional
     public void dispenseMedicine(int medicalRecordId) {
         Session session = this.factory.getObject().getCurrentSession();
-
-        // 1. Lấy danh sách thuốc từ bảng prescribed_medicine dựa theo medical_record_id
         Query<PrescribedMedicine> q = session.createQuery(
             "FROM PrescribedMedicine pm WHERE pm.medicalRecordId.id = :mrId", PrescribedMedicine.class);
         q.setParameter("mrId", medicalRecordId);
@@ -242,7 +241,7 @@ public class PharmacyRepositoryImpl implements PharmacyRepository{
             throw new RuntimeException("Không tìm thấy thuốc nào được kê cho phiếu khám số " + medicalRecordId);
         }
 
-        // 2. Duyệt từng loại thuốc trong đơn
+        // Duyệt từng loại thuốc trong đơn
         for (PrescribedMedicine pm : prescribedList) {
             int requiredQty = pm.getQuantity();
             Medicine medicine = pm.getMedicineId();
@@ -271,6 +270,30 @@ public class PharmacyRepositoryImpl implements PharmacyRepository{
                 throw new RuntimeException("Cảnh báo: Thuốc '" + medicine.getName() + "' trong kho không đủ (thiếu " + requiredQty + ")");
             }
         }    
+    }
+
+    @Override
+    public Medicine getMedicineById(int id) {
+        Session session = this.factory.getObject().getCurrentSession();
+        return session.get(Medicine.class, id);
+    }
+
+    @Override
+    public List<Medicine> getAllMedicinesByIds(Set<Integer> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return new java.util.ArrayList<>();
+        }
+
+        Session session = this.factory.getObject().getCurrentSession();
+        jakarta.persistence.criteria.CriteriaBuilder b = session.getCriteriaBuilder();
+        jakarta.persistence.criteria.CriteriaQuery<Medicine> q = b.createQuery(Medicine.class);
+        jakarta.persistence.criteria.Root<Medicine> root = q.from(Medicine.class);
+
+        q.select(root);
+        jakarta.persistence.criteria.Predicate p = root.get("id").in(ids);
+        q.where(p);
+
+        return session.createQuery(q).getResultList();
     }
 }
     

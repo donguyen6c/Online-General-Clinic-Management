@@ -4,18 +4,18 @@
  */
 package com.vudo.repositories;
 
-import com.vudo.pojo.Disease;
+import com.vudo.pojo.Service;
 import java.util.List;
 import java.util.Set;
 
 /**
  *
- * @author ADMIN
+ * @author ASUS
  */
-public interface DiseaseRepository {
-    Set<Disease> getAllById(Set<Integer> ids);
-    List<Disease> getAllDiseases();
-    Disease getDiseaseById(int id);
-    void updateDisease(Disease disease);
-    void addDisease(Disease disease);
+public interface ServicesRepository {
+    List<Service> getAllByIds(Set<Integer> ids);
+    List<Service> getAllServices();
+    Service getServiceById(int id);
+    void updateService(Service service);
+    void addService(Service service);
 }

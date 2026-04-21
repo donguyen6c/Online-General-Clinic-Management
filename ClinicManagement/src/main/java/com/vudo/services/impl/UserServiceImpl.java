@@ -88,6 +88,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean authenticate(String username, String password) {
+        UserDTO u = this.getUserByUsername(username); 
+        if (u == null) {
+            return false;
+        }
         return this.userRepo.authenticate(username, password);
     }
 

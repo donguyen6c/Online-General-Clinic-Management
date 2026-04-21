@@ -52,10 +52,10 @@ public class ApiUserController {
                 String token = JwtUtils.generateToken(u.getUsername());
                 return ResponseEntity.ok().body(Collections.singletonMap("token", token));
             } catch (Exception e) {
-                return ResponseEntity.status(500).body("Lỗi khi tạo JWT");
+                return ResponseEntity.status(500).body("Error JWT");
             }
         }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Sai thông tin đăng nhập");
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Wrong username or password");
     }
 
     @GetMapping("/secure/profile")

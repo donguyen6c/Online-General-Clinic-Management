@@ -51,4 +51,28 @@ public class DiseaseRepositoryImpl implements DiseaseRepository {
         return new HashSet<>(list);
     }
 
+    @Override
+    public List<Disease> getAllDiseases() {
+        Session session = this.factory.getObject().getCurrentSession();
+        return session.createQuery("FROM Disease", Disease.class).getResultList();
+    }
+
+    @Override
+    public Disease getDiseaseById(int id) {
+        Session session = this.factory.getObject().getCurrentSession();
+        return session.get(Disease.class, id);
+    }
+
+    @Override
+    public void updateDisease(Disease disease) {
+        Session session = this.factory.getObject().getCurrentSession();
+        session.merge(disease);
+    }
+
+    @Override
+    public void addDisease(Disease disease) {
+        Session session = this.factory.getObject().getCurrentSession();
+        session.persist(disease);
+    }
+
 }

@@ -17,6 +17,7 @@ public class MedicalRecordResponseDTO {
     private String diagnosis;
     private List<TestResultDTO> testResults;
     private List<PrescriptionDTO> prescriptions;
+    private List<ServiceResponseDTO> services;
 
     /**
      * @return the recordId
@@ -100,5 +101,19 @@ public class MedicalRecordResponseDTO {
      */
     public void setPrescriptions(List<PrescriptionDTO> prescriptions) {
         this.prescriptions = prescriptions;
+    }
+
+    /**
+     * @return the services
+     */
+    public List<ServiceResponseDTO> getServices() {
+        return services;
+    }
+
+    /**
+     * @param services the services to set
+     */
+    public void setServices(List<ServiceResponseDTO> services) {
+        this.services = services;
     }
 }

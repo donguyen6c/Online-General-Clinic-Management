@@ -4,9 +4,10 @@
  */
 package com.vudo.repositories.impl;
 
-import com.vudo.dto.MedicalRecordResponseDTO;
 import com.vudo.pojo.MedicalRecord;
+import com.vudo.pojo.PrescribedMedicine;
 import com.vudo.repositories.MedicalRecordRepository;
+import com.vudo.pojo.MedicalRecordService;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
@@ -52,6 +53,18 @@ public class MedicalRecordRepositoryImpl implements MedicalRecordRepository{
         Session session = this.factory.getObject().getCurrentSession();
         session.persist(medicalRecord);
         return medicalRecord;
+    }
+
+    @Override
+    public void addPrescriptionsToRecord(PrescribedMedicine pm) {
+        Session session = this.factory.getObject().getCurrentSession();
+        session.persist(pm);
+    }
+
+    @Override
+    public void addServicesToRecord(MedicalRecordService recordService) {
+        Session session = this.factory.getObject().getCurrentSession();
+        session.persist(recordService);
     }
     
 }

@@ -7,11 +7,13 @@ package com.vudo.mapper;
 import com.vudo.dto.MedicalRecordRequestDTO;
 import com.vudo.dto.MedicalRecordResponseDTO;
 import com.vudo.dto.PrescriptionDTO;
+import com.vudo.dto.ServiceResponseDTO;
 import com.vudo.dto.TestResultDTO;
 import com.vudo.pojo.Appointment;
 import com.vudo.pojo.Disease;
 import com.vudo.pojo.Doctor;
 import com.vudo.pojo.MedicalRecord;
+import com.vudo.pojo.MedicalRecordService;
 import com.vudo.pojo.PrescribedMedicine;
 import com.vudo.pojo.TestResult;
 import com.vudo.pojo.User;
@@ -67,6 +69,22 @@ public class MedicalRecordMapper {
             }
         }
         dto.setPrescriptions(presDTOs);
+        
+        List<ServiceResponseDTO> serviceDTOs = new ArrayList<>();
+        Set<MedicalRecordService> recordServices = record.getMedicalRecordServiceSet(); 
+        
+        if (recordServices != null && !recordServices.isEmpty()) {
+            for (MedicalRecordService ms : recordServices) {
+                ServiceResponseDTO sDto = new ServiceResponseDTO();
+                
+                sDto.setServiceName(ms.getServiceId().getName());
+                sDto.setQuantity(ms.getQuantity());
+                sDto.setPriceAtTime(ms.getPriceAtTime());
+                
+                serviceDTOs.add(sDto);
+            }
+        }
+        dto.setServices(serviceDTOs);
 
         return dto;
     }

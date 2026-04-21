@@ -6,9 +6,11 @@ package com.vudo.repositories;
 
 import com.vudo.dto.InventoryDTO;
 import com.vudo.dto.MedicineDTO;
+import com.vudo.pojo.Medicine;
 import com.vudo.pojo.Notification;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  *
@@ -26,4 +28,6 @@ public interface PharmacyRepository {
     List<InventoryDTO> getExpiringInventories();
     List<InventoryDTO> getLowStockInventories();
     void dispenseMedicine(int prescriptionId);
+    Medicine getMedicineById(int id);
+    List<Medicine> getAllMedicinesByIds(Set<Integer> ids);
 }

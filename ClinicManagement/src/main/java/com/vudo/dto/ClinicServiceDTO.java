@@ -4,23 +4,15 @@
  */
 package com.vudo.dto;
 
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
 /**
  *
  * @author ASUS
  */
-public class MedicineDTO {
+public class ClinicServiceDTO {
     private Integer id;
-    @NotBlank(message = "Tên thuốc không được để trống")
     private String name;
-    @NotBlank(message = "Đơn vị tính không được để trống")
-    private String unit;
-    @NotNull(message = "Giá thuốc không được để trống")
-    @Min(value = 0, message = "Giá thuốc không được là số âm")
     private BigDecimal price;
 
     /**
@@ -49,20 +41,6 @@ public class MedicineDTO {
      */
     public void setName(String name) {
         this.name = name;
-    }
-
-    /**
-     * @return the unit
-     */
-    public String getUnit() {
-        return unit;
-    }
-
-    /**
-     * @param unit the unit to set
-     */
-    public void setUnit(String unit) {
-        this.unit = unit;
     }
 
     /**

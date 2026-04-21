@@ -54,32 +54,5 @@ public class ApiDoctorController {
 
         return new ResponseEntity<>(d, HttpStatus.OK);
     }
-    
-    @GetMapping("/{patientId}/medical-records")
-    @PreAuthorize("hasAuthority('doctor')")
-    public ResponseEntity<List<MedicalRecordResponseDTO>> getHistory(@PathVariable("patientId") int patientId) {
-        
-        List<MedicalRecordResponseDTO> history = medicalRecordService.getPatientHistory(patientId);
-        
-        if (history == null || history.isEmpty()) {
-            return new ResponseEntity<>(new ArrayList<>(), HttpStatus.OK);
-        }
-        
-        return new ResponseEntity<>(history, HttpStatus.OK);
-    }
-    
-    @GetMapping("/{patientId}/medical-records/{recordId}")
-    @PreAuthorize("hasAuthority('doctor')")
-    public ResponseEntity<MedicalRecordResponseDTO> getMedicalRecordDetail(
-            @PathVariable("patientId") int patientId,
-            @PathVariable("recordId") int recordId) {
-        
-        MedicalRecordResponseDTO recordDetail = medicalRecordService.getMedicalRecordDetail(patientId, recordId);
-        
-        if (recordDetail == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        
-        return new ResponseEntity<>(recordDetail, HttpStatus.OK);
-    }
+   
 }

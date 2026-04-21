@@ -4,22 +4,31 @@
  */
 package com.vudo.services.impl;
 
+import com.vudo.dto.AddPrescriptionRequestDTO;
+import com.vudo.dto.AddServiceRequestDTO;
 import com.vudo.dto.MedicalRecordRequestDTO;
 import com.vudo.dto.MedicalRecordResponseDTO;
+import com.vudo.dto.PrescriptionItemDTO;
+import com.vudo.dto.ServiceItemDTO;
 import com.vudo.mapper.MedicalRecordMapper;
 import com.vudo.pojo.Appointment;
 import com.vudo.pojo.Disease;
 import com.vudo.pojo.Doctor;
 import com.vudo.pojo.MedicalRecord;
+import com.vudo.pojo.Medicine;
+import com.vudo.pojo.PrescribedMedicine;
 import com.vudo.pojo.User;
 import com.vudo.repositories.AppointmentRepository;
 import com.vudo.repositories.DiseaseRepository;
 import com.vudo.repositories.DoctorRepository;
 import com.vudo.repositories.MedicalRecordRepository;
+import com.vudo.repositories.PharmacyRepository;
+import com.vudo.repositories.ServicesRepository;
 import com.vudo.repositories.UserRepository;
 import com.vudo.services.MedicalRecordService;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +58,12 @@ public class MedicalRecordServiceImpl implements MedicalRecordService {
 
     @Autowired
     private DiseaseRepository diseaseRepo;
+    
+    @Autowired
+    private PharmacyRepository pharmacyRepo;
+    
+    @Autowired
+    private ServicesRepository servicesRepo;
 
     @Override
     @Transactional
@@ -103,7 +118,6 @@ public class MedicalRecordServiceImpl implements MedicalRecordService {
 
         return MedicalRecordMapper.toDTO(record);
     }
-}
 
     @Override
     @Transactional
@@ -115,6 +129,80 @@ public class MedicalRecordServiceImpl implements MedicalRecordService {
         }
 
         return MedicalRecordMapper.toDTO(record);
+    }
+
+    @Override
+    @Transactional
+    public void addPrescriptionsToRecord(Integer medicalRecordId, AddPrescriptionRequestDTO request) {
+        MedicalRecord record = medicalRecordRepo.getMedicalRecordById(medicalRecordId);
+        if (record == null) {
+            throw new RuntimeException("Không tìm thấy hồ sơ bệnh án với ID: " + medicalRecordId);
+        }
+
+        Set<Integer> medicineIds = request.getMedicines().stream()
+                .map(PrescriptionItemDTO::getMedicineId)
+                .collect(Collectors.toSet());
+
+        var medicines = pharmacyRepo.getAllMedicinesByIds(medicineIds);
+
+        Map<Integer, Medicine> medicineMap = medicines.stream()
+                .collect(Collectors.toMap(m -> m.getId(), m -> m));
+
+        for (PrescriptionItemDTO item : request.getMedicines()) {
+            
+            Medicine medicine = medicineMap.get(item.getMedicineId());
+            
+            if (medicine == null) {
+                throw new RuntimeException("Không tìm thấy thuốc có ID: " + item.getMedicineId());
+            }
+
+            PrescribedMedicine prescribedMedicine = new PrescribedMedicine();
+            
+            prescribedMedicine.setMedicalRecordId(record); 
+            prescribedMedicine.setMedicineId(medicine);    
+            
+            prescribedMedicine.setQuantity(item.getQuantity());
+            prescribedMedicine.setUsageInstruction(item.getUsageInstruction());
+            prescribedMedicine.setPriceAtTime(medicine.getPrice()); 
+
+            medicalRecordRepo.addPrescriptionsToRecord(prescribedMedicine);
+        }
+    }
+
+    @Override
+    public void addServicesToRecord(Integer medicalRecordId, AddServiceRequestDTO request) {
+       MedicalRecord record = medicalRecordRepo.getMedicalRecordById(medicalRecordId);
+        if (record == null) {
+            throw new RuntimeException("Không tìm thấy hồ sơ bệnh án với ID: " + medicalRecordId);
+        }
+
+        Set<Integer> serviceIds = request.getServices().stream()
+                .map(ServiceItemDTO::getServiceId)
+                .collect(Collectors.toSet());
+
+        List<com.vudo.pojo.Service> clinicServices = servicesRepo.getAllByIds(serviceIds);
+
+        Map<Integer, com.vudo.pojo.Service> serviceMap = clinicServices.stream()
+                .collect(Collectors.toMap(s -> s.getId(), s -> s));
+
+        for (ServiceItemDTO item : request.getServices()) {
+            
+            com.vudo.pojo.Service clinicService = serviceMap.get(item.getServiceId());
+            
+            if (clinicService == null) {
+                throw new RuntimeException("Không tìm thấy dịch vụ với ID: " + item.getServiceId());
+            }
+
+            com.vudo.pojo.MedicalRecordService recordService = new com.vudo.pojo.MedicalRecordService();
+            recordService.setMedicalRecordId(record);
+            recordService.setServiceId(clinicService);
+            
+            int quantity = (item.getQuantity() != null && item.getQuantity() > 0) ? item.getQuantity() : 1;
+            recordService.setQuantity(quantity);
+            recordService.setPriceAtTime(clinicService.getPrice()); 
+
+            medicalRecordRepo.addServicesToRecord(recordService); 
+        }
     }
 }
 

@@ -4,13 +4,19 @@
  */
 package com.vudo.mapper;
 
+import com.vudo.dto.MedicalRecordRequestDTO;
 import com.vudo.dto.MedicalRecordResponseDTO;
 import com.vudo.dto.PrescriptionDTO;
 import com.vudo.dto.TestResultDTO;
+import com.vudo.pojo.Appointment;
+import com.vudo.pojo.Disease;
+import com.vudo.pojo.Doctor;
 import com.vudo.pojo.MedicalRecord;
 import com.vudo.pojo.PrescribedMedicine;
 import com.vudo.pojo.TestResult;
+import com.vudo.pojo.User;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -19,6 +25,7 @@ import java.util.Set;
  * @author ASUS
  */
 public class MedicalRecordMapper {
+
     public static MedicalRecordResponseDTO toDTO(MedicalRecord record) {
         if (record == null) {
             return null;
@@ -62,5 +69,25 @@ public class MedicalRecordMapper {
         dto.setPrescriptions(presDTOs);
 
         return dto;
+    }
+
+    public static MedicalRecord toEntity(MedicalRecordRequestDTO dto,
+            Doctor doctor,
+            User patient,
+            Appointment appointment,
+            Set<Disease> diseases) {
+        MedicalRecord record = new MedicalRecord();
+
+        record.setSymptoms(dto.getSymptoms());
+        record.setDiagnosis(dto.getDiagnosis());
+        record.setPrescriptionNotes(dto.getPrescriptionNotes());
+        record.setCreatedAt(new Date());
+
+        record.setDoctorId(doctor);
+        record.setPatientId(patient);
+        record.setAppointmentId(appointment);
+        record.setDiseaseSet(diseases);
+
+        return record;
     }
 }

@@ -18,4 +18,5 @@ public interface DoctorRepository {
     Doctor getDoctorById(int id);
     void addOrUpdateDoctor(Doctor d);
     void deleteDoctor(int id);
+    Doctor getDoctorByUserName(String username);
 }

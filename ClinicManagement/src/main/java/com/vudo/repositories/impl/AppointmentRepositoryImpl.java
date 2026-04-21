@@ -69,4 +69,10 @@ public class AppointmentRepositoryImpl implements AppointmentRepository {
         return appointment;
     }
 
+    @Override
+    public Appointment getById(int id) {
+        Session session = this.factory.getObject().getCurrentSession();
+        return session.get(Appointment.class, id);
+    }
+
 }

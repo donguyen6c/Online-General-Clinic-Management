@@ -45,5 +45,12 @@ public class MedicalRecordRepositoryImpl implements MedicalRecordRepository{
         Session session = this.factory.getObject().getCurrentSession();
         return session.get(MedicalRecord.class, id);
     }
+
+    @Override
+    public MedicalRecord create(MedicalRecord medicalRecord) {
+        Session session = this.factory.getObject().getCurrentSession();
+        session.persist(medicalRecord);
+        return medicalRecord;
+    }
     
 }

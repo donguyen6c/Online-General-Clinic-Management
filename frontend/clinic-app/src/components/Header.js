@@ -5,6 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import Apis, { endpoints } from "../configs/Apis";
 
 const Header = () => {
+    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
     const [isOpen, setIsOpen] = useState(false);
     const [user, setUser] = useState(null);
     const navigate = useNavigate();
@@ -95,6 +96,29 @@ const Header = () => {
                         <Link to="/" className="text-dark text-decoration-none fw-medium">Khám sức khỏe</Link>
                         <Link to="/" className="text-dark text-decoration-none fw-medium">Tin tức</Link>
                     </div>
+
+                    <ul className="navbar-nav me-auto">
+                        <li className="nav-item">
+                            <Link className="nav-link" to="/doctors">Tìm Bác sĩ</Link>
+                        </li>
+
+                        {/* KIỂM TRA ROLE ĐỂ HIỂN THỊ MENU TƯƠNG ỨNG */}
+                        {currentUser?.role === 'patient' && (
+                            <li className="nav-item">
+                                <Link className="nav-link text-primary fw-bold" to="/my-appointments">
+                                    📅 Lịch hẹn của tôi
+                                </Link>
+                            </li>
+                        )}
+
+                        {currentUser?.role === 'doctor' && (
+                            <li className="nav-item">
+                                <Link className="nav-link text-danger fw-bold" to="/doctor-schedule">
+                                    🩺 Lịch khám hôm nay
+                                </Link>
+                            </li>
+                        )}
+                    </ul>
 
                     <div className="d-flex align-items-center gap-2">
                         {user ? (

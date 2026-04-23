@@ -10,6 +10,9 @@ import Patient from "./screens/Patient/Patient";
 import Pharmacist from "./screens/Pharmacist/Pharmacist";
 import Doctor from "./screens/Doctor/Doctor";
 import 'bootstrap/dist/css/bootstrap.min.css';
+import VideoCallPage from "./screens/VideoCall/VideoCallPage";
+import MyAppointments from "./screens/MyAppointments/MyAppointments";
+import DoctorSchedule from "./screens/DoctorSchedule/DoctorSchedule";
 
 const App = () => {
   return (
@@ -37,6 +40,18 @@ const App = () => {
 
         <Route element={<ProtectedRoute roles={'admin'} />}>
             <Route path="/" element={<Home />} />
+        </Route>
+
+        <Route element={<ProtectedRoute/>}>
+            <Route path="/video-call/:id" element={<VideoCallPage />} />
+        </Route>
+        
+        <Route element={<ProtectedRoute/>}>
+            <Route path="/my-appointments" element={<MyAppointments />} />
+        </Route>
+
+        <Route element={<ProtectedRoute/>}>
+            <Route path="/doctor-schedule" element={<DoctorSchedule />} />
         </Route>
 
       </Routes>

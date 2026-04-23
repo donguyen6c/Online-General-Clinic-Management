@@ -17,4 +17,5 @@ public interface AppointmentRepository {
     List<Appointment> getAppointmentsByPatientId(int patientId);
     Appointment add(Appointment appointment);
     Appointment getById(int id);
+    List<Appointment> getAppointmentsByDoctorId(int doctorId);
 }

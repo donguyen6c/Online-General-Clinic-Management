@@ -169,4 +169,16 @@ public class DoctorRepositoryImpl implements DoctorRepository {
 
         return results.isEmpty() ? null : results.get(0);
     }
+
+    @Override
+    public Doctor getDoctorByUserId(int userId) {
+        Session session = this.factory.getObject().getCurrentSession();
+        CriteriaBuilder cb = session.getCriteriaBuilder();
+        CriteriaQuery<Doctor> cq = cb.createQuery(Doctor.class);
+        Root<Doctor> root = cq.from(Doctor.class);
+        
+        cq.select(root).where(cb.equal(root.get("userId").get("id"), userId));
+        
+        return session.createQuery(cq).uniqueResult();
+    }
 }

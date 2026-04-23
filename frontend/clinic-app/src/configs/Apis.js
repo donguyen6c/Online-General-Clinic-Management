@@ -10,9 +10,12 @@ export const endpoints = {
     'doctor-detail': doctorId => `/doctors/${doctorId}`,
     'slots': (doctorId, date) => `/doctors/${doctorId}/slots?date=${date}`,
     'booking': doctorId => `/secure/doctors/${doctorId}/appointments`,
+    'patient-appointments': '/secure/patients/current-user/appointments',   
+    'doctor-appointments': '/secure/doctor-schedule',     
+    'get-meeting-url': (appointmentId) => `/secure/appointments/${appointmentId}/meeting-url`,
 }
 
 export default axios.create({
-    baseURL:"http://localhost:8081/ClinicManagement/api/"
+    baseURL:"http://localhost:8080/ClinicManagement/api/"
 })
 

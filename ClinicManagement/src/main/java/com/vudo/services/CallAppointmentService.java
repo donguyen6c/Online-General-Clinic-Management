@@ -6,8 +6,8 @@ package com.vudo.services;
 
 /**
  *
- * @author ADMIN
+ * @author ASUS
  */
-public class DoctorScheduleService {
-    
+public interface CallAppointmentService {
+    String getAuthorizedMeetingUrl(Integer appointmentId, String currentUsername);
 }

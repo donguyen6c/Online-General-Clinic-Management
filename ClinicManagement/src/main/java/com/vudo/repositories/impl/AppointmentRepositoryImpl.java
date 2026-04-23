@@ -75,4 +75,17 @@ public class AppointmentRepositoryImpl implements AppointmentRepository {
         return session.get(Appointment.class, id);
     }
 
+    @Override
+    public List<Appointment> getAppointmentsByDoctorId(int doctorId) {
+        Session session = this.factory.getObject().getCurrentSession();
+    CriteriaBuilder cb = session.getCriteriaBuilder();
+    CriteriaQuery<Appointment> cq = cb.createQuery(Appointment.class);
+    Root<Appointment> root = cq.from(Appointment.class);
+    
+    cq.select(root).where(cb.equal(root.get("doctorId").get("id"), doctorId))
+      .orderBy(cb.asc(root.get("appointmentDate")), cb.asc(root.get("startTime")));
+      
+    return session.createQuery(cq).getResultList();
+    }
+
 }

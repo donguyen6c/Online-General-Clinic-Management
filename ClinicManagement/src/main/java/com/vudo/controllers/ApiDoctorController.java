@@ -4,8 +4,10 @@
  */
 package com.vudo.controllers;
 
+import com.vudo.dto.AppointmentResponseDTO;
 import com.vudo.dto.DoctorDTO;
 import com.vudo.dto.MedicalRecordResponseDTO;
+import com.vudo.services.AppointmentService;
 import com.vudo.services.DoctorService;
 import com.vudo.services.MedicalRecordService;
 import java.util.ArrayList;
@@ -33,9 +35,9 @@ public class ApiDoctorController {
 
     @Autowired
     private DoctorService docService;
-    
+       
     @Autowired
-    private MedicalRecordService medicalRecordService;
+    private AppointmentService appointmentService;
 
     @GetMapping("/doctors")
     public ResponseEntity<?> list(@RequestParam Map<String, String> params) {
@@ -53,6 +55,16 @@ public class ApiDoctorController {
         DoctorDTO d = docService.getDoctorById(id);
 
         return new ResponseEntity<>(d, HttpStatus.OK);
+    }
+    
+    @GetMapping("/doctor-schedule")
+    public ResponseEntity<?> getMySchedule() {
+        try {
+            List<AppointmentResponseDTO> schedule = appointmentService.getDoctorAppointments();
+            return ResponseEntity.ok(schedule);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
    
 }

@@ -17,4 +17,5 @@ public interface AppointmentService {
     AvailableSlotsResponseDTO getSlots(int doctorId, String date);
     List<AppointmentResponseDTO> getPatientAppointments(int patientId);
     AppointmentResponseDTO createAppointment(int doctorId, AppointmentRequestDTO request);
+    List<AppointmentResponseDTO> getDoctorAppointments();
 }

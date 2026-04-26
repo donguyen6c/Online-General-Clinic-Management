@@ -5,11 +5,11 @@
 package com.vudo.services.impl;
 
 import com.vudo.dto.ClinicServiceDTO;
-import com.vudo.pojo.MedicalRecordService;
 import com.vudo.pojo.Service;
 import com.vudo.repositories.ServicesRepository;
 import com.vudo.services.ServiceService;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,8 +26,10 @@ public class ServiceServiceImpl implements ServiceService{
 
     @Override
     @Transactional
-    public List<ClinicServiceDTO> getAllServices() {
-        return serviceRepo.getAllServices().stream().map(s -> {
+    public List<ClinicServiceDTO> getAllServices(Map<String, String> params) {
+        List<Service> services = serviceRepo.getAllServices(params);
+
+        return services.stream().map(s -> {
             ClinicServiceDTO dto = new ClinicServiceDTO();
             dto.setId(s.getId());
             dto.setName(s.getName());
@@ -62,6 +64,11 @@ public class ServiceServiceImpl implements ServiceService{
 
         dto.setId(clinicService.getId());
         return dto;
+    }
+
+    @Override
+    public void deleteService(int id) {
+        this.serviceRepo.deleteService(id);
     }
     
 }

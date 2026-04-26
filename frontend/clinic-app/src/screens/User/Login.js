@@ -38,7 +38,7 @@ const Login = () => {
 
             switch (userData.role) {
                 case 'admin':
-                    navigate("/");
+                    navigate("/admin");
                     break;
                 case 'doctor':
                     navigate("/doctor");

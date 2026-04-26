@@ -3,12 +3,12 @@ import ProtectedRoute from "./routes/ProtectedRoute";
 import Login from "./screens/User/Login";
 import Register from "./screens/User/Register";
 import Profile from "./screens/User/Profile";
-import Home from "./screens/Home/Home"
 import Header from "./components/Header"
 import Footer from "./components/Footer"
 import Patient from "./screens/Patient/Patient";
 import Pharmacist from "./screens/Pharmacist/Pharmacist";
-import Doctor from "./screens/Doctor/Doctor";
+import Doctor from "./screens/Admin/Doctors/UpdateDoctor";
+import AdminDashboard from "./screens/Admin/AdminDashboard/AdminDashboard";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import VideoCallPage from "./screens/VideoCall/VideoCallPage";
 import MyAppointments from "./screens/MyAppointments/MyAppointments";
@@ -17,7 +17,9 @@ import DoctorSchedule from "./screens/DoctorSchedule/DoctorSchedule";
 const App = () => {
   return (
     <BrowserRouter>
+    <div className="d-flex flex-column min-vh-100">
     <Header/>
+    <main className="flex-grow-1">
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
@@ -39,7 +41,8 @@ const App = () => {
         </Route>
 
         <Route element={<ProtectedRoute roles={'admin'} />}>
-            <Route path="/" element={<Home />} />
+            <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="/admin-doctors" element={<Doctor />} />
         </Route>
 
         <Route element={<ProtectedRoute/>}>
@@ -55,7 +58,9 @@ const App = () => {
         </Route>
 
       </Routes>
+      </main>
       <Footer/>
+      </div>
     </BrowserRouter>
     
   );

@@ -6,6 +6,7 @@ package com.vudo.repositories;
 
 import com.vudo.pojo.Disease;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -14,8 +15,9 @@ import java.util.Set;
  */
 public interface DiseaseRepository {
     Set<Disease> getAllById(Set<Integer> ids);
-    List<Disease> getAllDiseases();
+    List<Disease> getAllDiseases(Map<String, String> params);
     Disease getDiseaseById(int id);
     void updateDisease(Disease disease);
     void addDisease(Disease disease);
+    void deleteDisease(int id);
 }

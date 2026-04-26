@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -77,6 +78,28 @@ public class ApiAdminController {
         try {
             ClinicServiceDTO created = serviceService.createService(requestDTO);
             return new ResponseEntity<>(created, HttpStatus.CREATED);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+    
+    @DeleteMapping("/diseases/{id}")
+    @PreAuthorize("hasAuthority('admin')")
+    public ResponseEntity<?> deleteDisease(@PathVariable("id") int id) {
+        try {
+            diseaseService.deleteDisease(id);
+            return ResponseEntity.noContent().build(); 
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    @DeleteMapping("/services/{id}")
+    @PreAuthorize("hasAuthority('admin')")
+    public ResponseEntity<?> deleteService(@PathVariable("id") int id) {
+        try {
+            serviceService.deleteService(id);
+            return ResponseEntity.noContent().build();
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }

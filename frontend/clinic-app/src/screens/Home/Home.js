@@ -7,55 +7,74 @@ const Home = () => {
   const [loading, setLoading] = useState(false);
   const [doctors, setDoctors] = useState([]);
   const [specialties, setSpecialties] = useState([]);
+  
   const [kw, setKw] = useState("");
   const [specialtyId, setSpecialtyId] = useState("");
 
-  const loadSpecialties = async () => {
-    setLoading(true);
-    let res = await Apis.get(endpoints["specialties"]);
-    setSpecialties(res.data);
-    setLoading(false);
-  };
+  // 1. TẢI CHUYÊN KHOA (Chỉ chạy 1 lần khi mở trang)
+  useEffect(() => {
+    const fetchSpecialties = async () => {
+      try {
+        let res = await Apis.get(endpoints["specialties"]);
+        // Đảm bảo res.data là một mảng
+        setSpecialties(res.data);
+      } catch (error) {
+        console.error("Lỗi tải chuyên khoa:", error);
+      }
+    };
+    fetchSpecialties();
+  }, []);
 
-  const loadDoctors = async (keyword, specId) => {
-    setLoading(true);
-    let res = await Apis.get(endpoints["doctors"], {
-      params: {
-        kw: keyword,
-        specialtyId: specId,
-      },
-    });
-    setDoctors(res.data);
-    setLoading(false);
-  };
+  // 2. TẢI BÁC SĨ (Tự động chạy khi mở trang hoặc khi đổi từ khóa/chuyên khoa)
+  useEffect(() => {
+    const fetchDoctors = async () => {
+      try {
+        setLoading(true);
+        let res = await Apis.get(endpoints["doctors"], {
+          params: {
+            kw: kw,
+            specialtyId: specialtyId,
+          },
+        });
+        
+        // CHỖ NÀY QUAN TRỌNG: Nếu BE có phân trang, phải trỏ đúng vào mảng (vd: res.data.data hoặc res.data.content)
+        // Mình đang để res.data.data giống file Patient.js của bạn
+        setDoctors(res.data.data || res.data); 
 
+      } catch (error) {
+        console.error("Lỗi tải bác sĩ:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    const delay = setTimeout(() => {
+      fetchDoctors();
+    }, 200);
+
+    return () => clearTimeout(delay);
+  }, [kw, specialtyId]);
+
+  // Handle Search Input (Thực ra không cần làm gì vì onChange của ô input đã setKw và kích hoạt useEffect rồi)
   const handleSearch = (e) => {
     e.preventDefault();
   };
 
-  useEffect(() => {
-    loadSpecialties();
-  }, []);
-
-  useEffect(() => {
-    const delay = setTimeout(() => {
-        loadDoctors(kw, specialtyId);
-    }, 200);
-
-    return () => clearTimeout(delay);
-}, [kw, specialtyId]);
-
   const handleDelete = async (id) => {
-    if (window.confirm("Chắc chắn xóa?")) {
+    if (window.confirm("Chắc chắn xóa bác sĩ này?")) {
       try {
         await Apis.delete(`${endpoints["doctors"]}/${id}`);
         alert("Xóa thành công");
-        loadDoctors(kw, specialtyId);
+        
+        // Cập nhật lại UI bằng cách lọc bỏ bác sĩ vừa xóa ra khỏi State (không cần gọi lại API cho nặng máy)
+        setDoctors(prev => prev.filter(d => d.id !== id));
       } catch (error) {
         alert("Xoá thất bại");
+        console.error(error);
       }
     }
   };
+
   return (
     <>
       <div className="container mt-5">
@@ -70,7 +89,8 @@ const Home = () => {
             >
               Tất cả
             </button>
-            {specialties.map((c) => (
+            {/* Thêm check specialties && specialties.length để tránh lỗi map nếu mảng rỗng */}
+            {specialties && specialties.length > 0 && specialties.map((c) => (
               <button
                 key={c.id}
                 onClick={() => setSpecialtyId(c.id)}
@@ -90,7 +110,7 @@ const Home = () => {
                   value={kw}
                   onChange={(e) => setKw(e.target.value)}
                   className="form-control me-2"
-                  placeholder="Nhập tên..."
+                  placeholder="Nhập tên bác sĩ..."
                 />
                 <button type="submit" className="btn btn-success">
                   Tìm
@@ -123,7 +143,7 @@ const Home = () => {
                     <MySpinner />
                   </td>
                 </tr>
-              ) : doctors.length > 0 ? (
+              ) : doctors && doctors.length > 0 ? (
                 doctors.map((d) => (
                   <tr key={d.id}>
                     <td>{d.id}</td>
@@ -159,4 +179,5 @@ const Home = () => {
     </>
   );
 };
+
 export default Home;

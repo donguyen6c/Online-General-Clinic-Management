@@ -30,7 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author ASUS
  */
 @RestController
-@RequestMapping("/api/secure")
+@RequestMapping("/api")
 public class ApiDoctorController {
 
     @Autowired
@@ -44,7 +44,8 @@ public class ApiDoctorController {
         return new ResponseEntity<>(this.docService.getDoctors(params), HttpStatus.OK);
     }
 
-    @DeleteMapping("/doctors/{doctorId}")
+    @DeleteMapping("/secure/doctors/{doctorId}")
+    @PreAuthorize("hasAuthority('admin')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable(value = "doctorId") int id) {
         this.docService.deleteDoctor(id);

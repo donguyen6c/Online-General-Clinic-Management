@@ -11,15 +11,7 @@ const MyAppointments = () => {
     useEffect(() => {
         const loadAppointments = async () => {
             try {
-                // 1. Lấy token đã lưu khi user đăng nhập (nếu bạn lưu tên khác thì sửa lại nhé)
-                const token = localStorage.getItem("token") || localStorage.getItem("access_token");
-
-                // 2. Gắn header Authorization vào request
-                const res = await Apis.get(endpoints['patient-appointments'], {
-                    headers: {
-                        "Authorization": `Bearer ${token}`
-                    }
-                });
+                const res = await Apis.get(endpoints['patient-appointments']);
                 
                 setAppointments(res.data);
             } catch (error) {
@@ -31,15 +23,12 @@ const MyAppointments = () => {
         loadAppointments();
     }, []);
 
-    // 3. Cập nhật logic kiểm tra thời gian theo định dạng DTO mới
     const checkReadyToJoin = (dateStr, timeString, status) => {
         if (status !== 'scheduled') return false;
         
-        // API trả về time: "00:30 - 01:00" -> Cần cắt chuỗi lấy phần "00:30"
         const startTime = timeString.split(" - ")[0].trim(); 
         
         const now = new Date();
-        // Nối chuỗi ngày và giờ (thêm :00 cho giây để chuẩn format ISO)
         const appointmentTime = new Date(`${dateStr}T${startTime}:00`); 
         const diffInMinutes = (appointmentTime - now) / 1000 / 60;
         
@@ -60,7 +49,6 @@ const MyAppointments = () => {
                         <div className="col-md-6 mb-4" key={appt.id}>
                             <div className="card shadow-sm h-100">
                                 <div className="card-body">
-                                    {/* 4. Đổi tên các trường hiển thị khớp với JSON Postman */}
                                     <h5 className="card-title text-primary">
                                         Khám với: Bác sĩ {appt.doctorName}
                                     </h5>

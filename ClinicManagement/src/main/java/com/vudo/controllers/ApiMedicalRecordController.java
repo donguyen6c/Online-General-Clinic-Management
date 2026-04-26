@@ -76,7 +76,7 @@ public class ApiMedicalRecordController {
     }
     
     @GetMapping("/{patientId}/medical-records/{recordId}")
-    @PreAuthorize("hasAuthority('doctor')")
+    @PreAuthorize("hasAuthority('doctor')or hasAuthority('pharmacist')")
     public ResponseEntity<MedicalRecordResponseDTO> getMedicalRecordDetail(
             @PathVariable("patientId") int patientId,
             @PathVariable("recordId") int recordId) {
@@ -91,7 +91,7 @@ public class ApiMedicalRecordController {
     }
     
     @PostMapping("/medical-records/{medicalRecordId}/services")
-    @PreAuthorize("hasAuthority('doctor')")
+    @PreAuthorize("hasAuthority('doctor') or hasAuthority('pharmacist') or hasAuthority('admin')")
     public ResponseEntity<?> addServices(
             @PathVariable("medicalRecordId") Integer medicalRecordId,
             @RequestBody AddServiceRequestDTO request) {

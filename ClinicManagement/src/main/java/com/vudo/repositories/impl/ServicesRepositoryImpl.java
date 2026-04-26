@@ -15,7 +15,10 @@ import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import org.hibernate.query.Query;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,13 +29,40 @@ import org.springframework.transaction.annotation.Transactional;
 @Repository
 @Transactional
 public class ServicesRepositoryImpl implements ServicesRepository{
+    
+    @Autowired
+    private Environment env;
+    
     @Autowired
     private LocalSessionFactoryBean factory;
 
     @Override
-    public List<Service> getAllServices() {
+    public List<Service> getAllServices(Map<String, String> params) {
         Session session = this.factory.getObject().getCurrentSession();
-        return session.createQuery("FROM Service", Service.class).getResultList();
+        CriteriaBuilder b = session.getCriteriaBuilder();
+        CriteriaQuery<Service> q = b.createQuery(Service.class);
+        Root<Service> root = q.from(Service.class);
+        q.select(root);
+
+        if (params != null) {
+            String kw = params.get("kw");
+            if (kw != null && !kw.isEmpty()) {
+                q.where(b.like(root.get("name"), String.format("%%%s%%", kw)));
+            }
+        }
+
+        q.orderBy(b.desc(root.get("id")));
+        Query<Service> query = session.createQuery(q);
+
+        // Phân trang
+        if (params != null && !params.containsKey("all")) {
+            int pageSize = this.env.getProperty("services_disease", Integer.class);
+            int page = Integer.parseInt(params.getOrDefault("page", "1"));
+            query.setMaxResults(pageSize);
+            query.setFirstResult((page - 1) * pageSize);
+        }
+
+        return query.getResultList();
     }
 
     @Override
@@ -68,4 +98,12 @@ public class ServicesRepositoryImpl implements ServicesRepository{
         return session.createQuery(q).getResultList();
     }
 
+    @Override
+    public void deleteService(int id) {
+        Session session = this.factory.getObject().getCurrentSession();
+        Service d = this.getServiceById(id);
+        if (d != null) {
+            session.remove(d);
+        }
+    }
 }

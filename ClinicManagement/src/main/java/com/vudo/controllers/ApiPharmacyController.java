@@ -107,4 +107,5 @@ public class ApiPharmacyController {
     public void dispenseMedicine(@PathVariable("id") int medicalRecordId) {
         pharmacyService.dispenseMedicine(medicalRecordId);
     }
+    
 }

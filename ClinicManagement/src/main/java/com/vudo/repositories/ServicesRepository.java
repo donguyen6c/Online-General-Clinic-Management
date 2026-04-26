@@ -6,6 +6,7 @@ package com.vudo.repositories;
 
 import com.vudo.pojo.Service;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -14,8 +15,9 @@ import java.util.Set;
  */
 public interface ServicesRepository {
     List<Service> getAllByIds(Set<Integer> ids);
-    List<Service> getAllServices();
+    List<Service> getAllServices(Map<String, String> params);
     Service getServiceById(int id);
     void updateService(Service service);
     void addService(Service service);
+    void deleteService(int id);
 }

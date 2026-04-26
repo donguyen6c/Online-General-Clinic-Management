@@ -6,13 +6,15 @@ package com.vudo.services;
 
 import com.vudo.dto.ClinicServiceDTO;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
  * @author ASUS
  */
 public interface ServiceService {
-    List<ClinicServiceDTO> getAllServices();
+    List<ClinicServiceDTO> getAllServices(Map<String, String> params);
     ClinicServiceDTO updateService(int id, ClinicServiceDTO dto);
     ClinicServiceDTO createService(ClinicServiceDTO dto);
+    void deleteService(int id);
 }

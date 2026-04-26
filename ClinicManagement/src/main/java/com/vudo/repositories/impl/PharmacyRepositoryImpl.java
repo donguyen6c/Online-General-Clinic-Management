@@ -9,6 +9,7 @@ import com.vudo.dto.MedicineDTO;
 import com.vudo.mapper.InventoryMapper;
 import com.vudo.mapper.MedicineMapper;
 import com.vudo.pojo.Inventory;
+import com.vudo.pojo.MedicalRecord;
 import com.vudo.pojo.Medicine;
 import com.vudo.pojo.Notification;
 import com.vudo.pojo.PrescribedMedicine;
@@ -16,11 +17,9 @@ import com.vudo.repositories.PharmacyRepository;
 import com.vudo.repositories.UserRepository;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -33,6 +32,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.core.env.Environment;
 
 /**
  *
@@ -41,6 +41,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Repository
 @Transactional
 public class PharmacyRepositoryImpl implements PharmacyRepository{
+    @Autowired
+    private Environment env;
     
     @Autowired
     private LocalSessionFactoryBean factory;
@@ -70,8 +72,17 @@ public class PharmacyRepositoryImpl implements PharmacyRepository{
         }
 
         Query<Medicine> query = session.createQuery(q);
-        List<Medicine> results = query.getResultList();
+        
+        if (params != null && !params.containsKey("all")) {
+            int pageSize = this.env.getProperty("medicines.page_size", Integer.class);
+            int page = Integer.parseInt(params.getOrDefault("page", "1"));
+            int start = (page - 1) * pageSize;
 
+            query.setMaxResults(pageSize); 
+            query.setFirstResult(start);  
+        }
+
+        List<Medicine> results = query.getResultList();
         List<MedicineDTO> dtos = new ArrayList<>();
         for (Medicine m : results) {
             dtos.add(MedicineMapper.toDTO(m));
@@ -104,8 +115,20 @@ public class PharmacyRepositoryImpl implements PharmacyRepository{
 
         q.orderBy(b.asc(root.get("expiryDate")));
 
-        List<Inventory> results = session.createQuery(q).getResultList();
+        Query<Inventory> query = session.createQuery(q);
+        
+        if (params != null) {
+            int pageSize = this.env.getProperty("inventories.page_size", Integer.class);
+            int page = Integer.parseInt(params.getOrDefault("page", "1"));
+            int start = (page - 1) * pageSize;
 
+            query.setMaxResults(pageSize);
+            query.setFirstResult(start);
+        }
+
+        List<Inventory> results = query.getResultList();
+
+        // Convert sang DTO
         List<InventoryDTO> dtos = new ArrayList<>();
         for (Inventory inv : results) {
             InventoryDTO invDto = InventoryMapper.toDTO(inv); 
@@ -114,6 +137,7 @@ public class PharmacyRepositoryImpl implements PharmacyRepository{
                 dtos.add(invDto);
             }
         }
+
         return dtos;
     }
     
@@ -211,7 +235,7 @@ public class PharmacyRepositoryImpl implements PharmacyRepository{
         
         root.fetch("medicineId", JoinType.INNER);
 
-        q.where(b.lessThan(root.get("quantity"), 100));
+        q.where(b.lessThan(root.get("quantity"), this.env.getProperty("inventories.low_stock", Integer.class)));
         
         q.orderBy(b.asc(root.get("quantity")));
 

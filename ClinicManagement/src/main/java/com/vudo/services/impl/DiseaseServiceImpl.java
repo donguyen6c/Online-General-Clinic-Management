@@ -9,6 +9,7 @@ import com.vudo.pojo.Disease;
 import com.vudo.repositories.DiseaseRepository;
 import com.vudo.services.DiseaseService;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,9 +26,10 @@ public class DiseaseServiceImpl implements DiseaseService{
     private DiseaseRepository diseaseRepo;
 
     @Override
-    @Transactional
-    public List<DiseaseDTO> getAllDiseases() {
-        return diseaseRepo.getAllDiseases().stream().map(d -> {
+    public List<DiseaseDTO> getAllDiseases(Map<String, String> params) {
+        List<Disease> diseases = diseaseRepo.getAllDiseases(params);
+    
+        return diseases.stream().map(d -> {
             DiseaseDTO dto = new DiseaseDTO();
             dto.setId(d.getId());
             dto.setName(d.getName());
@@ -60,5 +62,9 @@ public class DiseaseServiceImpl implements DiseaseService{
         
         return dto;
    }
-    
+   
+    @Override
+    public void deleteDisease(int id) {
+        this.diseaseRepo.deleteDisease(id);
+    }
 }

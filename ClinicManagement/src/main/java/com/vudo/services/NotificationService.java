@@ -4,8 +4,10 @@
  */
 package com.vudo.services;
 
+import com.vudo.dto.NotificationDTO;
 import com.vudo.pojo.MedicalRecord;
 import com.vudo.pojo.User;
+import java.util.List;
 
 /**
  *
@@ -14,4 +16,7 @@ import com.vudo.pojo.User;
 public interface NotificationService {
     void createBookingNotification(User user, String doctorName, String time);
     void createMedicinesNotification(User user, MedicalRecord id, String time);
+    List<NotificationDTO> getUserNotifications(int userId, int page);
+    boolean markNotificationAsRead(int notificationId);
+    Long countUnreadByUserId(int userId);
 }

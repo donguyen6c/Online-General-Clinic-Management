@@ -5,6 +5,7 @@
 package com.vudo.repositories;
 
 import com.vudo.pojo.Notification;
+import java.util.List;
 
 /**
  *
@@ -12,4 +13,7 @@ import com.vudo.pojo.Notification;
  */
 public interface NotificationRepository {
     Notification add(Notification notification);
+    List<Notification> getNotificationsByUserId(int userId, int page);
+    boolean markAsRead(int notificationId);
+    Long countUnreadByUserId(int userId);
 }

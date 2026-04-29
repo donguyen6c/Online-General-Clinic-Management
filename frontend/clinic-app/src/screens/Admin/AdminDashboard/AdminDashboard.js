@@ -2,9 +2,10 @@ import React, { useState } from "react";
 import { Tab, Tabs } from "react-bootstrap";
 import ServiceManagement from "../../../components/AdminDashboard/ServiceManagement";
 import DiseaseManagement from "../../../components/AdminDashboard/DiseaseManagement";
+import DoctorManagement from "../../../components/AdminDashboard/DoctorManagement";
 
 const AdminDashboard = () => {
-    const [key, setKey] = useState("services");
+    const [key, setKey] = useState("doctors");
 
     return (
         <div className="container mt-4">
@@ -18,6 +19,9 @@ const AdminDashboard = () => {
                 onSelect={(k) => setKey(k)}
                 className="mb-4 nav-pills nav-justified shadow-sm rounded bg-white p-2"
             >
+                <Tab eventKey="doctors" title={<span><i className="bi bi-heart-pulse me-2"></i>Bác Sĩ</span>}>
+                    <DoctorManagement />
+                </Tab>
                 <Tab eventKey="services" title={<span><i className="bi bi-gear-wide-connected me-2"></i>Dịch Vụ Y Tế</span>}>
                     <ServiceManagement />
                 </Tab>

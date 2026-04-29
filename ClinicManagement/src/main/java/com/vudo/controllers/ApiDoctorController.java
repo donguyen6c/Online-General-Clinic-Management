@@ -44,13 +44,6 @@ public class ApiDoctorController {
         return new ResponseEntity<>(this.docService.getDoctors(params), HttpStatus.OK);
     }
 
-    @DeleteMapping("/secure/doctors/{doctorId}")
-    @PreAuthorize("hasAuthority('admin')")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable(value = "doctorId") int id) {
-        this.docService.deleteDoctor(id);
-    }
-
     @GetMapping("/doctors/{id}")
     public ResponseEntity<DoctorDTO> getDoctorById(@PathVariable(value = "id") int id) {
         DoctorDTO d = docService.getDoctorById(id);

@@ -4,20 +4,25 @@
  */
 package com.vudo.services.impl;
 
+import com.vudo.dto.NotificationDTO;
 import com.vudo.pojo.MedicalRecord;
 import com.vudo.pojo.Notification;
 import com.vudo.pojo.User;
 import com.vudo.repositories.NotificationRepository;
 import com.vudo.services.NotificationService;
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
  * @author ADMIN
  */
 @Service
+@Transactional
 public class NotificationServiceImpl implements NotificationService{
     
     @Autowired
@@ -48,6 +53,30 @@ public class NotificationServiceImpl implements NotificationService{
 
         notificationRepository.add(n);
     }
-    
-    
+
+    @Override
+    public List<NotificationDTO> getUserNotifications(int userId, int page) {
+        List<Notification> notifications = notificationRepository.getNotificationsByUserId(userId, page);
+
+        return notifications.stream().map(n -> {
+            NotificationDTO dto = new NotificationDTO();
+            dto.setId(n.getId());
+            dto.setTitle(n.getTitle());
+            dto.setMessage(n.getMessage());
+            dto.setType(n.getType());
+            dto.setIsRead(n.getIsRead());
+            dto.setCreatedAt(n.getCreatedAt());
+            return dto;
+        }).collect(Collectors.toList());
+    }
+
+    @Override
+    public boolean markNotificationAsRead(int notificationId) {
+        return notificationRepository.markAsRead(notificationId);
+    }    
+
+    @Override
+    public Long countUnreadByUserId(int userId) {
+       return notificationRepository.countUnreadByUserId(userId);
+    }
 }

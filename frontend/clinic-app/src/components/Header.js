@@ -3,6 +3,7 @@ import { Menu, X, Phone, Globe } from 'lucide-react';
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Apis, { endpoints } from "../configs/Apis";
+import NotificationBell from "./Notification/NotificationBell";
 
 const Header = () => {
     const currentUser = JSON.parse(localStorage.getItem('currentUser'));
@@ -98,11 +99,6 @@ const Header = () => {
                     </div>
 
                     <ul className="navbar-nav me-auto">
-                        <li className="nav-item">
-                            <Link className="nav-link" to="/doctors">Tìm Bác sĩ</Link>
-                        </li>
-
-                        {/* KIỂM TRA ROLE ĐỂ HIỂN THỊ MENU TƯƠNG ỨNG */}
                         {currentUser?.role === 'patient' && (
                             <li className="nav-item">
                                 <Link className="nav-link text-primary fw-bold" to="/my-appointments">
@@ -122,6 +118,12 @@ const Header = () => {
 
                     <div className="d-flex align-items-center gap-2">
                         {user ? (
+                            <>
+                            {user.role === 'patient' && (
+                                <div className="header-right-actions me-3">
+                                    <NotificationBell />
+                                </div>
+                            )}
                             <Dropdown className="d-none d-sm-inline-flex">
                                 <Dropdown.Toggle variant="outline-primary" id="dropdown-user">
                                     Chào, {user.fullName || user.username}
@@ -138,6 +140,7 @@ const Header = () => {
                                     </Dropdown.Item>
                                 </Dropdown.Menu>
                             </Dropdown>
+                            </>
                         ) : (
                             <Button
                                 as={Link}

@@ -33,13 +33,20 @@ export const endpoints = {
     'services': '/services',
     'diseases': '/diseases',
 
-    // QUẢN LÝ ADMIN (SECURE)
+    // QUẢN LÝ ADMIN
     'admin-diseases': '/secure/admin/diseases',
     'admin-disease-detail': (id) => `/secure/admin/diseases/${id}`,
 
     'admin-services': '/secure/admin/services',
     'admin-service-detail': (id) => `/secure/admin/services/${id}`,
 
+    'admin-doctors': '/secure/admin/doctors', 
+    'admin-doctor-detail': (id) => `/secure/admin/doctors/${id}`,
+
+    // THÔNG BÁO
+    'notifications': '/secure/notifications/',
+    'mark-notification-read': (id) => `/secure/notifications/${id}/read`,
+    'unread-notification-count': '/secure/notifications/unread-count',
 }
 
 const Apis = axios.create({

@@ -13,6 +13,8 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import VideoCallPage from "./screens/VideoCall/VideoCallPage";
 import MyAppointments from "./screens/MyAppointments/MyAppointments";
 import DoctorSchedule from "./screens/DoctorSchedule/DoctorSchedule";
+import Booking from "./screens/Patient/Booking";
+import Appointments from "./screens/Patient/Appointments";
 
 const App = () => {
   return (
@@ -30,6 +32,8 @@ const App = () => {
 
         <Route element={<ProtectedRoute roles={'patient'} />}>
             <Route path="/patient" element={<Patient />} />
+            <Route path="/doctors/:doctorId/booking" element={<Booking />} />
+            <Route path="/apointments" element={<Appointments />} />
         </Route>
 
         <Route element={<ProtectedRoute roles={'pharmacist'} />}>

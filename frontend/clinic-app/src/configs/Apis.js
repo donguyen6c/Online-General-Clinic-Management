@@ -47,10 +47,12 @@ export const endpoints = {
     'notifications': '/secure/notifications/',
     'mark-notification-read': (id) => `/secure/notifications/${id}/read`,
     'unread-notification-count': '/secure/notifications/unread-count',
+
+    'appointments': '/secure/patients/current-user/appointments'
 }
 
 const Apis = axios.create({
-    baseURL: "http://localhost:8080/ClinicManagement/api/"
+    baseURL: "http://localhost:8081/ClinicManagement/api/"
 });
 
 Apis.interceptors.request.use(

@@ -1,6 +1,16 @@
 import { useEffect, useState } from "react";
+import {
+    Container,
+    Row,
+    Col,
+    Form,
+    Card,
+    Button,
+    Alert
+} from "react-bootstrap";
 import MySpinner from "../../components/MySpinner";
 import Apis, { endpoints } from "../../configs/Apis";
+import { useNavigate } from "react-router-dom";
 
 const Patient = () => {
     const [doctors, setDoctors] = useState([]);
@@ -10,6 +20,7 @@ const Patient = () => {
     const [page, setPage] = useState(1);
     const [hasMore, setHasMore] = useState(true);
     const [loading, setLoading] = useState(true);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const loadSpecialties = async () => {
@@ -28,12 +39,12 @@ const Patient = () => {
             try {
                 setLoading(true);
 
-                let url = `${endpoints['doctors']}?page=${page}`;
-
+                let url = `${endpoints["doctors"]}?page=${page}`;
                 if (kw) url += `&kw=${kw}`;
                 if (specialtyId) url += `&specialtyId=${specialtyId}`;
 
                 const res = await Apis.get(url);
+                console.info(res.data.data)
 
                 if (page === 1) {
                     setDoctors(res.data.data);
@@ -49,23 +60,19 @@ const Patient = () => {
             }
         };
 
-        const timeout = setTimeout(() => {
-            fetchDoctors();
-        }, 500);
-
+        const timeout = setTimeout(fetchDoctors, 500);
         return () => clearTimeout(timeout);
-        
-    }, [kw, specialtyId, page]);
 
+    }, [kw, specialtyId, page]);
 
     const handleSearchKw = (e) => {
         setKw(e.target.value);
-        setPage(1); 
+        setPage(1);
     };
 
     const handleSearchSpecialty = (e) => {
         setSpecialtyId(e.target.value);
-        setPage(1); 
+        setPage(1);
     };
 
     const handleLoadMore = () => {
@@ -73,23 +80,21 @@ const Patient = () => {
     };
 
     return (
-        <div className="container py-4">
+        <Container className="py-4">
             <h2 className="text-center mb-4">Danh sách bác sĩ</h2>
 
-            <div className="row mb-4">
-                <div className="col-md-6 mb-2">
-                    <input
+            <Row className="mb-4">
+                <Col md={6} className="mb-2">
+                    <Form.Control
                         type="text"
-                        className="form-control"
                         placeholder="Tìm theo tên bác sĩ..."
                         value={kw}
-                        onChange={handleSearchKw} 
+                        onChange={handleSearchKw}
                     />
-                </div>
+                </Col>
 
-                <div className="col-md-6">
-                    <select
-                        className="form-select"
+                <Col md={6}>
+                    <Form.Select
                         value={specialtyId}
                         onChange={handleSearchSpecialty}
                     >
@@ -99,46 +104,50 @@ const Patient = () => {
                                 {s.name}
                             </option>
                         ))}
-                    </select>
-                </div>
-            </div>
+                    </Form.Select>
+                </Col>
+            </Row>
 
-            <div className="row">
+            <Row>
                 {!loading && doctors.length === 0 && (
-                    <div className="alert alert-warning text-center">
+                    <Alert variant="warning" className="text-center">
                         Không có bác sĩ nào
-                    </div>
+                    </Alert>
                 )}
 
                 {doctors.map((d) => (
-                    <div className="col-md-4 mb-4" key={d.id}>
-                        <div className="card h-100 shadow-sm">
-                            <img
+                    <Col md={4} className="mb-4" key={d.id}>
+                        <Card className="h-100 shadow-sm">
+                            <Card.Img
+                                variant="top"
                                 src={d.user.avatar}
-                                className="card-img-top"
-                                alt=""
                                 style={{ height: "220px", objectFit: "cover" }}
                             />
 
-                            <div className="card-body">
-                                <h5 className="card-title">{d.user?.fullName}</h5>
+                            <Card.Body>
+                                <Card.Title>
+                                    {d.user?.fullName}
+                                </Card.Title>
 
                                 <p className="mb-1">
                                     <strong>Chuyên khoa:</strong> {d.specialty?.name}
                                 </p>
 
-                                <p className="text-muted small">{d.bio}</p>
-                            </div>
+                                <p className="text-muted small">
+                                    {d.bio}
+                                </p>
+                            </Card.Body>
 
-                            <div className="card-footer bg-white border-0">
-                                <button className="btn btn-outline-primary w-100">
+                            <Card.Footer className="bg-white border-0">
+                                <Button variant="outline-primary" className="w-100" 
+                                onClick={() => navigate(`/doctors/${d.id}/booking`)}>
                                     Đặt lịch
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+                                </Button>
+                            </Card.Footer>
+                        </Card>
+                    </Col>
                 ))}
-            </div>
+            </Row>
 
             {loading && (
                 <div className="text-center">
@@ -148,15 +157,12 @@ const Patient = () => {
 
             {!loading && doctors.length > 0 && hasMore && (
                 <div className="text-center mt-3">
-                    <button
-                        className="btn btn-outline-primary"
-                        onClick={handleLoadMore}
-                    >
+                    <Button variant="outline-primary" onClick={handleLoadMore}>
                         Xem thêm
-                    </button>
+                    </Button>
                 </div>
             )}
-        </div>
+        </Container>
     );
 };
 

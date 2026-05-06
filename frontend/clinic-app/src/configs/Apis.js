@@ -48,7 +48,8 @@ export const endpoints = {
     'mark-notification-read': (id) => `/secure/notifications/${id}/read`,
     'unread-notification-count': '/secure/notifications/unread-count',
 
-    'appointments': '/secure/patients/current-user/appointments'
+    'appointments': '/secure/patients/current-user/appointments',
+    'cancel-appointments': ap_id => `/secure/appointments/${ap_id}`
 }
 
 const Apis = axios.create({

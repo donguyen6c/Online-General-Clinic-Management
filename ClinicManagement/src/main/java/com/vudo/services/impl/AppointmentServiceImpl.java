@@ -168,7 +168,7 @@ public class AppointmentServiceImpl implements AppointmentService {
         notificationService.createBookingNotification(
                 patient,
                 doctor.getUserId().getFullName(),
-                request.getDate()+ " " + request.getStartTime()
+                request.getDate() + " " + request.getStartTime()
         );
         return AppointmentMapper.toDTO(saved);
     }
@@ -198,5 +198,46 @@ public class AppointmentServiceImpl implements AppointmentService {
         return appointments.stream()
                 .map(AppointmentMapper::toDTO)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional
+    public AppointmentResponseDTO cancelAppointment(int appointmentId) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        User currentUser = userRepo.getUserByUsername(username);
+
+        if (currentUser == null) {
+            throw new RuntimeException("Không tìm thấy thông tin người dùng");
+        }
+
+        Appointment appointment = appointmentRepo.getById(appointmentId);
+        if (appointment == null) {
+            throw new RuntimeException("Không tìm thấy lịch hẹn");
+        }
+
+        boolean isPatientOwner = appointment.getPatientId() != null
+                && appointment.getPatientId().getId().equals(currentUser.getId());
+
+        boolean isDoctorOwner = appointment.getDoctorId() != null
+                && appointment.getDoctorId().getUserId() != null
+                && appointment.getDoctorId().getUserId().getId().equals(currentUser.getId());
+
+        if (!isPatientOwner && !isDoctorOwner) {
+            throw new RuntimeException("Bạn không có quyền hủy lịch hẹn này");
+        }
+
+        if ("cancelled".equalsIgnoreCase(appointment.getStatus())) {
+            throw new RuntimeException("Lịch hẹn đã được hủy trước đó");
+        }
+
+        if (!appointment.getAppointmentDate().isAfter(LocalDate.now())) {
+            throw new RuntimeException("Chỉ được hủy lịch hẹn trước ngày khám");
+        }
+
+        appointment.setStatus("cancelled");
+
+        Appointment cancelled = appointmentRepo.cancel(appointment);
+
+        return AppointmentMapper.toDTO(cancelled);
     }
 }

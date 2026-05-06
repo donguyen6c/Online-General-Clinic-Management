@@ -19,12 +19,19 @@ const Booking = () => {
     const [slotData, setSlotData] = useState(null);
     const [selectedDate, setSelectedDate] = useState("");
     const [selectedSlot, setSelectedSlot] = useState(null);
+    const [reason, setReason] = useState("");
 
     const [doctorLoading, setDoctorLoading] = useState(true);
     const [slotLoading, setSlotLoading] = useState(false);
     const [bookingLoading, setBookingLoading] = useState(false);
 
-    const today = new Date().toISOString().split("T")[0];
+    const getTomorrow = () => {
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        return tomorrow.toISOString().split("T")[0];
+    };
+
+    const minDate = getTomorrow();
 
     const loadDoctor = async () => {
         try {
@@ -54,7 +61,7 @@ const Booking = () => {
 
     useEffect(() => {
         loadDoctor();
-        setSelectedDate(today);
+        setSelectedDate(minDate);
     }, [doctorId]);
 
     useEffect(() => {
@@ -64,6 +71,11 @@ const Booking = () => {
     const handleBooking = async () => {
         if (!selectedSlot || bookingLoading) return;
 
+        if (!reason.trim()) {
+            alert("Vui lòng nhập lý do khám!");
+            return;
+        }
+
         try {
             setBookingLoading(true);
 
@@ -71,11 +83,15 @@ const Booking = () => {
                 date: selectedDate,
                 startTime: selectedSlot.startTime,
                 endTime: selectedSlot.endTime,
-                reason: "Khám tổng quát"
+                reason: reason.trim()
             });
 
             alert("Đặt lịch thành công!");
+
+            setReason("");
+            setSelectedSlot(null);
             loadSlots(selectedDate);
+
         } catch (ex) {
             console.log(ex);
             alert("Đặt lịch thất bại!");
@@ -88,7 +104,6 @@ const Booking = () => {
         <Container className="py-4">
             <h2 className="text-center text-primary mb-4">Đặt lịch khám</h2>
 
-            {/* Doctor */}
             {doctorLoading ? (
                 <div className="text-center py-4">
                     <MySpinner />
@@ -98,27 +113,32 @@ const Booking = () => {
                     <Row className="g-0">
                         <Col md={4}>
                             <Card.Img
-                                src={doctor.user.avatar}
+                                src={doctor.user?.avatar}
                                 style={{ height: "300px", objectFit: "cover" }}
                             />
                         </Col>
+
                         <Col md={8}>
                             <Card.Body>
                                 <Card.Title className="mb-3">
                                     {doctor.user?.fullName}
                                 </Card.Title>
+
                                 <p className="mb-2">
                                     <strong>Chuyên khoa:</strong>{" "}
                                     {doctor.specialty?.name}
                                 </p>
+
                                 <p className="mb-2">
                                     <strong>Email:</strong>{" "}
                                     {doctor.user?.email || "Chưa cập nhật"}
                                 </p>
+
                                 <p className="mb-2">
                                     <strong>SĐT:</strong>{" "}
                                     {doctor.user?.phone || "Chưa cập nhật"}
                                 </p>
+
                                 <p className="mb-0">
                                     <strong>Giới thiệu:</strong>{" "}
                                     {doctor.bio || "Chưa có mô tả"}
@@ -129,20 +149,18 @@ const Booking = () => {
                 </Card>
             )}
 
-            {/* Booking */}
             <Card className="shadow-sm border-0">
                 <Card.Body>
                     <Form.Group className="mb-4">
                         <Form.Label className="fw-bold">
                             Chọn ngày khám
                         </Form.Label>
+
                         <Form.Control
                             type="date"
                             value={selectedDate}
-                            min={today}
-                            onChange={(e) =>
-                                setSelectedDate(e.target.value)
-                            }
+                            min={minDate}
+                            onChange={(e) => setSelectedDate(e.target.value)}
                         />
                     </Form.Group>
 
@@ -170,10 +188,8 @@ const Booking = () => {
                                             variant={
                                                 !slot.available
                                                     ? "light"
-                                                    : selectedSlot?.startTime ===
-                                                      slot.startTime &&
-                                                      selectedSlot?.endTime ===
-                                                          slot.endTime
+                                                    : selectedSlot?.startTime === slot.startTime &&
+                                                      selectedSlot?.endTime === slot.endTime
                                                     ? "primary"
                                                     : "outline-primary"
                                             }
@@ -185,6 +201,21 @@ const Booking = () => {
                                     </Col>
                                 ))}
                             </Row>
+
+                            <Form.Group className="mt-3">
+                                <Form.Label className="fw-bold">
+                                    Lý do khám
+                                </Form.Label>
+
+                                <Form.Control
+                                    as="textarea"
+                                    rows={3}
+                                    placeholder="Nhập lý do khám..."
+                                    value={reason}
+                                    onChange={(e) => setReason(e.target.value)}
+                                    disabled={bookingLoading}
+                                />
+                            </Form.Group>
 
                             <div className="text-end mt-3">
                                 <Button

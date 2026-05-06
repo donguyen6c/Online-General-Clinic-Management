@@ -19,13 +19,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpHeaders;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
 
 /**
  *
  * @author ADMIN
  */
 @RestController
-@RequestMapping("/api/secure")
+@RequestMapping("/api")
 public class ApiAppointmentController {
 
     @Autowired
@@ -47,6 +50,27 @@ public class ApiAppointmentController {
             return new ResponseEntity<>(ap, HttpStatus.CREATED);
         } catch (IllegalArgumentException ex) {
             return new ResponseEntity<>(Map.of("error", ex.getMessage()), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @DeleteMapping("secure/appointments/{id}")
+    @PreAuthorize("hasAnyAuthority('patient', 'doctor')")
+    public ResponseEntity<?> cancelAppointment(@PathVariable("id") Integer appointmentId) {
+        try {
+            AppointmentResponseDTO cancelled = appointmentService.cancelAppointment(appointmentId);
+            return ResponseEntity.ok(cancelled);
+        } catch (RuntimeException e) {
+            if ("Bạn không có quyền hủy lịch hẹn này".equals(e.getMessage())) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error", e.getMessage()));
+            }
+
+            if ("Không tìm thấy lịch hẹn".equals(e.getMessage())) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", e.getMessage()));
+            }
+
+            return ResponseEntity.badRequest()
+                    .header(HttpHeaders.CONTENT_TYPE, "application/json")
+                    .body(Map.of("error", e.getMessage()));
         }
     }
 }

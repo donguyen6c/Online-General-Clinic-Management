@@ -135,7 +135,7 @@ const Header = () => {
                                         <Dropdown.Item as={Link} to="/admin">Trang quản trị</Dropdown.Item>
                                     )}
                                     {user.role === 'patient' && (
-                                        <Dropdown.Item as={Link} to="/admin">Lịch hẹn</Dropdown.Item>
+                                        <Dropdown.Item as={Link} to="/apointments">Lịch hẹn</Dropdown.Item>
                                     )}
                                     <Dropdown.Divider />
                                     <Dropdown.Item onClick={handleLogout} className="text-danger">

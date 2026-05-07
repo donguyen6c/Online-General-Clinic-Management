@@ -3,7 +3,7 @@ import Apis, { endpoints } from "../../configs/Apis";
 import MySpinner from "../../components/MySpinner";
 
 const ServiceManagement = () => {
-    const PAGE_SIZE = 5; // Khớp với services_disease trong env của bạn
+    const PAGE_SIZE = 6; // Khớp với services_disease trong env của bạn
     const [services, setServices] = useState([]);
     const [kw, setKw] = useState("");
     const [page, setPage] = useState(1);

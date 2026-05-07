@@ -15,8 +15,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -64,4 +65,19 @@ public class ApiUserController {
     public ResponseEntity<UserDTO> getProfile(Principal principal) {
         return new ResponseEntity<>(this.userService.getUserByUsername(principal.getName()), HttpStatus.OK);
     }
+    
+    @PatchMapping(path = "/secure/profile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> updateProfile(
+            @RequestParam Map<String, String> params,
+            @RequestParam(value = "avatar", required = false) MultipartFile avatar,
+            Principal principal) {
+        try {
+            UserDTO updated = userService.updateProfile(principal.getName(), params, avatar);
+            return ResponseEntity.ok(updated);
+        } catch (RuntimeException ex) {
+            return ResponseEntity.badRequest().body(Map.of("error", ex.getMessage()));
+        }
+    }
+    
 }
+

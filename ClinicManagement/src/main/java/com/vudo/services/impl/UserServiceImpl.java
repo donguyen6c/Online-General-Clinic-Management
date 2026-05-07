@@ -95,4 +95,28 @@ public class UserServiceImpl implements UserService {
         return this.userRepo.authenticate(username, password);
     }
 
+    @Override
+    public UserDTO updateProfile(String username, Map<String, String> params, MultipartFile avatar) {
+        User u = this.userRepo.getUserByUsername(username);
+        if (u == null) throw new RuntimeException("Không tìm thấy user");
+
+        if (params.get("fullName") != null) u.setFullName(params.get("fullName"));
+        if (params.get("email")    != null) u.setEmail(params.get("email"));
+        if (params.get("phone")    != null) u.setPhone(params.get("phone"));
+        if (params.get("gender")   != null) u.setGender(params.get("gender"));
+
+        if (avatar != null && !avatar.isEmpty()) {
+            try {
+                Map res = this.cloudinary.uploader().upload(avatar.getBytes(),
+                        ObjectUtils.asMap("resource_type", "auto"));
+                u.setAvatar(res.get("secure_url").toString());
+            } catch (IOException ex) {
+                Logger.getLogger(UserServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+
+        this.userRepo.updateUser(u);
+        return UserMapper.toDTO(u);
+    }
+
 }

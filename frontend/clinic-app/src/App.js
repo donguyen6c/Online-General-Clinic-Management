@@ -5,7 +5,7 @@ import Register from "./screens/User/Register";
 import Profile from "./screens/User/Profile";
 import Header from "./components/Header"
 import Footer from "./components/Footer"
-import Patient from "./screens/Patient/Patient";
+import Patient from "./screens/Home/HealthCheck";
 import Pharmacist from "./screens/Pharmacist/Pharmacist";
 import Doctor from "./screens/Admin/Doctors/UpdateDoctor";
 import AdminDashboard from "./screens/Admin/AdminDashboard/AdminDashboard";
@@ -15,9 +15,19 @@ import MyAppointments from "./screens/MyAppointments/MyAppointments";
 import DoctorSchedule from "./screens/DoctorSchedule/DoctorSchedule";
 import Booking from "./screens/Patient/Booking";
 import Appointments from "./screens/Patient/Appointments";
+import Home from "./screens/Home/Home"
+import HealthCheck from "./screens/Home/HealthCheck";
+import Services from "./screens/Home/Services";
+import { useReducer } from "react";
+import cookies from "react-cookies";
+import { MyUserContext } from "./configs/Contexts";
+import MyUserReducer from "./reducers/MyUserReducer";
 
 const App = () => {
+  const [user, dispatch] = useReducer(MyUserReducer, cookies.load("user") || null);
+
   return (
+    <MyUserContext.Provider value={[user, dispatch]}>
     <BrowserRouter>
     <div className="d-flex flex-column min-vh-100">
     <Header/>
@@ -25,15 +35,17 @@ const App = () => {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/" element={<Home/>} />
+        <Route path="/health-check" element={<HealthCheck />} />
+        <Route path="/services" element={<Services/>}/>
 
         <Route element={<ProtectedRoute />}>
             <Route path="/profile" element={<Profile />} />
         </Route>
 
         <Route element={<ProtectedRoute roles={'patient'} />}>
-            <Route path="/patient" element={<Patient />} />
             <Route path="/doctors/:doctorId/booking" element={<Booking />} />
-            <Route path="/apointments" element={<Appointments />} />
+            <Route path="/appointments" element={<Appointments />} />
         </Route>
 
         <Route element={<ProtectedRoute roles={'pharmacist'} />}>
@@ -66,7 +78,7 @@ const App = () => {
       <Footer/>
       </div>
     </BrowserRouter>
-    
+    </MyUserContext.Provider>
   );
 }
 

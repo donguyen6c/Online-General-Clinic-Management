@@ -1,4 +1,5 @@
 import axios from "axios";
+import cookies from 'react-cookies'
 
 export const endpoints = {
     'specialties':  '/specialties',
@@ -53,25 +54,30 @@ export const endpoints = {
 }
 
 const Apis = axios.create({
-    baseURL: "http://localhost:8081/ClinicManagement/api/"
+    baseURL: process.env.REACT_APP_BASE_URL
 });
 
 Apis.interceptors.request.use(
     (config) => {
         if (config.url && config.url.includes('/secure/')) {
-            const token = localStorage.getItem("token"); 
-            
+            const token = cookies.load('token') || localStorage.getItem("token");
             if (token) {
                 config.headers.Authorization = `Bearer ${token}`;
             }
         }
-        
         return config;
     },
-    (error) => {
-        return Promise.reject(error);
-    }
+    (error) => Promise.reject(error)
 );
+
+export const authApis = () => {
+    return axios.create({
+        baseURL: process.env.REACT_APP_BASE_URL,
+        headers: {
+            'Authorization': `Bearer ${cookies.load('token')}`
+        }
+    })
+}
 
 export default Apis;
 

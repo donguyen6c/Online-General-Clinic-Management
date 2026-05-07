@@ -3,7 +3,7 @@ import Apis, { endpoints } from "../../configs/Apis";
 import MySpinner from "../../components/MySpinner";
 
 const DiseaseManagement = () => {
-    const PAGE_SIZE = 5;
+    const PAGE_SIZE = 6;
     
     const [diseases, setDiseases] = useState([]);
     const [kw, setKw] = useState("");
@@ -143,11 +143,11 @@ const DiseaseManagement = () => {
                                         <td><span className="badge bg-light text-dark border">#{d.id}</span></td>
                                         <td className="fw-bold text-start text-dark">{d.name}</td>
                                         <td>
-                                            <button className="btn btn-outline-warning btn-sm me-2" onClick={() => handleOpenModal(d)}>
-                                                <i className="bi bi-pencil-square"></i> Sửa
+                                            <button className="btn btn-warning btn-sm me-2" onClick={() => handleOpenModal(d)}>
+                                                Sửa
                                             </button>
-                                            <button className="btn btn-outline-danger btn-sm" onClick={() => handleDelete(d.id)}>
-                                                <i className="bi bi-trash"></i> Xóa
+                                            <button className="btn btn-danger btn-sm" onClick={() => handleDelete(d.id)}>
+                                                Xóa
                                             </button>
                                         </td>
                                     </tr>

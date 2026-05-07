@@ -1,181 +1,161 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Apis, { endpoints } from "../../configs/Apis";
-import MySpinner from "../../components/MySpinner";
+
 
 const Home = () => {
-  const [loading, setLoading] = useState(false);
-  const [doctors, setDoctors] = useState([]);
-  const [specialties, setSpecialties] = useState([]);
-  
-  const [kw, setKw] = useState("");
-  const [specialtyId, setSpecialtyId] = useState("");
+  const navigate = useNavigate();
 
-  // 1. TẢI CHUYÊN KHOA (Chỉ chạy 1 lần khi mở trang)
+  const [specialties, setSpecialties] = useState([]);
+  const [doctors,     setDoctors]     = useState([]);
+  const [services,    setServices]    = useState([]);
+
   useEffect(() => {
-    const fetchSpecialties = async () => {
-      try {
-        let res = await Apis.get(endpoints["specialties"]);
-        // Đảm bảo res.data là một mảng
-        setSpecialties(res.data);
-      } catch (error) {
-        console.error("Lỗi tải chuyên khoa:", error);
-      }
-    };
-    fetchSpecialties();
+    Apis.get(endpoints["specialties"])
+      .then(res => setSpecialties(res.data))
+      .catch(console.error);
   }, []);
 
-  // 2. TẢI BÁC SĨ (Tự động chạy khi mở trang hoặc khi đổi từ khóa/chuyên khoa)
   useEffect(() => {
-    const fetchDoctors = async () => {
-      try {
-        setLoading(true);
-        let res = await Apis.get(endpoints["doctors"], {
-          params: {
-            kw: kw,
-            specialtyId: specialtyId,
-          },
-        });
-        
-        // CHỖ NÀY QUAN TRỌNG: Nếu BE có phân trang, phải trỏ đúng vào mảng (vd: res.data.data hoặc res.data.content)
-        // Mình đang để res.data.data giống file Patient.js của bạn
-        setDoctors(res.data.data || res.data); 
+    Apis.get(endpoints["doctors"])
+      .then(res => {
+        const data = res.data.data || res.data;
+        setDoctors(Array.isArray(data) ? data.slice(0, 4) : []);
+      })
+      .catch(console.error);
+  }, []);
 
-      } catch (error) {
-        console.error("Lỗi tải bác sĩ:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    const delay = setTimeout(() => {
-      fetchDoctors();
-    }, 200);
-
-    return () => clearTimeout(delay);
-  }, [kw, specialtyId]);
-
-  // Handle Search Input (Thực ra không cần làm gì vì onChange của ô input đã setKw và kích hoạt useEffect rồi)
-  const handleSearch = (e) => {
-    e.preventDefault();
-  };
-
-  const handleDelete = async (id) => {
-    if (window.confirm("Chắc chắn xóa bác sĩ này?")) {
-      try {
-        await Apis.delete(`${endpoints["doctors"]}/${id}`);
-        alert("Xóa thành công");
-        
-        // Cập nhật lại UI bằng cách lọc bỏ bác sĩ vừa xóa ra khỏi State (không cần gọi lại API cho nặng máy)
-        setDoctors(prev => prev.filter(d => d.id !== id));
-      } catch (error) {
-        alert("Xoá thất bại");
-        console.error(error);
-      }
-    }
-  };
+  useEffect(() => {
+    Apis.get(endpoints["services"])
+      .then(res => setServices(Array.isArray(res.data) ? res.data.slice(0, 3) : []))
+      .catch(console.error);
+  }, []);
 
   return (
     <>
-      <div className="container mt-5">
-        <h2 className="mb-4 text-primary">Danh Sách Bác Sĩ</h2>
+      <section
+        className="text-white py-5"
+        style={{ background: "linear-gradient(135deg, #0a6e6e, #06b6d4)" }}
+      >
+        <div className="container py-3">
+          <h1 className="fw-bold mb-2" style={{ fontSize: "2.2rem" }}>
+            Đặt lịch khám nhanh &amp; tiện lợi
+          </h1>
+          <p className="mb-4 opacity-75">
+            Kết nối với đội ngũ bác sĩ chuyên khoa — mọi lúc, mọi nơi.
+          </p>
+        </div>
+      </section>
 
-        <section className="container p-0">
-          {/* Bộ lọc chuyên khoa */}
-          <div className="mb-3">
-            <button
-              onClick={() => setSpecialtyId("")}
-              className={`btn ${specialtyId === "" ? "btn-secondary" : "btn-outline-secondary"} me-2`}
-            >
-              Tất cả
-            </button>
-            {/* Thêm check specialties && specialties.length để tránh lỗi map nếu mảng rỗng */}
-            {specialties && specialties.length > 0 && specialties.map((c) => (
-              <button
-                key={c.id}
-                onClick={() => setSpecialtyId(c.id)}
-                className={`btn ${specialtyId === c.id ? "btn-primary" : "btn-outline-primary"} me-2`}
-              >
-                {c.name}
-              </button>
+      {/* ── SPEC ── */}
+      <section className="py-5 bg-white">
+        <div className="container">
+          <h4 className="fw-bold mb-1" style={{ color: "#0a6e6e" }}>Chuyên khoa</h4>
+          <p className="text-muted mb-4">Chọn chuyên khoa để tìm bác sĩ phù hợp</p>
+
+          <div className="row g-3">
+            {specialties.map((spec, idx) => (
+              <div key={spec.id} className="col-6 col-sm-4 col-md-3 col-lg-2">
+                <div
+                  className="border rounded-3 text-center p-3 h-100"
+                  style={{ cursor: "pointer", transition: "box-shadow .2s" }}
+                  onClick={() => navigate(`/health-check?specialtyId=${spec.id}`)}
+                  onMouseEnter={e => e.currentTarget.style.boxShadow = "0 4px 16px rgba(13,148,136,.18)"}
+                  onMouseLeave={e => e.currentTarget.style.boxShadow = "none"}
+                >
+                  <div className="fw-semibold small">{spec.name}</div>
+                </div>
+              </div>
             ))}
           </div>
+        </div>
+      </section>
 
-          {/* Thanh tìm kiếm */}
-          <div className="row mb-4">
-            <div className="col-md-5">
-              <form onSubmit={handleSearch} className="d-flex">
-                <input
-                  type="text"
-                  value={kw}
-                  onChange={(e) => setKw(e.target.value)}
-                  className="form-control me-2"
-                  placeholder="Nhập tên bác sĩ..."
-                />
-                <button type="submit" className="btn btn-success">
-                  Tìm
-                </button>
-              </form>
+      {/* ── DOCTORS ── */}
+      <section className="py-5" style={{ background: "#f8fafc" }}>
+        <div className="container">
+          <div className="d-flex justify-content-between align-items-center mb-4">
+            <div>
+              <h4 className="fw-bold mb-1" style={{ color: "#0a6e6e" }}>Bác sĩ nổi bật</h4>
+              <p className="text-muted mb-0">Đội ngũ chuyên gia giàu kinh nghiệm</p>
             </div>
+            <button className="btn btn-outline-secondary btn-sm" onClick={() => navigate("/health-check")}>Xem tất cả →</button>
           </div>
 
-          {/* Nút thêm mới */}
-          <div className="mt-2 mb-3">
-            <Link to="/doctor/add" className="btn btn-info text-white">
-              Thêm Bác sĩ
-            </Link>
+          <div className="row g-3">
+            {doctors.map(doc => (
+              <div key={doc.id} className="col-6 col-md-4 col-lg-3">
+                <div className="card h-100 border rounded-3 shadow-sm">
+                  <img src={doc.user?.avatar || "https://cdn-icons-png.flaticon.com/512/3774/3774299.png"} alt={doc.user?.fullName} className="card-img-top" 
+                  style={{ height: 180, objectFit: "cover" }}/>
+                  <div className="card-body d-flex flex-column">
+                    <div className="fw-bold mb-1" style={{ color: "#0a6e6e" }}>{doc.user?.fullName || "Bác sĩ"}</div>
+                    <div className="text-muted small mb-3">{doc.specialty?.name || "Đa khoa"}</div>
+                    <button className="btn btn-sm mt-auto text-white" style={{ background: "#0d9488" }} onClick={() => navigate(`/doctors/${doc.id}/booking`)}>
+                      Đặt lịch
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
+        </div>
+      </section>
 
-          {/* Bảng dữ liệu */}
-          <table className="table table-bordered table-hover">
-            <thead className="table-dark">
-              <tr>
-                <th>ID</th>
-                <th>Tên Bác Sĩ</th>
-                <th>Chuyên Khoa</th>
-                <th>Hành Động</th>
-              </tr>
-            </thead>
-            <tbody>
-              {loading ? (
-                <tr>
-                  <td colSpan="4" className="text-center">
-                    <MySpinner />
-                  </td>
-                </tr>
-              ) : doctors && doctors.length > 0 ? (
-                doctors.map((d) => (
-                  <tr key={d.id}>
-                    <td>{d.id}</td>
-                    <td>{d.user?.fullName}</td>
-                    <td>{d.specialty?.name}</td>
-                    <td>
-                      <Link
-                        to={`/doctor/edit/${d.id}`}
-                        className="btn btn-info text-white me-2"
-                      >
-                        Cập nhật
-                      </Link>
-                      <button
-                        onClick={() => handleDelete(d.id)}
-                        className="btn btn-danger btn-sm"
-                      >
-                        Xóa
-                      </button>
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="4" className="text-center text-danger">
-                    Không tìm thấy bác sĩ nào!
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </section>
-      </div>
+      {/* ── DỊCH VỤ ── */}
+      <section className="py-5 bg-white">
+        <div className="container">
+          <div className="d-flex justify-content-between align-items-center mb-4">
+            <div>
+              <h4 className="fw-bold mb-1" style={{ color: "#0a6e6e" }}>Dịch vụ y tế</h4>
+              <p className="text-muted mb-0">Đội ngũ chuyên gia giàu kinh nghiệm</p>
+            </div>
+            <button
+              className="btn btn-outline-secondary btn-sm"
+              onClick={() => navigate("/services")}
+            >
+              Xem tất cả →
+            </button>
+          </div>
+          <div className="row g-3">
+            {services.map((svc, i) => (
+              <div key={svc.id} className="col-12 col-sm-6 col-lg-4">
+                <div className="border rounded-3 p-3 h-100">
+                  <div className="fw-semibold mb-1">{svc.name}</div>
+                  {svc.description && <p className="text-muted small mb-2">{svc.description}</p>}
+                  <span className="badge" style={{ background: "#ccfbf1", color: "#0d9488", fontSize: "0.85rem" }}>
+                    {Number(svc.price).toLocaleString("vi-VN")} ₫
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── ABOUT + CTA ── */}
+      <section className="p-3" style={{ background: "#f0fdfa" }}>
+          {/* CTA */}
+          <div className="text-center mt-5">
+            <h5 className="fw-bold mb-2">Sẵn sàng đặt lịch khám?</h5>
+            <p className="text-muted mb-3">Đăng ký ngay để trải nghiệm dịch vụ y tế hiện đại</p>
+            <div className="d-flex justify-content-center gap-3 flex-wrap">
+              <button
+                className="btn text-white px-4"
+                style={{ background: "#0d9488" }}
+                onClick={() => navigate("/doctors")}
+              >
+                Tìm bác sĩ ngay
+              </button>
+              <button
+                className="btn btn-outline-secondary px-4"
+                onClick={() => navigate("/register")}
+              >
+                Đăng ký tài khoản
+              </button>
+            </div>
+        </div>
+      </section>
     </>
   );
 };

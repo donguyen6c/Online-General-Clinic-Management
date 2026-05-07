@@ -218,11 +218,11 @@ const DoctorManagement = () => {
                                     <td><Badge bg="info">{d.specialty?.name}</Badge></td>
                                     <td>{d.user?.phone}</td>
                                     <td>
-                                        <Button variant="outline-warning" size="sm" className="me-2" onClick={() => handleShow(d)}>
-                                            <i className="bi bi-pencil-square"></i> Sửa
+                                        <Button className="btn btn-warning btn-sm me-2" onClick={() => handleShow(d)}>
+                                            Sửa
                                         </Button>
-                                        <Button variant="outline-danger" size="sm" onClick={() => handleDelete(d.id)}>
-                                            <i className="bi bi-trash"></i> Xóa
+                                        <Button className="btn btn-danger btn-sm" onClick={() => handleDelete(d.id)}>
+                                            Xóa
                                         </Button>
                                     </td>
                                 </tr>
@@ -255,10 +255,12 @@ const DoctorManagement = () => {
                                     <Form.Label className="small fw-bold">Tên đăng nhập <span className="text-danger">*</span></Form.Label>
                                     <Form.Control size="sm" type="text" disabled={!!formData.id} value={formData.username} onChange={(e) => setFormData({...formData, username: e.target.value})} required />
                                 </Form.Group>
-                                <Form.Group className="mb-2">
-                                    <Form.Label className="small fw-bold">Mật khẩu {formData.id && "(Bỏ trống nếu không đổi)"} {(!formData.id) && <span className="text-danger">*</span>}</Form.Label>
-                                    <Form.Control size="sm" type="password" value={formData.password} onChange={(e) => setFormData({...formData, password: e.target.value})} required={!formData.id} />
-                                </Form.Group>
+                                {!formData.id && ( 
+                                    <Form.Group className="mb-2"> 
+                                    <Form.Label className="small fw-bold"> Mật khẩu <span className="text-danger">*</span></Form.Label>
+                                        <Form.Control  size="sm"type="password" value={formData.password} onChange={(e) => setFormData({...formData, password: e.target.value }) } required/>
+                                    </Form.Group>
+                                )}
                                 <Form.Group className="mb-2">
                                     <Form.Label className="small fw-bold">Họ và Tên <span className="text-danger">*</span></Form.Label>
                                     <Form.Control size="sm" type="text" value={formData.fullName} onChange={(e) => setFormData({...formData, fullName: e.target.value})} required />

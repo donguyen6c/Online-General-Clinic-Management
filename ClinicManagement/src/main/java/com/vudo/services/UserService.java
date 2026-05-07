@@ -17,4 +17,5 @@ public interface UserService extends UserDetailsService{
     UserDTO getUserByUsername(String username);
     UserDTO addUser(Map<String, String> params, MultipartFile avatar);
     boolean authenticate(String username, String password);
+    UserDTO updateProfile(String username, Map<String, String> params, MultipartFile avatar);
 }

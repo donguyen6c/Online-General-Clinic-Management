@@ -10,13 +10,15 @@ import {
 } from "react-bootstrap";
 import MySpinner from "../../components/MySpinner";
 import Apis, { endpoints } from "../../configs/Apis";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
-const Patient = () => {
+const HealthCheck = () => {
+    const [searchParams] = useSearchParams();
+
     const [doctors, setDoctors] = useState([]);
     const [specialties, setSpecialties] = useState([]);
     const [kw, setKw] = useState("");
-    const [specialtyId, setSpecialtyId] = useState("");
+    const [specialtyId, setSpecialtyId] = useState(searchParams.get("specialtyId") || "");
     const [page, setPage] = useState(1);
     const [hasMore, setHasMore] = useState(true);
     const [loading, setLoading] = useState(true);
@@ -166,4 +168,4 @@ const Patient = () => {
     );
 };
 
-export default Patient;
+export default HealthCheck;

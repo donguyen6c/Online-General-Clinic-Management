@@ -1,7 +1,8 @@
 import { Navigate, Outlet } from "react-router-dom";
+import cookies from "react-cookies";
 
 const ProtectedRoute = ({ roles }) => {
-  const user = JSON.parse(localStorage.getItem("user"));
+  const user = cookies.load("user");
 
   if (!user) {
     return <Navigate to="/login" />;

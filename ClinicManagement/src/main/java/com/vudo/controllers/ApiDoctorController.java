@@ -51,7 +51,7 @@ public class ApiDoctorController {
         return new ResponseEntity<>(d, HttpStatus.OK);
     }
     
-    @GetMapping("/doctor-schedule")
+    @GetMapping("/secure/doctor-schedule")
     public ResponseEntity<?> getMySchedule() {
         try {
             List<AppointmentResponseDTO> schedule = appointmentService.getDoctorAppointments();

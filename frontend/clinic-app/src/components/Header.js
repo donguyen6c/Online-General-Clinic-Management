@@ -4,7 +4,6 @@ import { Menu, X, Phone } from 'lucide-react';
 import { Link, useNavigate } from "react-router-dom";
 import { MyUserContext } from "../configs/Contexts";
 import NotificationBell from "./Notification/NotificationBell";
-import cookies from "react-cookies";
 
 const Header = () => {
     const [user, dispatch] = useContext(MyUserContext);
@@ -12,7 +11,7 @@ const Header = () => {
     const navigate = useNavigate();
 
     const handleLogout = () => {
-        dispatch({ type: "LOGOUT" }); // MyUserReducer tự xóa cookies
+        dispatch({ type: "LOGOUT" }); 
         localStorage.removeItem("user");
         localStorage.removeItem("token");
         navigate("/login");
@@ -36,13 +35,25 @@ const Header = () => {
                     </div>
 
                     {user?.role !== 'admin' && (
-                    <div className="d-none d-lg-flex align-items-center gap-4">
-                        <Link to="/" className="text-dark text-decoration-none fw-medium">Cơ sở y tế</Link>
-                        <Link to="/services" className="text-dark text-decoration-none fw-medium">Dịch vụ y tế</Link>
-                        <Link to="/health-check" className="text-dark text-decoration-none fw-medium">Khám sức khỏe</Link>
-                        <Link to="/" className="text-dark text-decoration-none fw-medium">Tin tức</Link>
-                    </div>
+                        <div className="d-none d-lg-flex align-items-center gap-4">
+                            {user?.role === 'pharmacist' ? (
+                                <Link to="/pharmacist" className="text-dark text-decoration-none fw-medium">Quản lý kho thuốc</Link>
+                            ) : user?.role === 'doctor' ? (
+                                <Link to="/doctor-schedule" className="text-dark text-decoration-none fw-medium">Lịch của bác sĩ</Link>
+                            ) : (
+                                <>
+                                    <Link to="/services" className="text-dark text-decoration-none fw-medium">Dịch vụ y tế</Link>
+                                    <Link to="/health-check" className="text-dark text-decoration-none fw-medium">Khám sức khỏe</Link>
+                                    {user?.role === 'patient' && (
+                                        <>
+                                            <Link to="/my-appointments" className="text-dark text-decoration-none fw-medium">Hẹn khám online</Link>
+                                        </>
+                                    )}
+                                </>
+                            )}
+                        </div>
                     )}
+
                     <div className="d-flex align-items-center gap-2">
                         {user ? (
                             <>

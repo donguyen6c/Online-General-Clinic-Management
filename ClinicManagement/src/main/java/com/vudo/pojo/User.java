@@ -24,6 +24,7 @@ import jakarta.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Set;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
@@ -78,6 +79,7 @@ public class User implements Serializable {
     @Size(max = 6)
     @Column(name = "gender")
     private String gender;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     @Column(name = "date_of_birth")
     @Temporal(TemporalType.DATE)
     private Date dateOfBirth;

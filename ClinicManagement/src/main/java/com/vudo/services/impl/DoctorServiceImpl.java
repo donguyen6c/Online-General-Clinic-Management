@@ -13,6 +13,7 @@ import com.vudo.pojo.User;
 import com.vudo.repositories.DoctorRepository;
 import com.vudo.services.DoctorService;
 import java.io.IOException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +21,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 /**
@@ -34,6 +36,9 @@ public class DoctorServiceImpl implements DoctorService {
 
     @Autowired
     private Cloudinary cloudinary;
+    
+    @Autowired
+    private BCryptPasswordEncoder passwordEncoder;
 
     @Override
     public Map<String, Object> getDoctors(Map<String, String> params) {
@@ -75,9 +80,7 @@ public class DoctorServiceImpl implements DoctorService {
             try {
                 Map res = this.cloudinary.uploader().upload(user.getFile().getBytes(),
                         ObjectUtils.asMap("resource_type", "auto"));
-
                 user.setAvatar(res.get("secure_url").toString());
-
             } catch (IOException ex) {
                 Logger.getLogger(DoctorServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
                 throw new RuntimeException("Lỗi khi tải ảnh đại diện lên server!");
@@ -89,12 +92,19 @@ public class DoctorServiceImpl implements DoctorService {
             if (user.getPhone() == null || !user.getPhone().matches(phoneRegex)) {
                 throw new IllegalArgumentException("Số điện thoại không hợp lệ! Vui lòng nhập đúng 9 chữ số.");
             }
-
             String emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$";
             if (user.getEmail() == null || !user.getEmail().matches(emailRegex)) {
                 throw new IllegalArgumentException("Email không đúng định dạng.");
             }
         }
+
+        if (user.getId() == null) {
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+            user.setProvider("local");
+            user.setActive(true);
+            user.setCreatedAt(new Date());
+        }
+
         this.docRepo.addOrUpdateDoctor(d);
     }
 

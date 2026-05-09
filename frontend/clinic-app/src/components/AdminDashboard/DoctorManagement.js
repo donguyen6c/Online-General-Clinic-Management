@@ -22,6 +22,7 @@ const DoctorManagement = () => {
         gender: "male",
         specialtyId: "",
         bio: "",
+        dateOfBirth: "",
         file: null
     });
 
@@ -97,6 +98,10 @@ const DoctorManagement = () => {
             gender: doctor.user.gender || "male",
             specialtyId: doctor.specialty?.id || "",
             bio: doctor.bio || "",
+            dateOfBirth: doctor.user.dateOfBirth
+            ? new Date(doctor.user.dateOfBirth).toISOString().split("T")[0]
+            : "",
+            avatarUrl: doctor.user?.avatar || "",
             file: null
         });
     } else {
@@ -126,6 +131,7 @@ const DoctorManagement = () => {
             form.append("userId.email", formData.email);
             form.append("userId.phone", formData.phone);
             form.append("userId.gender", formData.gender);
+            form.append("userId.dateOfBirth", formData.dateOfBirth);
             
             if (formData.password) form.append("userId.password", formData.password);
             if (formData.file) form.append("userId.file", formData.file); 
@@ -280,6 +286,12 @@ const DoctorManagement = () => {
                                         <option value="female">Nữ</option>
                                     </Form.Select>
                                 </Form.Group>
+                                <Form.Group className="mb-2">
+                                    <Form.Label className="small fw-bold">
+                                        Ngày sinh <span className="text-danger">*</span>
+                                    </Form.Label>
+                                    <Form.Control size="sm" type="date" value={formData.dateOfBirth} onChange={(e) => setFormData({...formData, dateOfBirth: e.target.value})} required/>
+                                </Form.Group>
                             </div>
 
                             <div className="col-md-6 ps-3">
@@ -305,8 +317,13 @@ const DoctorManagement = () => {
                                     <Form.Control size="sm" as="textarea" rows={4} value={formData.bio} onChange={(e) => setFormData({...formData, bio: e.target.value})} />
                                 </Form.Group>
                                 <Form.Group className="mb-3">
-                                    <Form.Label className="small fw-bold">Ảnh đại diện{(!formData.id) && <span className="text-danger">*</span>}</Form.Label>
-                                    <Form.Control size="sm" type="file" ref={fileInputRef} onChange={handleFileChange} accept="image/*" required={!formData.id} />
+                                <Form.Label className="small fw-bold">Ảnh đại diện{(!formData.id) && <span className="text-danger">*</span>}</Form.Label>
+                                {formData.id && formData.avatarUrl && (
+                                    <div className="mb-2">
+                                        <img src={formData.avatarUrl} alt="avatar hiện tại" width="70" height="70" className="rounded-circle shadow-sm mb-1" style={{ objectFit: 'cover' }}/>
+                                    </div>
+                                )}
+                                <Form.Control size="sm" type="file" ref={fileInputRef} onChange={handleFileChange} accept="image/*" required={!formData.id}/>
                                 </Form.Group>
                             </div>
                         </div>

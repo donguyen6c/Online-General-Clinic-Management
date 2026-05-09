@@ -9,6 +9,7 @@ const profileFields = [
     { field: "fullName", label: "Họ và Tên",      type: "text"  },
     { field: "email",    label: "Email",            type: "email" },
     { field: "phone",    label: "Số điện thoại",    type: "tel"   },
+    { field: "dateOfBirth", label: "Ngày sinh",         type: "date"  }
 ];
 
 const Profile = () => {
@@ -22,6 +23,9 @@ const Profile = () => {
         email:    user?.email    || "",
         phone:    user?.phone    || "",
         gender:   user?.gender   || "",
+        dateOfBirth: user?.dateOfBirth
+        ? new Date(user.dateOfBirth).toISOString().split("T")[0]
+        : "", 
     });
     const [avatarPreview, setAvatarPreview] = useState(null);
     const [loading,       setLoading]       = useState(false);
@@ -46,6 +50,9 @@ const Profile = () => {
             email:    user?.email    || "",
             phone:    user?.phone    || "",
             gender:   user?.gender   || "",
+            dateOfBirth: user?.dateOfBirth
+            ? new Date(user.dateOfBirth).toISOString().split("T")[0]
+            : "",
         });
         setAvatarPreview(null);
         setIsEditing(false);
@@ -135,7 +142,11 @@ const Profile = () => {
                                         {profileFields.map(f => (
                                             <tr key={f.field}>
                                                 <th>{f.label}:</th>
-                                                <td>{user[f.field]}</td>
+                                                <td>
+                                                    {f.field === "dateOfBirth" && user[f.field]
+                                                        ? new Date(user[f.field]).toLocaleDateString("vi-VN")
+                                                        : user[f.field]}
+                                                </td>
                                             </tr>
                                         ))}
                                         <tr>

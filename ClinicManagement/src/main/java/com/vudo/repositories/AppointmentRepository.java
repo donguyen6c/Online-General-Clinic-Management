@@ -14,9 +14,9 @@ import java.util.List;
  */
 public interface AppointmentRepository {
     List<Appointment> getByDoctorIdAndDate(int doctorId, LocalDate appointmentDate);
-    List<Appointment> getAppointmentsByPatientId(int patientId);
+    List<Appointment> getAppointmentsByPatientId(int patientId, int page);
     Appointment add(Appointment appointment);
     Appointment getById(int id);
-    List<Appointment> getAppointmentsByDoctorId(int doctorId);
+    List<Appointment> getAppointmentsByDoctorId(int doctorId, int page);
     Appointment cancel(Appointment appointment);
 }

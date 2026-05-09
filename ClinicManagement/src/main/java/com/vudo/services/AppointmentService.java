@@ -15,8 +15,8 @@ import java.util.List;
  */
 public interface AppointmentService {
     AvailableSlotsResponseDTO getSlots(int doctorId, String date);
-    List<AppointmentResponseDTO> getPatientAppointments(int patientId);
+    List<AppointmentResponseDTO> getPatientAppointments(int patientId, int page);
     AppointmentResponseDTO createAppointment(int doctorId, AppointmentRequestDTO request);
-    List<AppointmentResponseDTO> getDoctorAppointments();
+    List<AppointmentResponseDTO> getDoctorAppointments(int page);
     AppointmentResponseDTO cancelAppointment(int appointmentId);
 }

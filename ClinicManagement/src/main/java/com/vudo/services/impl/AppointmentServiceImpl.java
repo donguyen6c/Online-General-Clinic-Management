@@ -135,11 +135,9 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
     @Override
-    @Transactional
-    public List<AppointmentResponseDTO> getPatientAppointments(int patientId) {
-        List<Appointment> appointments = appointmentRepo.getAppointmentsByPatientId(patientId);
-        return appointments.stream().map(appointment -> AppointmentMapper.toDTO(appointment))
-                .collect(Collectors.toList());
+    public List<AppointmentResponseDTO> getPatientAppointments(int patientId, int page) {
+        List<Appointment> appointments = appointmentRepo.getAppointmentsByPatientId(patientId, page);
+        return appointments.stream().map(AppointmentMapper::toDTO).collect(Collectors.toList());
     }
 
     @Override
@@ -174,30 +172,14 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
     @Override
-    @Transactional
-    public List<AppointmentResponseDTO> getDoctorAppointments() {
+    public List<AppointmentResponseDTO> getDoctorAppointments(int page) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         User currentUser = userRepo.getUserByUsername(username);
-
-        if (currentUser == null) {
-            throw new RuntimeException("Không tìm thấy thông tin người dùng");
-        }
-
-        // 2. Tìm thông tin Doctor tương ứng với User này
-        // Lưu ý: Bạn cần chắc chắn trong DoctorRepository có hàm getDoctorByUserId()
+        if (currentUser == null) throw new RuntimeException("Không tìm thấy thông tin người dùng");
         Doctor doctor = doctorRepo.getDoctorByUserId(currentUser.getId());
-        if (doctor == null) {
-            throw new RuntimeException("Tài khoản này không phải là bác sĩ");
-        }
-
-        // 3. Lấy danh sách lịch hẹn của bác sĩ
-        // Lưu ý: Bạn cần chắc chắn trong AppointmentRepository có hàm getAppointmentsByDoctorId()
-        List<Appointment> appointments = appointmentRepo.getAppointmentsByDoctorId(doctor.getId());
-
-        // 4. Chuyển đổi sang DTO và trả về
-        return appointments.stream()
-                .map(AppointmentMapper::toDTO)
-                .collect(Collectors.toList());
+        if (doctor == null) throw new RuntimeException("Tài khoản này không phải là bác sĩ");
+        List<Appointment> appointments = appointmentRepo.getAppointmentsByDoctorId(doctor.getId(), page);
+        return appointments.stream().map(AppointmentMapper::toDTO).collect(Collectors.toList());
     }
 
     @Override

@@ -21,6 +21,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -41,17 +42,12 @@ public class ApiPatientController {
     
     @GetMapping("/current-user/appointments")
     @PreAuthorize("hasAuthority('patient')")
-    public ResponseEntity<List<AppointmentResponseDTO>> getCurrentUserAppointments(Principal principal) {
-        String username = principal.getName();
-        UserDTO currentUser = userService.getUserByUsername(username);
-        int patientId = currentUser.getId();
-        
-        List<AppointmentResponseDTO> appointments = appointmentService.getPatientAppointments(patientId);  
-        if (appointments == null || appointments.isEmpty()) {
-            return new ResponseEntity<>(new ArrayList<>(), HttpStatus.OK);
-        }
-        
-        return new ResponseEntity<>(appointments, HttpStatus.OK);
+    public ResponseEntity<List<AppointmentResponseDTO>> getCurrentUserAppointments(
+            Principal principal,
+            @RequestParam(value = "page", defaultValue = "1") int page) {
+        int patientId = userService.getUserByUsername(principal.getName()).getId();
+        List<AppointmentResponseDTO> appointments = appointmentService.getPatientAppointments(patientId, page);
+        return new ResponseEntity<>(appointments == null ? new ArrayList<>() : appointments, HttpStatus.OK);
     }
     
     @GetMapping("/current-user/medical-records")

@@ -2,25 +2,34 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Apis, { endpoints } from "../../configs/Apis";
 import MySpinner from "../../components/MySpinner";
+import cookies from "react-cookies";
 
 const DoctorSchedule = () => {
-    const [appointments, setAppointments] = useState([]);
+    const PAGE_SIZE = 4;
+    const [schedules, setSchedules] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [page, setPage] = useState(1);
+    const [hasMore, setHasMore] = useState(true);
     const navigate = useNavigate();
 
     useEffect(() => {
         const loadSchedule = async () => {
             try {
-                // 1. Lấy token xác thực từ localStorage
-                const token = localStorage.getItem("token") || localStorage.getItem("access_token");
-
-                // 2. Gửi request kèm header Authorization
-                const res = await Apis.get(endpoints['doctor-appointments'], {
-                    headers: {
-                        "Authorization": `Bearer ${token}`
-                    }
+                const token = cookies.load("token");
+                const res = await Apis.get(endpoints['doctor-schedule'], {
+                    headers: { "Authorization": `Bearer ${token}` },
+                    params: { page }
                 });
-                setAppointments(res.data);
+                const newData = res.data || [];
+                if (page === 1) {
+                    setSchedules(newData);
+                } else {
+                    setSchedules(prev => {
+                        const existingIds = new Set(prev.map(a => a.id));
+                        return [...prev, ...newData.filter(a => !existingIds.has(a.id))];
+                    });
+                }
+                setHasMore(newData.length === PAGE_SIZE);
             } catch (error) {
                 console.error("Lỗi tải lịch khám:", error);
             } finally {
@@ -28,62 +37,64 @@ const DoctorSchedule = () => {
             }
         };
         loadSchedule();
-    }, []);
+    }, [page]);
 
-    // 3. Logic kiểm tra thời gian khớp với định dạng DTO (date, time)
     const checkReadyToJoin = (dateStr, timeString, status) => {
         if (status !== 'scheduled') return false;
-        
-        // Cắt chuỗi "08:00 - 08:30" lấy "08:00"
-        const startTime = timeString.split(" - ")[0].trim(); 
-        
+        const startTime = timeString.split(" - ")[0].trim();
         const now = new Date();
         const appointmentTime = new Date(`${dateStr}T${startTime}:00`);
         const diffInMinutes = (appointmentTime - now) / 1000 / 60;
-        
-        // Cho phép vào trước 15 phút và trễ tối đa 60 phút
-        return diffInMinutes <= 15 && diffInMinutes >= -60; 
+        return diffInMinutes <= 15 && diffInMinutes >= -60;
     };
 
-    if (loading) return <MySpinner />;
+    if (loading && page === 1) return <MySpinner />;
 
     return (
         <div className="container py-4">
             <h2 className="text-center mb-4">Lịch Khám Của Bác Sĩ</h2>
-            
-            {appointments.length === 0 ? (
+
+            {schedules.length === 0 ? (
                 <div className="alert alert-info text-center">Hôm nay không có lịch khám nào.</div>
             ) : (
-                <div className="row">
-                    {appointments.map(appt => (
-                        <div className="col-md-6 mb-4" key={appt.id}>
-                            <div className="card shadow-sm h-100 border-primary">
-                                <div className="card-body">
-                                    {/* 4. Sử dụng tên trường từ DTO: patientName, date, time */}
-                                    <h5 className="card-title text-danger">
-                                        Bệnh nhân: {appt.patientName}
-                                    </h5>
-                                    <p className="mb-1"><strong>Lý do khám:</strong> {appt.reason || "Không ghi rõ"}</p>
-                                    <p className="mb-1"><strong>Ngày:</strong> {appt.date}</p>
-                                    <p className="mb-3"><strong>Giờ:</strong> {appt.time}</p>
-                                    
-                                    {checkReadyToJoin(appt.date, appt.time, appt.status) ? (
-                                        <button 
-                                            className="btn btn-primary w-100 fw-bold"
-                                            onClick={() => navigate(`/video-call/${appt.id}`)}
-                                        >
-                                            🎥 Gọi bệnh nhân vào phòng
-                                        </button>
-                                    ) : (
-                                        <button className="btn btn-secondary w-100" disabled>
-                                            {appt.status === 'completed' ? 'Đã hoàn thành' : 'Chưa đến giờ'}
-                                        </button>
-                                    )}
+                <>
+                    <div className="row">
+                        {schedules.map(appt => (
+                            <div className="col-md-6 mb-4" key={appt.id}>
+                                <div className="card shadow-sm h-100 border-primary">
+                                    <div className="card-body">
+                                        <h5 className="card-title text-danger">Bệnh nhân: {appt.patientName}</h5>
+                                        <p className="mb-1"><strong>Lý do khám:</strong> {appt.reason || "Không ghi rõ"}</p>
+                                        <p className="mb-1"><strong>Ngày:</strong> {appt.date}</p>
+                                        <p className="mb-3"><strong>Giờ:</strong> {appt.time}</p>
+
+                                        {checkReadyToJoin(appt.date, appt.time, appt.status) ? (
+                                            <button className="btn btn-primary w-100 fw-bold" onClick={() => navigate(`/video-call/${appt.id}`)}>
+                                                Gọi bệnh nhân vào phòng
+                                            </button>
+                                        ) : (
+                                            <button className="btn btn-secondary w-100" disabled>
+                                                {appt.status === 'completed' ? 'Đã hoàn thành' : 'Chưa đến giờ'}
+                                            </button>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
+                        ))}
+                    </div>
+
+                    {hasMore && (
+                        <div className="text-center mt-2">
+                            <button
+                                className="btn btn-outline-primary px-4"
+                                onClick={() => setPage(prev => prev + 1)}
+                                disabled={loading}
+                            >
+                                {loading ? "Đang tải..." : "Xem thêm"}
+                            </button>
                         </div>
-                    ))}
-                </div>
+                    )}
+                </>
             )}
         </div>
     );

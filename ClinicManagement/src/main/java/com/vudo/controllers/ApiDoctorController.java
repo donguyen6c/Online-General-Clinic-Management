@@ -51,11 +51,11 @@ public class ApiDoctorController {
         return new ResponseEntity<>(d, HttpStatus.OK);
     }
     
-    @GetMapping("/doctor-schedule")
-    public ResponseEntity<?> getMySchedule() {
+    @GetMapping("/secure/doctor-schedule")
+    @PreAuthorize("hasAuthority('doctor')")
+    public ResponseEntity<?> getMySchedule(@RequestParam(value = "page", defaultValue = "1") int page) {
         try {
-            List<AppointmentResponseDTO> schedule = appointmentService.getDoctorAppointments();
-            return ResponseEntity.ok(schedule);
+            return ResponseEntity.ok(appointmentService.getDoctorAppointments(page));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

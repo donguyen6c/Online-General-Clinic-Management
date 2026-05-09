@@ -1,15 +1,7 @@
 import Apis, { endpoints } from "../../configs/Apis";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import {
-    Container,
-    Row,
-    Col,
-    Card,
-    Form,
-    Button,
-    Alert
-} from "react-bootstrap";
+import {Container, Row, Col, Card, Form, Button, Alert} from "react-bootstrap";
 import MySpinner from "../../components/MySpinner";
 
 const Booking = () => {

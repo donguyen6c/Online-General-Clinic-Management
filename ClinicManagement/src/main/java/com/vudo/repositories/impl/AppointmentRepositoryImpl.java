@@ -14,6 +14,7 @@ import java.util.List;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +29,9 @@ public class AppointmentRepositoryImpl implements AppointmentRepository {
 
     @Autowired
     private LocalSessionFactoryBean factory;
+    
+    @Autowired
+    private Environment env;
 
     @Override
     public List<Appointment> getByDoctorIdAndDate(int doctorId, LocalDate appointmentDate) {
@@ -48,18 +52,19 @@ public class AppointmentRepositoryImpl implements AppointmentRepository {
     }
 
     @Override
-    public List<Appointment> getAppointmentsByPatientId(int patientId) {
-        Session session = this.factory.getObject().getCurrentSession();
-        CriteriaBuilder cb = session.getCriteriaBuilder();
-        CriteriaQuery<Appointment> cq = cb.createQuery(Appointment.class);
-        Root<Appointment> root = cq.from(Appointment.class);
-
-        cq.where(cb.equal(root.get("patientId").get("id"), patientId));
-
-        cq.orderBy(cb.desc(root.get("appointmentDate")), cb.desc(root.get("startTime")));
-
-        Query<Appointment> query = session.createQuery(cq);
-        return query.getResultList();
+    public List<Appointment> getAppointmentsByPatientId(int patientId, int page) {
+    Session session = this.factory.getObject().getCurrentSession();
+    CriteriaBuilder cb = session.getCriteriaBuilder();
+    CriteriaQuery<Appointment> cq = cb.createQuery(Appointment.class);
+    Root<Appointment> root = cq.from(Appointment.class);
+    cq.where(cb.equal(root.get("patientId").get("id"), patientId));
+    cq.orderBy(cb.desc(root.get("appointmentDate")), cb.desc(root.get("startTime")));
+    
+    Query<Appointment> query = session.createQuery(cq);
+    int pageSize = this.env.getProperty("appointments.page_size", Integer.class);
+    query.setFirstResult((page - 1) * pageSize);
+    query.setMaxResults(pageSize);
+    return query.getResultList();
     }
 
     @Override
@@ -76,16 +81,20 @@ public class AppointmentRepositoryImpl implements AppointmentRepository {
     }
 
     @Override
-    public List<Appointment> getAppointmentsByDoctorId(int doctorId) {
+    public List<Appointment> getAppointmentsByDoctorId(int doctorId, int page) {
         Session session = this.factory.getObject().getCurrentSession();
         CriteriaBuilder cb = session.getCriteriaBuilder();
         CriteriaQuery<Appointment> cq = cb.createQuery(Appointment.class);
         Root<Appointment> root = cq.from(Appointment.class);
+        cq.select(root)
+          .where(cb.equal(root.get("doctorId").get("id"), doctorId))
+          .orderBy(cb.asc(root.get("appointmentDate")), cb.asc(root.get("startTime")));
 
-        cq.select(root).where(cb.equal(root.get("doctorId").get("id"), doctorId))
-                .orderBy(cb.asc(root.get("appointmentDate")), cb.asc(root.get("startTime")));
-
-        return session.createQuery(cq).getResultList();
+        Query<Appointment> query = session.createQuery(cq);
+        int pageSize = this.env.getProperty("appointments.page_size", Integer.class);
+        query.setFirstResult((page - 1) * pageSize);
+        query.setMaxResults(pageSize);
+        return query.getResultList();
     }
 
     @Override

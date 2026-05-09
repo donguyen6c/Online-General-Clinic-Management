@@ -12,6 +12,7 @@ import com.vudo.pojo.User;
 import com.vudo.repositories.UserRepository;
 import com.vudo.services.UserService;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -25,6 +26,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  *
@@ -53,6 +57,27 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDTO addUser(Map<String, String> params, MultipartFile avatar) {
         User u = new User();
+
+        String phoneRegex = "^\\d{9}$";
+        if (params.get("phone") == null || !params.get("phone").matches(phoneRegex))
+            throw new IllegalArgumentException("Số điện thoại không hợp lệ! Vui lòng nhập đúng 9 chữ số.");
+
+        String emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$";
+        if (params.get("email") == null || !params.get("email").matches(emailRegex))
+            throw new IllegalArgumentException("Email không đúng định dạng.");
+
+        if (params.get("fullName") == null || params.get("fullName").isBlank())
+            throw new IllegalArgumentException("Họ và tên không được để trống.");
+
+        if (params.get("username") == null || params.get("username").isBlank())
+            throw new IllegalArgumentException("Tên đăng nhập không được để trống.");
+
+        if (params.get("password") == null || params.get("password").length() < 6)
+            throw new IllegalArgumentException("Mật khẩu phải có ít nhất 6 ký tự.");
+
+        if (this.userRepo.getUserByUsername(params.get("username")) != null)
+            throw new IllegalArgumentException("Tên đăng nhập đã tồn tại.");
+
         u.setFullName(params.get("fullName"));
         u.setEmail(params.get("email"));
         u.setPhone(params.get("phone"));
@@ -61,8 +86,10 @@ public class UserServiceImpl implements UserService {
         u.setPassword(passwordEncoder.encode(params.get("password")));
         u.setRole("patient");
         u.setProvider("local");
+        u.setActive(true);
+        u.setCreatedAt(new Date());
 
-        if (!avatar.isEmpty()) {
+        if (avatar != null && !avatar.isEmpty()) {
             try {
                 Map res = this.cloudinary.uploader().upload(avatar.getBytes(),
                         ObjectUtils.asMap("resource_type", "auto"));
@@ -71,6 +98,7 @@ public class UserServiceImpl implements UserService {
                 Logger.getLogger(UserServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+
         return UserMapper.toDTO(this.userRepo.addUser(u));
     }
 
@@ -105,6 +133,15 @@ public class UserServiceImpl implements UserService {
         if (params.get("phone")    != null) u.setPhone(params.get("phone"));
         if (params.get("gender")   != null) u.setGender(params.get("gender"));
 
+        if (params.get("dateOfBirth") != null) {
+            try {
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                u.setDateOfBirth(sdf.parse(params.get("dateOfBirth")));
+            } catch (ParseException ex) {
+                Logger.getLogger(UserServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        
         if (avatar != null && !avatar.isEmpty()) {
             try {
                 Map res = this.cloudinary.uploader().upload(avatar.getBytes(),

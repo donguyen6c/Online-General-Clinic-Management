@@ -5,9 +5,7 @@ import Register from "./screens/User/Register";
 import Profile from "./screens/User/Profile";
 import Header from "./components/Header"
 import Footer from "./components/Footer"
-import Patient from "./screens/Home/HealthCheck";
 import Pharmacist from "./screens/Pharmacist/Pharmacist";
-import Doctor from "./screens/Admin/Doctors/UpdateDoctor";
 import AdminDashboard from "./screens/Admin/AdminDashboard/AdminDashboard";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import VideoCallPage from "./screens/VideoCall/VideoCallPage";
@@ -22,6 +20,7 @@ import { useReducer } from "react";
 import cookies from "react-cookies";
 import { MyUserContext } from "./configs/Contexts";
 import MyUserReducer from "./reducers/MyUserReducer";
+import Doctor from "./screens/Doctor/Doctor"
 
 const App = () => {
   const [user, dispatch] = useReducer(MyUserReducer, cookies.load("user") || null);
@@ -46,6 +45,7 @@ const App = () => {
         <Route element={<ProtectedRoute roles={'patient'} />}>
             <Route path="/doctors/:doctorId/booking" element={<Booking />} />
             <Route path="/appointments" element={<Appointments />} />
+            <Route path="/my-appointments" element={<MyAppointments />} />
         </Route>
 
         <Route element={<ProtectedRoute roles={'pharmacist'} />}>
@@ -54,11 +54,11 @@ const App = () => {
 
         <Route element={<ProtectedRoute roles={'doctor'} />}>
             <Route path="/doctor" element={<Doctor />} />
+            <Route path="/doctor-schedule" element={<DoctorSchedule />} />
         </Route>
 
         <Route element={<ProtectedRoute roles={'admin'} />}>
             <Route path="/admin" element={<AdminDashboard />} />
-            <Route path="/admin-doctors" element={<Doctor />} />
         </Route>
 
         <Route element={<ProtectedRoute/>}>
@@ -66,11 +66,10 @@ const App = () => {
         </Route>
         
         <Route element={<ProtectedRoute/>}>
-            <Route path="/my-appointments" element={<MyAppointments />} />
+            
         </Route>
 
         <Route element={<ProtectedRoute/>}>
-            <Route path="/doctor-schedule" element={<DoctorSchedule />} />
         </Route>
 
       </Routes>

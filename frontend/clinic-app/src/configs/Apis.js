@@ -50,7 +50,12 @@ export const endpoints = {
     'unread-notification-count': '/secure/notifications/unread-count',
 
     'appointments': '/secure/patients/current-user/appointments',
-    'cancel-appointments': ap_id => `/secure/appointments/${ap_id}`
+    'cancel-appointments': ap_id => `/secure/appointments/${ap_id}`,
+
+    'medical-records': '/secure/medical-records',
+    'medical-record-prescriptions': (medicalRecordId) => `/secure/medical-records/${medicalRecordId}/prescriptions`,
+    'medical-record-services': (medicalRecordId) => `/secure/medical-records/${medicalRecordId}/services`,
+    'appointments-doctor': '/secure/doctor-schedule',
 }
 
 const Apis = axios.create({

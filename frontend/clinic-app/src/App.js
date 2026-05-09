@@ -21,6 +21,7 @@ import cookies from "react-cookies";
 import { MyUserContext } from "./configs/Contexts";
 import MyUserReducer from "./reducers/MyUserReducer";
 import Doctor from "./screens/Doctor/Doctor"
+import MedicalRecord from "./screens/Doctor/MedicalRecord";
 
 const App = () => {
   const [user, dispatch] = useReducer(MyUserReducer, cookies.load("user") || null);
@@ -55,6 +56,9 @@ const App = () => {
         <Route element={<ProtectedRoute roles={'doctor'} />}>
             <Route path="/doctor" element={<Doctor />} />
             <Route path="/doctor-schedule" element={<DoctorSchedule />} />
+        </Route>
+        <Route element={<ProtectedRoute/>}>
+            <Route path="/medical-record" element={<MedicalRecord />} />
         </Route>
 
         <Route element={<ProtectedRoute roles={'admin'} />}>

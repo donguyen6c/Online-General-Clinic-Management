@@ -71,15 +71,13 @@ const MyAppointments = () => {
                                         <p className="mb-3"><strong>Giờ:</strong> {appt.time}</p>
 
                                         {checkReadyToJoin(appt.date, appt.time, appt.status) ? (
-                                            <button
-                                                className="btn btn-success w-100 fw-bold"
-                                                onClick={() => navigate(`/video-call/${appt.id}`)}
-                                            >
-                                                Vào phòng khám trực tuyến
+                                            <button className="btn btn-success w-100 fw-bold" onClick={() => navigate(`/video-call/${appt.id}`)}>
+                                                Vào phòng khám
                                             </button>
                                         ) : (
-                                            <button className="btn btn-secondary w-100" disabled>
-                                                {appt.status === 'completed' ? 'Đã hoàn thành' : 'Chưa đến giờ khám'}
+                                            <button
+                                            className={`btn w-100 ${ appt.status === "completed" ? "btn-success" : "btn-warning"}`} disabled >
+                                            {appt.status === "completed" ? "Đã hoàn thành" : "Chưa đến giờ"}
                                             </button>
                                         )}
                                     </div>

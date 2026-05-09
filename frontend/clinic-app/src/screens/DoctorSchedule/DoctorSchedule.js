@@ -63,19 +63,21 @@ const DoctorSchedule = () => {
                             <div className="col-md-6 mb-4" key={appt.id}>
                                 <div className="card shadow-sm h-100 border-primary">
                                     <div className="card-body">
-                                        <h5 className="card-title text-danger">Bệnh nhân: {appt.patientName}</h5>
+                                        <h5 className="card-title text-danger">Tư vấn khám bệnh</h5>
+                                        <p className="mb-1"><strong>Mã cuộc hẹn:</strong> {appt.id}</p>
                                         <p className="mb-1"><strong>Lý do khám:</strong> {appt.reason || "Không ghi rõ"}</p>
                                         <p className="mb-1"><strong>Ngày:</strong> {appt.date}</p>
                                         <p className="mb-3"><strong>Giờ:</strong> {appt.time}</p>
 
                                         {checkReadyToJoin(appt.date, appt.time, appt.status) ? (
                                             <button className="btn btn-primary w-100 fw-bold" onClick={() => navigate(`/video-call/${appt.id}`)}>
-                                                Gọi bệnh nhân vào phòng
+                                                Vào phòng khám
                                             </button>
                                         ) : (
-                                            <button className="btn btn-secondary w-100" disabled>
-                                                {appt.status === 'completed' ? 'Đã hoàn thành' : 'Chưa đến giờ'}
-                                            </button>
+                                        <button
+                                        className={`btn w-100 ${ appt.status === "completed" ? "btn-success" : "btn-warning"}`} disabled >
+                                        {appt.status === "completed" ? "Đã hoàn thành" : "Chưa đến giờ"}
+                                        </button>
                                         )}
                                     </div>
                                 </div>

@@ -89,8 +89,17 @@ public class MedicalRecordMapper {
         dto.setServices(serviceDTOs);
         Set<Payment> payments = record.getPaymentSet();
         if (payments != null && !payments.isEmpty()) {
-            Payment payment = payments.iterator().next();
-            dto.setPaymentStatus(payment.getStatus());
+            Payment latest = null;
+            for (Payment p : payments) {
+                if ("paid".equals(p.getStatus())) {
+                    latest = p;
+                    break;
+                }
+                if (latest == null || (p.getCreatedAt() != null && p.getCreatedAt().after(latest.getCreatedAt()))) {
+                    latest = p;
+                }
+            }
+            dto.setPaymentStatus(latest.getStatus());
         } else {
             dto.setPaymentStatus("pending");
         }

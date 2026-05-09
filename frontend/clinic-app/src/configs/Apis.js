@@ -62,9 +62,7 @@ export const endpoints = {
     'current-user-medical-records': '/secure/patients/current-user/medical-records', 
     'patient-medical-records': (patientId) => `/secure/${patientId}/medical-records`,
     'appointments-doctor': '/secure/doctor-schedule',
-    'current-user-medical-records': '/secure/current-user/medical-records', 
-
-    'medical-record-detail':(medicalRecordId) =>`/secure/patients/current-user/medical-records/${medicalRecordId}`, 
+    'medical-record-payment':(medicalRecordId) =>`/secure/patients/current-user/medical-records/${medicalRecordId}`, 
     'create-payment':'/secure/payments/vnpay/create',
 }
 

@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+import com.vudo.pojo.Payment;
 
 /**
  *
@@ -86,6 +87,13 @@ public class MedicalRecordMapper {
             }
         }
         dto.setServices(serviceDTOs);
+        Set<Payment> payments = record.getPaymentSet();
+        if (payments != null && !payments.isEmpty()) {
+            Payment payment = payments.iterator().next();
+            dto.setPaymentStatus(payment.getStatus());
+        } else {
+            dto.setPaymentStatus("pending");
+        }
 
         return dto;
     }

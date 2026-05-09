@@ -13,7 +13,7 @@ const Payment = () => {
     const [error, setError] = useState("");
 
     useEffect(() => {
-        Apis.get(endpoints["medical-record-detail"](recordId))
+        Apis.get(endpoints["medical-record-payment"](recordId))
             .then(res => setRecord(res.data))
             .catch(err => {
                 console.error(err);

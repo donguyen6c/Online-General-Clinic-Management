@@ -172,10 +172,18 @@ const Payment = () => {
                             <Button
                                 variant="success"
                                 className="w-100"
-                                disabled={paying || totalAmount <= 0}
+                                disabled={
+                                    paying ||
+                                    totalAmount <= 0 ||
+                                    record.paymentStatus === "paid"
+                                }
                                 onClick={handlePayment}
                             >
-                                {paying ? "Đang xử lý..." : "Thanh toán VNPay"}
+                                {record.paymentStatus === "paid"
+                                    ? "Đã thanh toán"
+                                    : paying
+                                        ? "Đang xử lý..."
+                                        : "Thanh toán VNPay"}
                             </Button>
                         </Card.Body>
                     </Card>

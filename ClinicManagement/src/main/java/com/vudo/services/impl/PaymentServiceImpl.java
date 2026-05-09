@@ -13,8 +13,10 @@ import com.vudo.pojo.MedicalRecord;
 import com.vudo.pojo.MedicalRecordService;
 import com.vudo.pojo.Payment;
 import com.vudo.pojo.PrescribedMedicine;
+import com.vudo.pojo.User;
 import com.vudo.repositories.MedicalRecordRepository;
 import com.vudo.repositories.PaymentRepository;
+import com.vudo.services.NotificationService;
 import com.vudo.services.PaymentService;
 import com.vudo.utils.VNPayUtils;
 import java.math.BigDecimal;
@@ -41,6 +43,9 @@ public class PaymentServiceImpl implements PaymentService {
     private MedicalRecordRepository medicalRecordRepo;
     @Autowired
     private PaymentRepository paymentRepo;
+    
+    @Autowired
+    private NotificationService notificationService;
 
     @Override
     @Transactional
@@ -122,11 +127,15 @@ public class PaymentServiceImpl implements PaymentService {
 
         if ("00".equals(responseCode)) {
             payment.setStatus("paid");
+            MedicalRecord mr = payment.getMedicalRecordId();
+            User patient = mr.getPatientId(); 
+            String currentTime = new java.util.Date().toString();
+            notificationService.createPaymentNotification(patient, mr, currentTime);
         } else {
             payment.setStatus("failed");
         }
         paymentRepo.update(payment);
-
+        
         return Map.of("status", payment.getStatus(), "paymentCode", txRef, "responseCode", responseCode);
     }
 

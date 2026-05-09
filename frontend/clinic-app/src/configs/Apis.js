@@ -60,6 +60,9 @@ export const endpoints = {
     'medical-record-services': (medicalRecordId) => `/secure/medical-records/${medicalRecordId}/services`,
     'appointments-doctor': '/secure/doctor-schedule',
     'current-user-medical-records': '/secure/current-user/medical-records', 
+
+    'medical-record-detail':(medicalRecordId) =>`/secure/patients/current-user/medical-records/${medicalRecordId}`, 
+    'create-payment':'/secure/payments/vnpay/create',
 }
 
 const Apis = axios.create({

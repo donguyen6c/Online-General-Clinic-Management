@@ -84,8 +84,21 @@ public class NotificationServiceImpl implements NotificationService{
     public void createMedicalRecordNotification(User user, MedicalRecord id, String time) {
         Notification n = new Notification();
         n.setTitle("Đã xong Hồ Sơ Bệnh Án");
-        n.setMessage("Hồ sơ bệnh án #" + id.getId() + " đã xong lúc " + time + ". Vui lòng đến quầythuốc.");
+        n.setMessage("Hồ sơ bệnh án #" + id.getId() + " đã xong lúc " + time + ". Vui lòng đến quầy thuốc.");
         n.setType("MEDICAL-RECORD"); 
+        n.setIsRead(false);
+        n.setCreatedAt(new Date());
+        n.setUserId(user);
+
+        notificationRepository.add(n);
+    }
+
+    @Override
+    public void createPaymentNotification(User user, MedicalRecord id, String time) {
+        Notification n = new Notification();
+        n.setTitle("Thanh toán thành công");
+        n.setMessage("Hồ sơ bệnh án #" + id.getId() + " đã thanh toán xong lúc " + time + ".");
+        n.setType("PAYMENT"); 
         n.setIsRead(false);
         n.setCreatedAt(new Date());
         n.setUserId(user);

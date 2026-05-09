@@ -5,6 +5,7 @@
 package com.vudo.services;
 
 import com.vudo.dto.UserDTO;
+import java.util.List;
 import java.util.Map;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.multipart.MultipartFile;
@@ -18,4 +19,5 @@ public interface UserService extends UserDetailsService{
     UserDTO addUser(Map<String, String> params, MultipartFile avatar);
     boolean authenticate(String username, String password);
     UserDTO updateProfile(String username, Map<String, String> params, MultipartFile avatar);
+    List<UserDTO> searchPatients(String keyword);
 }

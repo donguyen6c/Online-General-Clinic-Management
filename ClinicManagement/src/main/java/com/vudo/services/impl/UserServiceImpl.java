@@ -29,6 +29,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -154,6 +156,11 @@ public class UserServiceImpl implements UserService {
 
         this.userRepo.updateUser(u);
         return UserMapper.toDTO(u);
+    }
+    
+    @Override
+    public List<UserDTO> searchPatients(String keyword) {
+        return userRepo.searchByKeyword(keyword).stream() .map(UserMapper::toDTO).collect(Collectors.toList());
     }
 
 }

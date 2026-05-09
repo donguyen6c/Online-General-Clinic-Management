@@ -5,6 +5,7 @@
 package com.vudo.repositories;
 
 import com.vudo.pojo.User;
+import java.util.List;
 
 /**
  *
@@ -16,4 +17,5 @@ public interface UserRepository {
     boolean authenticate(String username, String password);
     User getUserById(int id);
     void updateUser(User u);
+    List<User> searchByKeyword(String keyword);
 }

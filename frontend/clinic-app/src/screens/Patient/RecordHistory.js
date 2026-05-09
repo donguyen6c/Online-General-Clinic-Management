@@ -22,12 +22,8 @@ const RecordHistory = () => {
             return <span className="badge bg-success">Đã thanh toán</span>;
         }
         return (
-            <button
-                className="badge bg-warning text-dark border-0"
-                style={{ cursor: "pointer" }}
-                onClick={() => navigate(`/payment/${record.recordId}`)}
-            >
-                {record.paymentStatus === "failed" ? "Thanh toán thất bại" : "Chưa thanh toán"}
+            <button className={`badge border-0 ${ record.paymentStatus === "failed" ? "bg-danger": "bg-warning text-dark" }`}  onClick={() => navigate(`/payment/${record.recordId}`)}>
+                {record.paymentStatus === "failed"? "Thanh toán thất bại" : "Chưa thanh toán"}
             </button>
         );
     };

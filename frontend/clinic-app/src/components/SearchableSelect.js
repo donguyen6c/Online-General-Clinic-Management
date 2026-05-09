@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import Apis from "../configs/Apis";
 
-const SearchableSelect = ({ endpoint, onChange, placeholder = "Tìm kiếm..." }) => {
+const SearchableSelect = ({ endpoint, onChange, placeholder = "Tìm kiếm...", labelKey = "name" }) => {
     const [query, setQuery] = useState("");
     const [options, setOptions] = useState([]);
     const [open, setOpen] = useState(false);
@@ -43,8 +43,8 @@ const SearchableSelect = ({ endpoint, onChange, placeholder = "Tìm kiếm..." }
                         <li key={item.id}
                             className="list-group-item list-group-item-action"
                             style={{ cursor: "pointer" }}
-                            onMouseDown={() => { onChange(item); setQuery(item.name); setOpen(false); }}>
-                            {item.name}
+                            onMouseDown={() => { onChange(item); setQuery(item[labelKey]); setOpen(false); }}>
+                            {item[labelKey]}  {item.id ? `(ID: ${item.id})` : ""}
                         </li>
                     ))}
                 </ul>

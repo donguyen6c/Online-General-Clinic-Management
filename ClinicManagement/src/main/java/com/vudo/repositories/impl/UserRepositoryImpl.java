@@ -6,6 +6,10 @@ package com.vudo.repositories.impl;
 
 import com.vudo.pojo.User;
 import com.vudo.repositories.UserRepository;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
+import java.util.List;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,5 +63,19 @@ public class UserRepositoryImpl implements UserRepository {
     public void updateUser(User u) {
         Session session = this.factory.getObject().getCurrentSession();
         session.merge(u);
+    }
+
+    @Override
+    public List<User> searchByKeyword(String keyword) {
+        Session session = this.factory.getObject().getCurrentSession();
+        CriteriaBuilder cb = session.getCriteriaBuilder();
+        CriteriaQuery<User> cq = cb.createQuery(User.class);
+        Root<User> root = cq.from(User.class);
+        cq.where(
+            cb.and( cb.equal(root.get("role"), "patient"),
+                cb.like(cb.lower(root.get("fullName")), "%" + keyword.toLowerCase() + "%")
+            )
+        );
+        return session.createQuery(cq).setMaxResults(10).getResultList();
     }
 }

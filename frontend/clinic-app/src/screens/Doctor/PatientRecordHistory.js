@@ -1,18 +1,19 @@
 import { useState } from "react";
 import Apis, { endpoints } from "../../configs/Apis";
 import MySpinner from "../../components/MySpinner";
+import SearchableSelect from "../../components/SearchableSelect";
 
 const PatientRecordHistory = () => {
-    const [patientId, setPatientId] = useState("");
     const [records, setRecords] = useState([]);
     const [loading, setLoading] = useState(false);
     const [searched, setSearched] = useState(false);
+    const [patientName, setPatientName] = useState("");
 
-    const handleSearch = async () => {
-        if (!patientId.trim()) return;
+    const handleSelectPatient = async (patient) => {
+        setPatientName(patient.fullName);
         setLoading(true);
         try {
-            const res = await Apis.get(endpoints["patient-medical-records"](patientId));
+            const res = await Apis.get(endpoints["patient-medical-records"](patient.id));
             setRecords(res.data || []);
         } catch {
             setRecords([]);
@@ -26,18 +27,20 @@ const PatientRecordHistory = () => {
         <div className="container py-4" style={{ maxWidth: 800 }}>
             <h4 className="text-primary mb-4">Hồ sơ bệnh án bệnh nhân</h4>
 
-            <div className="input-group mb-4">
-                <input
-                    className="form-control"
-                    placeholder="Nhập ID bệnh nhân..."
-                    value={patientId}
-                    onChange={e => setPatientId(e.target.value)}
-                    onKeyDown={e => e.key === "Enter" && handleSearch()}
+            <div className="mb-4">
+                <SearchableSelect
+                    endpoint={endpoints["patients"]}
+                    placeholder="Tìm bệnh nhân theo tên..."
+                    labelKey="fullName"
+                    onChange={handleSelectPatient}
                 />
-                <button className="btn btn-primary" onClick={handleSearch}>Tìm</button>
             </div>
 
             {loading && <MySpinner />}
+
+            {!loading && searched && patientName && (
+                <p className="text-muted mb-3">Kết quả cho: <strong>{patientName}</strong></p>
+            )}
 
             {!loading && searched && records.length === 0 && (
                 <p className="text-muted">Không có hồ sơ nào.</p>
@@ -69,9 +72,7 @@ const PatientRecordHistory = () => {
                         {r.testResults?.length > 0 && <>
                             <p className="mb-1"><strong>Kết quả xét nghiệm:</strong></p>
                             <ul>{r.testResults.map((t, i) =>
-                                <li key={i}>{t.testName}: {t.resultValue}{" "}
-                                    {t.fileUrl && <a href={t.fileUrl} target="_blank" rel="noreferrer">[Xem file]</a>}
-                                </li>
+                                <li key={i}>{t.testName}: {t.resultValue}</li>
                             )}</ul>
                         </>}
                     </div>

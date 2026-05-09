@@ -60,7 +60,6 @@ const RecordHistory = () => {
                                         {record.testResults.map((t, i) => (
                                             <li key={i}>
                                                 {t.testName}: {t.resultValue}{" "}
-                                                {t.fileUrl && <a href={t.fileUrl} target="_blank" rel="noreferrer">[Xem file]</a>}
                                             </li>
                                         ))}
                                     </ul>

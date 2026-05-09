@@ -40,8 +40,9 @@ const Header = () => {
                                 <Link to="/pharmacist" className="text-dark text-decoration-none fw-medium">Quản lý kho thuốc</Link>
                             ) : user?.role === 'doctor' ? (
                                 <>
-                                <Link to="/doctor-schedule" className="text-dark text-decoration-none fw-medium">Lịch của bác sĩ</Link>
+                                <Link to="/doctor-schedule" className="text-dark text-decoration-none fw-medium">Lịch Của Bác Sĩ</Link>
                                 <Link to="/medical-record" className="text-dark text-decoration-none fw-medium">Tạo Hồ Sơ Bệnh Án</Link>
+                                <Link to="/patient-record-history" className="text-dark text-decoration-none fw-medium">Hồ Sơ Của Bệnh Nhân</Link>
                                 </>
                             ) : (
                                 <>
@@ -50,6 +51,7 @@ const Header = () => {
                                     {user?.role === 'patient' && (
                                         <>
                                             <Link to="/my-appointments" className="text-dark text-decoration-none fw-medium">Hẹn khám online</Link>
+                                            <Link to="/record-history" className="text-dark text-decoration-none fw-medium">Hồ sơ bệnh án</Link>
                                         </>
                                     )}
                                 </>

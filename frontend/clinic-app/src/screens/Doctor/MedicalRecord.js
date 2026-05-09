@@ -32,7 +32,7 @@ const MedicalRecord = () => {
     useEffect(() => {
         const loadInitialData = async () => {
             try {
-                const apptRes = await Apis.get(`${endpoints["appointments-doctor"]}?all=true`);
+                const apptRes = await Apis.get(`${endpoints["doctor-appointments"]}?all=true`);
                 setAppointments(apptRes.data || []);
             } catch (error) {
                 setMessage({ type: "danger", text: "Không thể tải dữ liệu." });

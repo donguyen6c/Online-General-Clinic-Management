@@ -8,10 +8,7 @@ import com.vudo.dto.AddPrescriptionRequestDTO;
 import com.vudo.dto.AddServiceRequestDTO;
 import com.vudo.dto.MedicalRecordRequestDTO;
 import com.vudo.dto.MedicalRecordResponseDTO;
-import com.vudo.dto.UserDTO;
 import com.vudo.services.MedicalRecordService;
-import com.vudo.services.UserService;
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -36,14 +33,9 @@ public class ApiMedicalRecordController {
     @Autowired
     private MedicalRecordService medicalRecordService;
     
-    @Autowired
-    private UserService userService;
-
     @PostMapping("/medical-records")
     @PreAuthorize("hasAuthority('doctor')")
-    public ResponseEntity<?> createMedicalRecord(
-            @RequestBody MedicalRecordRequestDTO request) {
-
+    public ResponseEntity<?> createMedicalRecord(@RequestBody MedicalRecordRequestDTO request) {
         try {
             MedicalRecordResponseDTO record = medicalRecordService.create(request);
             return new ResponseEntity<>(record, HttpStatus.CREATED);
@@ -52,56 +44,29 @@ public class ApiMedicalRecordController {
         }
     }
     
-    @PostMapping("/medical-records/{medicalRecordId}/prescriptions")
-    @PreAuthorize("hasAuthority('doctor')")
-    public ResponseEntity<?> addPrescriptions(
-            @PathVariable("medicalRecordId") Integer medicalRecordId,
-            @RequestBody AddPrescriptionRequestDTO request) {
-        
-        try {
-            medicalRecordService.addPrescriptionsToRecord(medicalRecordId, request);
-            
-            return ResponseEntity.ok(Map.of("success","Kê đơn thuốc thành công"
-            ));
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
-        }
-    }
-    
     @GetMapping("/{patientId}/medical-records")
     @PreAuthorize("hasAuthority('doctor')")
-    public ResponseEntity<List<MedicalRecordResponseDTO>> getHistory(@PathVariable("patientId") int patientId) {
-        
+    public ResponseEntity<List<MedicalRecordResponseDTO>> getHistory(@PathVariable("patientId") int patientId) {       
         List<MedicalRecordResponseDTO> history = medicalRecordService.getPatientHistory(patientId);
         
-        if (history == null || history.isEmpty()) {
-            return new ResponseEntity<>(new ArrayList<>(), HttpStatus.OK);
-        }
+        if (history == null || history.isEmpty()) { return new ResponseEntity<>(new ArrayList<>(), HttpStatus.OK);}
         
         return new ResponseEntity<>(history, HttpStatus.OK);
     }
     
     @GetMapping("/{patientId}/medical-records/{recordId}")
     @PreAuthorize("hasAuthority('doctor')or hasAuthority('pharmacist')")
-    public ResponseEntity<MedicalRecordResponseDTO> getMedicalRecordDetail(
-            @PathVariable("patientId") int patientId,
-            @PathVariable("recordId") int recordId) {
-        
+    public ResponseEntity<MedicalRecordResponseDTO> getMedicalRecordDetail(@PathVariable("patientId") int patientId, @PathVariable("recordId") int recordId) {       
         MedicalRecordResponseDTO recordDetail = medicalRecordService.getMedicalRecordDetail(patientId, recordId);
         
-        if (recordDetail == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        if (recordDetail == null) { return new ResponseEntity<>(HttpStatus.NOT_FOUND); }
         
         return new ResponseEntity<>(recordDetail, HttpStatus.OK);
     }
     
     @PostMapping("/medical-records/{medicalRecordId}/services")
-    @PreAuthorize("hasAuthority('doctor') or hasAuthority('pharmacist') or hasAuthority('admin')")
-    public ResponseEntity<?> addServices(
-            @PathVariable("medicalRecordId") Integer medicalRecordId,
-            @RequestBody AddServiceRequestDTO request) {
-        
+    @PreAuthorize("hasAuthority('doctor') or hasAuthority('pharmacist')")
+    public ResponseEntity<?> addServices(@PathVariable("medicalRecordId") Integer medicalRecordId, @RequestBody AddServiceRequestDTO request) {
         try {
             medicalRecordService.addServicesToRecord(medicalRecordId, request);
             
@@ -112,16 +77,16 @@ public class ApiMedicalRecordController {
         }
     }
     
-    @GetMapping("/current-user/medical-records")
-    @PreAuthorize("hasAuthority('patient')")
-    public ResponseEntity<List<MedicalRecordResponseDTO>> getMedicalRecords(Principal principal) {
-        String username = principal.getName();
-        UserDTO currentUser = userService.getUserByUsername(username);
-        List<MedicalRecordResponseDTO> history = medicalRecordService.getPatientHistory(currentUser.getId());
-        if (history == null || history.isEmpty()) {
-            return new ResponseEntity<>(new ArrayList<>(), HttpStatus.OK);
+    @PostMapping("/medical-records/{medicalRecordId}/prescriptions")
+    @PreAuthorize("hasAuthority('doctor')")
+    public ResponseEntity<?> addPrescriptions(@PathVariable("medicalRecordId") Integer medicalRecordId, @RequestBody AddPrescriptionRequestDTO request) {      
+        try {
+            medicalRecordService.addPrescriptionsToRecord(medicalRecordId, request);
+            
+            return ResponseEntity.ok(Map.of("success","Kê đơn thuốc thành công"
+            ));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
-        return new ResponseEntity<>(history, HttpStatus.OK);
     }
-    
 }

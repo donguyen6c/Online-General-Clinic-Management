@@ -49,22 +49,19 @@ public class ApiPatientController {
         List<AppointmentResponseDTO> appointments = appointmentService.getPatientAppointments(patientId, page);
         return new ResponseEntity<>(appointments == null ? new ArrayList<>() : appointments, HttpStatus.OK);
     }
-    
+     
     @GetMapping("/current-user/medical-records")
     @PreAuthorize("hasAuthority('patient')")
-    public ResponseEntity<List<MedicalRecordResponseDTO>> getCurrentUserHistory(Principal principal) {
+    public ResponseEntity<List<MedicalRecordResponseDTO>> getMedicalRecords(Principal principal) {
         String username = principal.getName();
-        int patientId = userService.getUserByUsername(username).getId();
-
-        List<MedicalRecordResponseDTO> history = medicalRecordService.getPatientHistory(patientId);
-        
+        UserDTO currentUser = userService.getUserByUsername(username);
+        List<MedicalRecordResponseDTO> history = medicalRecordService.getPatientHistory(currentUser.getId());
         if (history == null || history.isEmpty()) {
             return new ResponseEntity<>(new ArrayList<>(), HttpStatus.OK);
         }
-        
         return new ResponseEntity<>(history, HttpStatus.OK);
     }
-
+    
     @GetMapping("/current-user/medical-records/{recordId}")
     @PreAuthorize("hasAuthority('patient')")
     public ResponseEntity<MedicalRecordResponseDTO> getCurrentUserMedicalRecordDetail(
@@ -82,4 +79,5 @@ public class ApiPatientController {
         
         return new ResponseEntity<>(recordDetail, HttpStatus.OK);
     }
+    
 }

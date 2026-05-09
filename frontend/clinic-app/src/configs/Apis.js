@@ -14,6 +14,7 @@ export const endpoints = {
     'slots': (doctorId, date) => `/doctors/${doctorId}/slots?date=${date}`,
     'booking': doctorId => `/secure/doctors/${doctorId}/appointments`,
     'patient-appointments': '/secure/patients/current-user/appointments',   
+    'doctor-appointments': '/secure/doctor-schedule',
     'doctor-schedule': '/secure/doctor-schedule',    
     'get-meeting-url': (appointmentId) => `/secure/appointments/${appointmentId}/meeting-url`,
     // QUẢN LÝ DANH MỤC THUỐC
@@ -58,8 +59,8 @@ export const endpoints = {
     'medical-records': '/secure/medical-records',
     'medical-record-prescriptions': (medicalRecordId) => `/secure/medical-records/${medicalRecordId}/prescriptions`,
     'medical-record-services': (medicalRecordId) => `/secure/medical-records/${medicalRecordId}/services`,
-    'appointments-doctor': '/secure/doctor-schedule',
-    'current-user-medical-records': '/secure/current-user/medical-records', 
+    'current-user-medical-records': '/secure/patients/current-user/medical-records', 
+    'patient-medical-records': (patientId) => `/secure/${patientId}/medical-records`,
 }
 
 const Apis = axios.create({

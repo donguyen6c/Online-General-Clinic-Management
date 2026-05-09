@@ -23,6 +23,7 @@ import MyUserReducer from "./reducers/MyUserReducer";
 import Doctor from "./screens/Doctor/Doctor"
 import MedicalRecord from "./screens/Doctor/MedicalRecord";
 import RecordHistory from "./screens/Patient/RecordHistory";
+import PatientRecordHistory from "./screens/Doctor/PatientRecordHistory";
 
 const App = () => {
   const [user, dispatch] = useReducer(MyUserReducer, cookies.load("user") || null);
@@ -59,6 +60,7 @@ const App = () => {
             <Route path="/doctor" element={<Doctor />} />
             <Route path="/doctor-schedule" element={<DoctorSchedule />} />
             <Route path="/medical-record" element={<MedicalRecord />} />
+            <Route path="/patient-record-history" element={<PatientRecordHistory />} />
         </Route>
 
         <Route element={<ProtectedRoute roles={'admin'} />}>

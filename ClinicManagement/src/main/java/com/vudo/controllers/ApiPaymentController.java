@@ -7,10 +7,12 @@ package com.vudo.controllers;
 import com.vudo.dto.VNPayCreatePaymentRequestDTO;
 import com.vudo.services.PaymentService;
 import jakarta.servlet.http.HttpServletRequest;
+import java.net.URI;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 /**
  *
  * @author ADMIN
@@ -26,6 +29,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/secure/payments")
 public class ApiPaymentController {
+    
+    @Autowired
+    private Environment env;
 
     @Autowired
     private PaymentService paymentService;
@@ -44,12 +50,26 @@ public class ApiPaymentController {
     @GetMapping("/vnpay/callback")
     public ResponseEntity<?> paymentCallback(HttpServletRequest request) {
         Map<String, String> params = new HashMap<>();
+
         Enumeration<String> en = request.getParameterNames();
         while (en.hasMoreElements()) {
             String name = en.nextElement();
             params.put(name, request.getParameter(name));
         }
+
         Map<String, String> result = paymentService.handleVNPayCallback(params);
-        return ResponseEntity.ok(result);
+
+        String status = result.get("status");
+        String paymentCode = result.get("paymentCode");
+        String responseCode = result.get("responseCode");
+
+        String redirectUrl = env.getProperty("urlFE")
+        + "/payment-result?status=" + status
+        + "&paymentCode=" + paymentCode
+        + "&responseCode=" + responseCode;
+
+        return ResponseEntity.status(HttpStatus.FOUND)
+                .location(URI.create(redirectUrl))
+                .build();
     }
 }

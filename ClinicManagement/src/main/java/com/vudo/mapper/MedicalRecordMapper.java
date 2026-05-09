@@ -65,6 +65,7 @@ public class MedicalRecordMapper {
                 presDto.setMedicineName(pm.getMedicineId().getName());
                 presDto.setQuantity(pm.getQuantity());
                 presDto.setInstruction(pm.getUsageInstruction());
+                presDto.setPrice(pm.getPriceAtTime());
                 presDTOs.add(presDto);
             }
         }

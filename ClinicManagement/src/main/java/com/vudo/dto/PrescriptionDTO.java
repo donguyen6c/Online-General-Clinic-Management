@@ -4,6 +4,8 @@
  */
 package com.vudo.dto;
 
+import java.math.BigDecimal;
+
 /**
  *
  * @author ASUS
@@ -12,6 +14,7 @@ public class PrescriptionDTO {
     private String medicineName;
     private int quantity;
     private String instruction;
+    private BigDecimal price;
 
     /**
      * @return the medicineName
@@ -53,5 +56,19 @@ public class PrescriptionDTO {
      */
     public void setInstruction(String instruction) {
         this.instruction = instruction;
+    }
+
+    /**
+     * @return the price
+     */
+    public BigDecimal getPrice() {
+        return price;
+    }
+
+    /**
+     * @param price the price to set
+     */
+    public void setPrice(BigDecimal price) {
+        this.price = price;
     }
 }

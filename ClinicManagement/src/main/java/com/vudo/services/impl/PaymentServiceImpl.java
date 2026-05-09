@@ -26,6 +26,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.TreeMap;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +44,7 @@ public class PaymentServiceImpl implements PaymentService {
     private MedicalRecordRepository medicalRecordRepo;
     @Autowired
     private PaymentRepository paymentRepo;
-    
+
     @Autowired
     private NotificationService notificationService;
 
@@ -57,6 +58,15 @@ public class PaymentServiceImpl implements PaymentService {
         MedicalRecord medicalRecord = medicalRecordRepo.getMedicalRecordById(request.getMedicalRecordId());
         if (medicalRecord == null) {
             throw new IllegalArgumentException("Không tìm thấy hồ sơ bệnh án");
+        }
+
+        Set<Payment> payments = medicalRecord.getPaymentSet();
+        if (payments != null && !payments.isEmpty()) {
+            for (Payment p : payments) {
+                if ("paid".equals(p.getStatus())) {
+                    throw new IllegalArgumentException("Đã thanh toán rồi!");
+                }
+            }
         }
 
         String tmnCode = env.getProperty("vnpay.tmnCode");
@@ -106,7 +116,8 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     @Transactional
-    public Map<String, String> handleVNPayCallback(Map<String, String> vnpParams) {
+    public Map<String, String> handleVNPayCallback(Map<String, String> vnpParams
+    ) {
         String secureHash = vnpParams.get("vnp_SecureHash");
         TreeMap<String, String> filtered = VNPayUtils.filterAndSortVnpParams(vnpParams);
         String hashSecret = env.getProperty("vnpay.hashSecret");
@@ -128,14 +139,14 @@ public class PaymentServiceImpl implements PaymentService {
         if ("00".equals(responseCode)) {
             payment.setStatus("paid");
             MedicalRecord mr = payment.getMedicalRecordId();
-            User patient = mr.getPatientId(); 
+            User patient = mr.getPatientId();
             String currentTime = new java.util.Date().toString();
             notificationService.createPaymentNotification(patient, mr, currentTime);
         } else {
             payment.setStatus("failed");
         }
         paymentRepo.update(payment);
-        
+
         return Map.of("status", payment.getStatus(), "paymentCode", txRef, "responseCode", responseCode);
     }
 

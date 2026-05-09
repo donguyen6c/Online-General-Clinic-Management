@@ -19,6 +19,10 @@ export const endpoints = {
     'doctor-schedule': '/secure/doctor-schedule',
     'patients': '/secure/patients/',    
     'get-meeting-url': (appointmentId) => `/secure/appointments/${appointmentId}/meeting-url`,
+
+    // LỊCH CỦA BÁC SĨ
+    'doctor-schedules': '/secure/doctor/schedules',
+    'doctor-schedule-detail': (id) => `/secure/doctor/schedules/${id}`,
     // QUẢN LÝ DANH MỤC THUỐC
     'medicines': '/secure/pharmacy/medicines',
     'medicine-detail': (id) => `/secure/pharmacy/medicines/${id}`,

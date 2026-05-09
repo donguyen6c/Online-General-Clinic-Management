@@ -20,6 +20,10 @@ import jakarta.validation.constraints.Size;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalTimeSerializer;
 
 /**
  *
@@ -43,12 +47,16 @@ public class DoctorSchedule implements Serializable {
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
-    @Basic(optional = false)
-    @NotNull
+    @JsonSerialize(using = LocalDateSerializer.class)
+    @JsonFormat(pattern = "yyyy-MM-dd")
     @Column(name = "work_date")
     private LocalDate workDate;
+    @JsonSerialize(using = LocalTimeSerializer.class)
+    @JsonFormat(pattern = "HH:mm:ss")
     @Column(name = "start_time")
     private LocalTime startTime;
+    @JsonSerialize(using = LocalTimeSerializer.class)
+    @JsonFormat(pattern = "HH:mm:ss")
     @Column(name = "end_time")
     private LocalTime endTime;
     @Size(max = 255)

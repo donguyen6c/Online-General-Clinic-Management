@@ -34,20 +34,41 @@ public class DoctorScheduleRepositoryImpl implements DoctorScheduleRepository {
         CriteriaBuilder cb = session.getCriteriaBuilder();
         CriteriaQuery<DoctorSchedule> cq = cb.createQuery(DoctorSchedule.class);
         Root<DoctorSchedule> root = cq.from(DoctorSchedule.class);
-
         cq.select(root).where(
-                cb.and(
-                        cb.equal(root.get("doctorId").get("id"), doctorId),
-                        cb.equal(root.get("workDate"), workDate)
-                )
+            cb.and(
+                cb.equal(root.get("doctorId").get("id"), doctorId),
+                cb.equal(root.get("workDate"), workDate)
+            )
         );
-
         List<DoctorSchedule> results = session.createQuery(cq).getResultList();
+        return results.isEmpty() ? null : results.get(0);
+    }
 
-        if (results.isEmpty()) {
-            return null;
-        }
-        return results.get(0);
+    @Override
+    public List<DoctorSchedule> getByDoctorId(int doctorId) {
+        Session session = this.factory.getObject().getCurrentSession();
+        CriteriaBuilder cb = session.getCriteriaBuilder();
+        CriteriaQuery<DoctorSchedule> cq = cb.createQuery(DoctorSchedule.class);
+        Root<DoctorSchedule> root = cq.from(DoctorSchedule.class);
+        cq.select(root)
+          .where(cb.equal(root.get("doctorId").get("id"), doctorId))
+          .orderBy(cb.desc(root.get("workDate")));
+        return session.createQuery(cq).getResultList();
+    }
+
+    @Override
+    public DoctorSchedule save(DoctorSchedule schedule) {
+        Session session = this.factory.getObject().getCurrentSession();
+        session.saveOrUpdate(schedule);
+        return schedule;
+    }
+
+    @Override
+    public void delete(int id) {
+        Session session = this.factory.getObject().getCurrentSession();
+        DoctorSchedule schedule = session.get(DoctorSchedule.class, id);
+        if (schedule == null) throw new RuntimeException("Không tìm thấy lịch với ID: " + id);
+        session.delete(schedule);
     }
 
 }

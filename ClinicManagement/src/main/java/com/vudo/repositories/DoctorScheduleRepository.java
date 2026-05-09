@@ -14,4 +14,7 @@ import java.util.List;
  */
 public interface DoctorScheduleRepository {
     DoctorSchedule getByDoctorIdAndWorkDate(int doctorId, LocalDate workDate);
+    List<DoctorSchedule> getByDoctorId(int doctorId);
+    DoctorSchedule save(DoctorSchedule schedule);
+    void delete(int id);
 }

@@ -8,7 +8,10 @@ import com.vudo.dto.AddPrescriptionRequestDTO;
 import com.vudo.dto.AddServiceRequestDTO;
 import com.vudo.dto.MedicalRecordRequestDTO;
 import com.vudo.dto.MedicalRecordResponseDTO;
+import com.vudo.dto.UserDTO;
 import com.vudo.services.MedicalRecordService;
+import com.vudo.services.UserService;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +35,9 @@ import org.springframework.web.bind.annotation.RestController;
 public class ApiMedicalRecordController {
     @Autowired
     private MedicalRecordService medicalRecordService;
+    
+    @Autowired
+    private UserService userService;
 
     @PostMapping("/medical-records")
     @PreAuthorize("hasAuthority('doctor')")
@@ -104,6 +110,18 @@ public class ApiMedicalRecordController {
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
+    }
+    
+    @GetMapping("/current-user/medical-records")
+    @PreAuthorize("hasAuthority('patient')")
+    public ResponseEntity<List<MedicalRecordResponseDTO>> getMedicalRecords(Principal principal) {
+        String username = principal.getName();
+        UserDTO currentUser = userService.getUserByUsername(username);
+        List<MedicalRecordResponseDTO> history = medicalRecordService.getPatientHistory(currentUser.getId());
+        if (history == null || history.isEmpty()) {
+            return new ResponseEntity<>(new ArrayList<>(), HttpStatus.OK);
+        }
+        return new ResponseEntity<>(history, HttpStatus.OK);
     }
     
 }

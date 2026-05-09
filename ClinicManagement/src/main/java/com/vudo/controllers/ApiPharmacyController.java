@@ -38,13 +38,13 @@ public class ApiPharmacyController {
     private PharmacyService pharmacyService;
     
     @GetMapping("/medicines")
-    @PreAuthorize("hasAuthority('doctor') or hasAuthority('pharmacist') or hasAuthority('admin')")
+    @PreAuthorize("hasAuthority('doctor') or hasAuthority('pharmacist')")
     public ResponseEntity<List<MedicineDTO>> list(@RequestParam Map<String, String> params) {
         return new ResponseEntity<>(pharmacyService.getMedicines(params), HttpStatus.OK);
     }
 
     @GetMapping("/inventory")
-    @PreAuthorize("hasAuthority('doctor') or hasAuthority('pharmacist') or hasAuthority('admin')")
+    @PreAuthorize("hasAuthority('pharmacist')")
     public ResponseEntity<List<InventoryDTO>> getInventories(@RequestParam Map<String, String> params) {
         return new ResponseEntity<>(pharmacyService.getInventories(params), HttpStatus.OK);
     }

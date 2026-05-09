@@ -8,6 +8,7 @@ import com.vudo.dto.AppointmentRequestDTO;
 import com.vudo.dto.AppointmentResponseDTO;
 import com.vudo.dto.AvailableSlotsResponseDTO;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -17,6 +18,6 @@ public interface AppointmentService {
     AvailableSlotsResponseDTO getSlots(int doctorId, String date);
     List<AppointmentResponseDTO> getPatientAppointments(int patientId, int page);
     AppointmentResponseDTO createAppointment(int doctorId, AppointmentRequestDTO request);
-    List<AppointmentResponseDTO> getDoctorAppointments(int page);
+    List<AppointmentResponseDTO> getDoctorAppointments(Map<String, String> params);
     AppointmentResponseDTO cancelAppointment(int appointmentId);
 }

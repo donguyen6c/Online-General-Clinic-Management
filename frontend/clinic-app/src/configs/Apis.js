@@ -2,12 +2,14 @@ import axios from "axios";
 import cookies from 'react-cookies'
 
 export const endpoints = {
+    //CHUNG
     'specialties':  '/specialties',
     'doctors':  '/doctors',
     'users': '/users',
     'login': '/login',
     'profile': '/secure/profile',
     'logout' : '/logout',
+
     'doctor-detail': doctorId => `/doctors/${doctorId}`,
     'slots': (doctorId, date) => `/doctors/${doctorId}/slots?date=${date}`,
     'booking': doctorId => `/secure/doctors/${doctorId}/appointments`,
@@ -52,10 +54,12 @@ export const endpoints = {
     'appointments': '/secure/patients/current-user/appointments',
     'cancel-appointments': ap_id => `/secure/appointments/${ap_id}`,
 
+    // HỒ SƠ BỆNH ÁN
     'medical-records': '/secure/medical-records',
     'medical-record-prescriptions': (medicalRecordId) => `/secure/medical-records/${medicalRecordId}/prescriptions`,
     'medical-record-services': (medicalRecordId) => `/secure/medical-records/${medicalRecordId}/services`,
     'appointments-doctor': '/secure/doctor-schedule',
+    'current-user-medical-records': '/secure/current-user/medical-records', 
 }
 
 const Apis = axios.create({

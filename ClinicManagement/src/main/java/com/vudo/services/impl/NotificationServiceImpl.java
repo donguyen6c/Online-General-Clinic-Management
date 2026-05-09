@@ -42,10 +42,10 @@ public class NotificationServiceImpl implements NotificationService{
     }
 
     @Override
-    public void createMedicinesNotification(User user, MedicalRecord record, String time) {
+    public void createMedicinesNotification(User user, MedicalRecord id, String time) {
         Notification n = new Notification();
         n.setTitle("Đơn thuốc đã sẵn sàng");
-        n.setMessage("Thuốc của hồ sơ bệnh án #" + record.getId() + " đã được chuẩn bị xong lúc " + time + ". Vui lòng đến quầy nhận thuốc.");
+        n.setMessage("Thuốc của hồ sơ bệnh án #" + id.getId() + " đã được chuẩn bị xong lúc " + time + ". Vui lòng đến quầy nhận thuốc.");
         n.setType("MEDICINE"); 
         n.setIsRead(false);
         n.setCreatedAt(new Date());
@@ -78,5 +78,18 @@ public class NotificationServiceImpl implements NotificationService{
     @Override
     public Long countUnreadByUserId(int userId) {
        return notificationRepository.countUnreadByUserId(userId);
+    }
+
+    @Override
+    public void createMedicalRecordNotification(User user, MedicalRecord id, String time) {
+        Notification n = new Notification();
+        n.setTitle("Đã xong Hồ Sơ Bệnh Án");
+        n.setMessage("Hồ sơ bệnh án #" + id.getId() + " đã xong lúc " + time + ". Vui lòng đến quầythuốc.");
+        n.setType("MEDICAL-RECORD"); 
+        n.setIsRead(false);
+        n.setCreatedAt(new Date());
+        n.setUserId(user);
+
+        notificationRepository.add(n);
     }
 }

@@ -1,19 +1,18 @@
-
 import React, { useEffect, useMemo, useState } from "react";
 import Apis, { endpoints } from "../../configs/Apis";
 import MySpinner from "../../components/MySpinner";
+import SearchableSelect from "../../components/SearchableSelect";
+import { useSearchParams } from "react-router-dom";
 
 const MedicalRecord = () => {
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
     const [appointments, setAppointments] = useState([]);
-    const [diseases, setDiseases] = useState([]);
-    const [services, setServices] = useState([]);
-    const [medicines, setMedicines] = useState([]);
+    const [searchParams] = useSearchParams();
 
     const [form, setForm] = useState({
         sourceType: "appointment",
-        appointmentId: "",
+        appointmentId: searchParams.get("appointmentId") || "",
         patientId: "",
         symptoms: "",
         diagnosis: "",
@@ -33,114 +32,80 @@ const MedicalRecord = () => {
     useEffect(() => {
         const loadInitialData = async () => {
             try {
-                const [apptRes, diseaseRes, serviceRes, medicineRes] = await Promise.all([
-                    Apis.get(endpoints["appointments-doctor"]),
-                    Apis.get(`${endpoints["diseases"]}?all=true`),
-                    Apis.get(endpoints["services"]),
-                    Apis.get(endpoints["medicines"])
-                ]);
-
+                const apptRes = await Apis.get(`${endpoints["appointments-doctor"]}?all=true`);
                 setAppointments(apptRes.data || []);
-                setDiseases(diseaseRes.data || []);
-                setServices(serviceRes.data || []);
-                setMedicines(medicineRes.data || []);
             } catch (error) {
-                console.error("Lỗi tải dữ liệu tạo phiếu khám:", error);
-                setMessage({ type: "danger", text: "Không thể tải dữ liệu nền cho phiếu khám." });
+                setMessage({ type: "danger", text: "Không thể tải dữ liệu." });
             } finally {
                 setLoading(false);
             }
         };
-
         loadInitialData();
     }, []);
 
     const updateForm = (key, value) => setForm(prev => ({ ...prev, [key]: value }));
 
-    const addServiceRow = () => {
-        setForm(prev => ({ ...prev, selectedServices: [...prev.selectedServices, { serviceId: "", quantity: 1 }] }));
-    };
+    const addServiceRow = () =>
+        setForm(prev => ({ ...prev, selectedServices: [...prev.selectedServices, { serviceId: "", serviceName: "", quantity: 1 }] }));
 
-    const addMedicineRow = () => {
-        setForm(prev => ({ ...prev, selectedMedicines: [...prev.selectedMedicines, { medicineId: "", quantity: 1, usageInstruction: "" }] }));
-    };
+    const addMedicineRow = () =>
+        setForm(prev => ({ ...prev, selectedMedicines: [...prev.selectedMedicines, { medicineId: "", medicineName: "", quantity: 1, usageInstruction: "" }] }));
 
-    const removeServiceRow = (idx) => {
+    const removeServiceRow = (idx) =>
         setForm(prev => ({ ...prev, selectedServices: prev.selectedServices.filter((_, i) => i !== idx) }));
-    };
 
-    const removeMedicineRow = (idx) => {
+    const removeMedicineRow = (idx) =>
         setForm(prev => ({ ...prev, selectedMedicines: prev.selectedMedicines.filter((_, i) => i !== idx) }));
-    };
 
-    const updateServiceRow = (idx, key, value) => {
+    const updateServiceRow = (idx, key, value) =>
         setForm(prev => ({
             ...prev,
             selectedServices: prev.selectedServices.map((row, i) => i === idx ? { ...row, [key]: value } : row)
         }));
-    };
 
-    const updateMedicineRow = (idx, key, value) => {
+    const updateMedicineRow = (idx, key, value) =>
         setForm(prev => ({
             ...prev,
             selectedMedicines: prev.selectedMedicines.map((row, i) => i === idx ? { ...row, [key]: value } : row)
         }));
-    };
-    const addDiseaseRow = () => {
-        setForm(prev => ({
-            ...prev,
-            diseaseIds: [...prev.diseaseIds, ""]
-        }));
-    };
 
-    const removeDiseaseRow = (idx) => {
-        setForm(prev => ({
-            ...prev,
-            diseaseIds: prev.diseaseIds.filter((_, i) => i !== idx)
-        }));
-    };
+    const addDiseaseRow = () =>
+        setForm(prev => ({ ...prev, diseaseIds: [...prev.diseaseIds, { id: "", name: "" }] }));
 
-    const updateDiseaseRow = (idx, value) => {
+    const removeDiseaseRow = (idx) =>
+        setForm(prev => ({ ...prev, diseaseIds: prev.diseaseIds.filter((_, i) => i !== idx) }));
+
+    const updateDiseaseRow = (idx, item) =>
         setForm(prev => ({
             ...prev,
-            diseaseIds: prev.diseaseIds.map((id, i) => i === idx ? value : id)
+            diseaseIds: prev.diseaseIds.map((d, i) => i === idx ? { id: String(item.id), name: item.name } : d)
         }));
-    };
 
     const validate = () => {
         if (!form.symptoms.trim() || !form.diagnosis.trim())
             return "Triệu chứng và chẩn đoán là bắt buộc.";
-
         if (form.sourceType === "appointment" && !form.appointmentId)
-            return "Vui lòng chọn lịch hẹn để tạo phiếu khám.";
-
+            return "Vui lòng chọn lịch hẹn.";
         if (form.sourceType === "manual" && !form.patientId.trim())
-            return "Vui lòng nhập patientId khi tạo không từ lịch hẹn.";
-
-        const invalidService = form.selectedServices.some(s => !s.serviceId || Number(s.quantity) <= 0);
-        if (invalidService) return "Dịch vụ phải có service và số lượng hợp lệ.";
-
-        const invalidMedicine = form.selectedMedicines.some(m => !m.medicineId || Number(m.quantity) <= 0 || !m.usageInstruction.trim());
-        if (invalidMedicine) return "Thuốc phải có thuốc, số lượng và liều dùng hợp lệ.";
-
+            return "Vui lòng nhập ID bệnh nhân.";
+        if (form.selectedServices.some(s => !s.serviceId || Number(s.quantity) <= 0))
+            return "Dịch vụ phải có tên và số lượng hợp lệ.";
+        if (form.selectedMedicines.some(m => !m.medicineId || Number(m.quantity) <= 0 || !m.usageInstruction.trim()))
+            return "Thuốc phải có tên, số lượng và liều dùng hợp lệ.";
         return "";
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setMessage({ type: "", text: "" });
-
         const errorMsg = validate();
-        if (errorMsg) {
-            setMessage({ type: "warning", text: errorMsg });
-            return;
-        }
+        if (errorMsg) { setMessage({ type: "warning", text: errorMsg }); return; }
 
         const payload = {
             symptoms: form.symptoms.trim(),
             diagnosis: form.diagnosis.trim(),
             prescriptionNotes: form.prescriptionNotes.trim(),
-            diseaseIds: form.diseaseIds.filter(id => id !== "").map(id => Number(id)),
+            diseaseIds: form.diseaseIds.filter(d => d.id !== "").map(d => Number(d.id)),
             appointmentId: form.sourceType === "appointment" ? Number(form.appointmentId) : null,
             patientId: form.sourceType === "manual" ? Number(form.patientId) : null
         };
@@ -148,12 +113,8 @@ const MedicalRecord = () => {
         try {
             setSubmitting(true);
             const createRes = await Apis.post(endpoints["medical-records"], payload);
-            console.info(createRes)
             const medicalRecordId = createRes?.data?.recordId;
-
-            if (!medicalRecordId) {
-                throw new Error("Không nhận được medicalRecordId từ BE.");
-            }
+            if (!medicalRecordId) throw new Error("Không nhận được medicalRecordId từ BE.");
 
             if (form.selectedServices.length > 0) {
                 await Apis.post(endpoints["medical-record-services"](medicalRecordId), {
@@ -173,19 +134,12 @@ const MedicalRecord = () => {
 
             setMessage({ type: "success", text: `Tạo phiếu khám thành công. Mã hồ sơ: ${medicalRecordId}` });
             setForm({
-                sourceType: "appointment",
-                appointmentId: "",
-                patientId: "",
-                symptoms: "",
-                diagnosis: "",
-                prescriptionNotes: "",
-                diseaseIds: [],
-                selectedServices: [],
-                selectedMedicines: []
+                sourceType: "appointment", appointmentId: "", patientId: "",
+                symptoms: "", diagnosis: "", prescriptionNotes: "",
+                diseaseIds: [], selectedServices: [], selectedMedicines: []
             });
         } catch (error) {
-            console.error("Lỗi tạo phiếu khám:", error);
-            setMessage({ type: "danger", text: error?.response?.data?.error || error?.response?.data || error.message || "Tạo phiếu khám thất bại." });
+            setMessage({ type: "danger", text: error?.response?.data?.error || error.message || "Tạo phiếu khám thất bại." });
         } finally {
             setSubmitting(false);
         }
@@ -200,6 +154,7 @@ const MedicalRecord = () => {
 
             <form className="card shadow-sm" onSubmit={handleSubmit}>
                 <div className="card-body">
+                    {/* Nguồn tạo phiếu */}
                     <div className="mb-3">
                         <label className="form-label fw-bold d-block">Nguồn tạo phiếu</label>
                         <div className="form-check form-check-inline">
@@ -229,6 +184,7 @@ const MedicalRecord = () => {
                         </div>
                     )}
 
+                    {/* Triệu chứng & Chẩn đoán */}
                     <div className="row">
                         <div className="col-md-6 mb-3">
                             <label className="form-label">Triệu chứng *</label>
@@ -245,55 +201,29 @@ const MedicalRecord = () => {
                         <textarea className="form-control" rows="2" value={form.prescriptionNotes} onChange={(e) => updateForm("prescriptionNotes", e.target.value)} />
                     </div>
 
+                    {/* Bệnh liên quan */}
                     <div className="mb-3">
                         <div className="d-flex justify-content-between align-items-center mb-2">
                             <label className="form-label mb-0">Bệnh liên quan</label>
-                            <button
-                                type="button"
-                                className="btn btn-sm btn-outline-primary"
-                                onClick={addDiseaseRow}
-                            >
-                                + Thêm bệnh
-                            </button>
+                            <button type="button" className="btn btn-sm btn-outline-primary" onClick={addDiseaseRow}>+ Thêm bệnh</button>
                         </div>
-
-                        {form.diseaseIds.map((diseaseId, idx) => (
+                        {form.diseaseIds.map((disease, idx) => (
                             <div className="row g-2 mb-2" key={`disease-row-${idx}`}>
                                 <div className="col-md-10">
-                                    <select
-                                        className="form-select"
-                                        value={diseaseId}
-                                        onChange={(e) => updateDiseaseRow(idx, e.target.value)}
-                                    >
-                                        <option value="">-- Chọn bệnh --</option>
-                                        {diseases.map(d => (
-                                            <option
-                                                key={d.id}
-                                                value={d.id}
-                                                disabled={
-                                                    form.diseaseIds.includes(String(d.id)) &&
-                                                    diseaseId !== String(d.id)
-                                                }
-                                            >
-                                                {d.name}
-                                            </option>
-                                        ))}
-                                    </select>
+                                    <SearchableSelect
+                                        endpoint={endpoints["diseases"]}
+                                        placeholder="Tìm bệnh..."
+                                        onChange={(item) => updateDiseaseRow(idx, item)}
+                                    />
                                 </div>
-
                                 <div className="col-md-2">
-                                    <button
-                                        type="button"
-                                        className="btn btn-outline-danger w-100"
-                                        onClick={() => removeDiseaseRow(idx)}
-                                    >
-                                        Xóa
-                                    </button>
+                                    <button type="button" className="btn btn-outline-danger w-100" onClick={() => removeDiseaseRow(idx)}>Xóa</button>
                                 </div>
                             </div>
                         ))}
                     </div>
 
+                    {/* Dịch vụ */}
                     <div className="mb-3">
                         <div className="d-flex justify-content-between align-items-center mb-2">
                             <label className="form-label mb-0">Dịch vụ chỉ định</label>
@@ -302,19 +232,24 @@ const MedicalRecord = () => {
                         {form.selectedServices.map((row, idx) => (
                             <div className="row g-2 mb-2" key={`service-row-${idx}`}>
                                 <div className="col-md-7">
-                                    <select className="form-select" value={row.serviceId} onChange={(e) => updateServiceRow(idx, "serviceId", e.target.value)}>
-                                        <option value="">-- Chọn dịch vụ --</option>
-                                        {services.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
-                                    </select>
+                                    <SearchableSelect
+                                        endpoint={endpoints["services"]}
+                                        placeholder="Tìm dịch vụ..."
+                                        onChange={(item) => updateServiceRow(idx, "serviceId", String(item.id))}
+                                    />
                                 </div>
                                 <div className="col-md-3">
-                                    <input type="number" min="1" className="form-control" value={row.quantity} onChange={(e) => updateServiceRow(idx, "quantity", e.target.value)} />
+                                    <input type="number" min="1" className="form-control" value={row.quantity}
+                                        onChange={(e) => updateServiceRow(idx, "quantity", e.target.value)} />
                                 </div>
-                                <div className="col-md-2"><button type="button" className="btn btn-outline-danger w-100" onClick={() => removeServiceRow(idx)}>Xóa</button></div>
+                                <div className="col-md-2">
+                                    <button type="button" className="btn btn-outline-danger w-100" onClick={() => removeServiceRow(idx)}>Xóa</button>
+                                </div>
                             </div>
                         ))}
                     </div>
 
+                    {/* Thuốc */}
                     <div className="mb-3">
                         <div className="d-flex justify-content-between align-items-center mb-2">
                             <label className="form-label mb-0">Thuốc kê toa</label>
@@ -323,22 +258,28 @@ const MedicalRecord = () => {
                         {form.selectedMedicines.map((row, idx) => (
                             <div className="row g-2 mb-2" key={`medicine-row-${idx}`}>
                                 <div className="col-md-4">
-                                    <select className="form-select" value={row.medicineId} onChange={(e) => updateMedicineRow(idx, "medicineId", e.target.value)}>
-                                        <option value="">-- Chọn thuốc --</option>
-                                        {medicines.map(m => <option key={m.id} value={m.id}>{m.name}</option>)}
-                                    </select>
+                                    <SearchableSelect
+                                        endpoint={endpoints["medicines"]}
+                                        placeholder="Tìm thuốc..."
+                                        onChange={(item) => updateMedicineRow(idx, "medicineId", String(item.id))}
+                                    />
                                 </div>
                                 <div className="col-md-2">
-                                    <input type="number" min="1" className="form-control" value={row.quantity} onChange={(e) => updateMedicineRow(idx, "quantity", e.target.value)} />
+                                    <input type="number" min="1" className="form-control" value={row.quantity}
+                                        onChange={(e) => updateMedicineRow(idx, "quantity", e.target.value)} />
                                 </div>
                                 <div className="col-md-4">
-                                    <input className="form-control" placeholder="Liều dùng" value={row.usageInstruction} onChange={(e) => updateMedicineRow(idx, "usageInstruction", e.target.value)} />
+                                    <input className="form-control" placeholder="Liều dùng" value={row.usageInstruction}
+                                        onChange={(e) => updateMedicineRow(idx, "usageInstruction", e.target.value)} />
                                 </div>
-                                <div className="col-md-2"><button type="button" className="btn btn-outline-danger w-100" onClick={() => removeMedicineRow(idx)}>Xóa</button></div>
+                                <div className="col-md-2">
+                                    <button type="button" className="btn btn-outline-danger w-100" onClick={() => removeMedicineRow(idx)}>Xóa</button>
+                                </div>
                             </div>
                         ))}
                     </div>
                 </div>
+
                 <div className="card-footer d-flex justify-content-end">
                     <button type="submit" className="btn btn-primary" disabled={submitting}>
                         {submitting ? "Đang tạo phiếu..." : "Tạo phiếu khám"}

@@ -26,6 +26,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -172,13 +173,13 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
     @Override
-    public List<AppointmentResponseDTO> getDoctorAppointments(int page) {
+    public List<AppointmentResponseDTO> getDoctorAppointments(Map<String, String> params) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         User currentUser = userRepo.getUserByUsername(username);
         if (currentUser == null) throw new RuntimeException("Không tìm thấy thông tin người dùng");
         Doctor doctor = doctorRepo.getDoctorByUserId(currentUser.getId());
         if (doctor == null) throw new RuntimeException("Tài khoản này không phải là bác sĩ");
-        List<Appointment> appointments = appointmentRepo.getAppointmentsByDoctorId(doctor.getId(), page);
+        List<Appointment> appointments = appointmentRepo.getAppointmentsByDoctorId(doctor.getId(), params);
         return appointments.stream().map(AppointmentMapper::toDTO).collect(Collectors.toList());
     }
 

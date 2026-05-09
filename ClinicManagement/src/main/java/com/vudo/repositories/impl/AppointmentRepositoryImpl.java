@@ -11,6 +11,7 @@ import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,19 +82,23 @@ public class AppointmentRepositoryImpl implements AppointmentRepository {
     }
 
     @Override
-    public List<Appointment> getAppointmentsByDoctorId(int doctorId, int page) {
+    public List<Appointment> getAppointmentsByDoctorId(int doctorId, Map<String, String> params) {
         Session session = this.factory.getObject().getCurrentSession();
         CriteriaBuilder cb = session.getCriteriaBuilder();
         CriteriaQuery<Appointment> cq = cb.createQuery(Appointment.class);
         Root<Appointment> root = cq.from(Appointment.class);
         cq.select(root)
           .where(cb.equal(root.get("doctorId").get("id"), doctorId))
-          .orderBy(cb.asc(root.get("appointmentDate")), cb.asc(root.get("startTime")));
-
+          .orderBy(cb.desc(root.get("appointmentDate")), cb.desc(root.get("startTime")));
         Query<Appointment> query = session.createQuery(cq);
-        int pageSize = this.env.getProperty("appointments.page_size", Integer.class);
-        query.setFirstResult((page - 1) * pageSize);
-        query.setMaxResults(pageSize);
+
+        if (!"true".equals(params.get("all"))) {
+            int page = Integer.parseInt(params.getOrDefault("page", "1"));
+            int pageSize = this.env.getProperty("appointments.page_size", Integer.class);
+            query.setFirstResult((page - 1) * pageSize);
+            query.setMaxResults(pageSize);
+        }
+
         return query.getResultList();
     }
 

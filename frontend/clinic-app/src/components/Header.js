@@ -39,7 +39,10 @@ const Header = () => {
                             {user?.role === 'pharmacist' ? (
                                 <Link to="/pharmacist" className="text-dark text-decoration-none fw-medium">Quản lý kho thuốc</Link>
                             ) : user?.role === 'doctor' ? (
+                                <>
                                 <Link to="/doctor-schedule" className="text-dark text-decoration-none fw-medium">Lịch của bác sĩ</Link>
+                                <Link to="/medical-record" className="text-dark text-decoration-none fw-medium">Tạo Hồ Sơ Bệnh Án</Link>
+                                </>
                             ) : (
                                 <>
                                     <Link to="/services" className="text-dark text-decoration-none fw-medium">Dịch vụ y tế</Link>

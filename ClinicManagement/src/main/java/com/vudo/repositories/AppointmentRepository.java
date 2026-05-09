@@ -7,6 +7,7 @@ package com.vudo.repositories;
 import com.vudo.pojo.Appointment;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -17,6 +18,6 @@ public interface AppointmentRepository {
     List<Appointment> getAppointmentsByPatientId(int patientId, int page);
     Appointment add(Appointment appointment);
     Appointment getById(int id);
-    List<Appointment> getAppointmentsByDoctorId(int doctorId, int page);
+    List<Appointment> getAppointmentsByDoctorId(int doctorId, Map<String, String> params);
     Appointment cancel(Appointment appointment);
 }

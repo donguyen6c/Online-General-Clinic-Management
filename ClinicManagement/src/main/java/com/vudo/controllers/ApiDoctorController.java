@@ -53,9 +53,9 @@ public class ApiDoctorController {
     
     @GetMapping("/secure/doctor-schedule")
     @PreAuthorize("hasAuthority('doctor')")
-    public ResponseEntity<?> getMySchedule(@RequestParam(value = "page", defaultValue = "1") int page) {
+    public ResponseEntity<?> getMySchedule(@RequestParam Map<String, String> params) {
         try {
-            return ResponseEntity.ok(appointmentService.getDoctorAppointments(page));
+            return ResponseEntity.ok(appointmentService.getDoctorAppointments(params));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

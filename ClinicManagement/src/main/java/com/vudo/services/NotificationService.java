@@ -16,6 +16,7 @@ import java.util.List;
 public interface NotificationService {
     void createBookingNotification(User user, String doctorName, String time);
     void createMedicinesNotification(User user, MedicalRecord id, String time);
+    void createMedicalRecordNotification(User user, MedicalRecord id,String time);
     List<NotificationDTO> getUserNotifications(int userId, int page);
     boolean markNotificationAsRead(int notificationId);
     Long countUnreadByUserId(int userId);

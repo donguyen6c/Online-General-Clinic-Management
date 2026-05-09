@@ -22,6 +22,7 @@ import { MyUserContext } from "./configs/Contexts";
 import MyUserReducer from "./reducers/MyUserReducer";
 import Doctor from "./screens/Doctor/Doctor"
 import MedicalRecord from "./screens/Doctor/MedicalRecord";
+import RecordHistory from "./screens/Patient/RecordHistory";
 
 const App = () => {
   const [user, dispatch] = useReducer(MyUserReducer, cookies.load("user") || null);
@@ -47,6 +48,7 @@ const App = () => {
             <Route path="/doctors/:doctorId/booking" element={<Booking />} />
             <Route path="/appointments" element={<Appointments />} />
             <Route path="/my-appointments" element={<MyAppointments />} />
+            <Route path="/record-history" element={<RecordHistory />} />
         </Route>
 
         <Route element={<ProtectedRoute roles={'pharmacist'} />}>
@@ -56,8 +58,6 @@ const App = () => {
         <Route element={<ProtectedRoute roles={'doctor'} />}>
             <Route path="/doctor" element={<Doctor />} />
             <Route path="/doctor-schedule" element={<DoctorSchedule />} />
-        </Route>
-        <Route element={<ProtectedRoute/>}>
             <Route path="/medical-record" element={<MedicalRecord />} />
         </Route>
 
@@ -67,14 +67,7 @@ const App = () => {
 
         <Route element={<ProtectedRoute/>}>
             <Route path="/video-call/:id" element={<VideoCallPage />} />
-        </Route>
-        
-        <Route element={<ProtectedRoute/>}>
-            
-        </Route>
-
-        <Route element={<ProtectedRoute/>}>
-        </Route>
+        </Route>s
 
       </Routes>
       </main>

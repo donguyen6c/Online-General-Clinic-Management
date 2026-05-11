@@ -15,7 +15,6 @@ public interface DoctorWorkingPatternRepository {
     List<DoctorWorkingPattern> getByDoctorId(int doctorId);
     DoctorWorkingPattern getByDoctorIdAndDayOfWeek(int doctorId, int dayOfWeek);
     DoctorWorkingPattern getById(int id);
-    void add(DoctorWorkingPattern pattern);
-    void update(DoctorWorkingPattern pattern);
+    void addOrUpdate(DoctorWorkingPattern pattern);
     void delete(int id);
 }

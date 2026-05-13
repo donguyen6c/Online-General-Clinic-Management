@@ -12,5 +12,7 @@ import java.util.List;
  * @author ADMIN
  */
 public interface DoctorWorkingPatternService {
-    public List<DoctorWorkingPatternDTO> getByDoctorId(int id);
+    void addOrUpdate(DoctorWorkingPatternDTO pattern);
+    void deleteMyWorkingPattern(int id);
+    List<DoctorWorkingPatternDTO> getMyWorkingPatterns();
 }

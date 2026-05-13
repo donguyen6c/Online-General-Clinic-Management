@@ -70,15 +70,9 @@ public class DoctorWorkingPatternRepositoryImpl implements DoctorWorkingPatternR
         Session session = this.factory.getObject().getCurrentSession();
         return session.get(DoctorWorkingPattern.class, id);
     }
-
+    
     @Override
-    public void add(DoctorWorkingPattern pattern) {
-        Session session = this.factory.getObject().getCurrentSession();
-        session.persist(pattern);
-    }
-
-    @Override
-    public void update(DoctorWorkingPattern pattern) {
+    public void addOrUpdate(DoctorWorkingPattern pattern) {
         Session session = this.factory.getObject().getCurrentSession();
         session.merge(pattern);
     }

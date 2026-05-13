@@ -24,6 +24,8 @@ export const endpoints = {
     // LỊCH CỦA BÁC SĨ
     'doctor-schedules': '/secure/doctor/schedules',
     'doctor-schedule-detail': (id) => `/secure/doctor/schedules/${id}`,
+    "doctor-working-patterns": "/secure/doctor/working-patterns",
+    "doctor-working-pattern-detail": (id) => `/secure/doctor/working-patterns/${id}`,
     // QUẢN LÝ DANH MỤC THUỐC
     'medicines': '/secure/pharmacy/medicines',
     'medicine-detail': (id) => `/secure/pharmacy/medicines/${id}`,

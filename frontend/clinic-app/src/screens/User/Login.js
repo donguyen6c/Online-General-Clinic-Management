@@ -5,6 +5,8 @@ import Apis, { authApis, endpoints } from "../../configs/Apis";
 import { MyUserContext } from "../../configs/Contexts";
 import MySpinner from "../../components/MySpinner";
 import cookies from "react-cookies";
+import { signInWithPopup } from "firebase/auth";
+import { auth, googleProvider } from "../../configs/firebase";
 
 const userInfo = [
     { field: "username", label: "Tên đăng nhập", type: "text"     },
@@ -19,35 +21,50 @@ const Login = () => {
     const [q]                   = useSearchParams();
     const navigate              = useNavigate();
 
+    const handleAfterLogin = async (token) => {
+        cookies.save("token", token);
+        const p = await authApis().get(endpoints["profile"]);
+        cookies.save("user", p.data);
+        dispatch({ type: "LOGIN", payload: p.data });
+
+        const next = q.get("next");
+        if (next) {
+            navigate(next);
+        } else {
+            switch (p.data.role) {
+                case "admin":      navigate("/admin");      break;
+                case "doctor":     navigate("/doctor");     break;
+                case "pharmacist": navigate("/pharmacist"); break;
+                default:           navigate("/");
+            }
+        }
+    };
+
     const login = async (e) => {
         e.preventDefault();
-        console.log("login called", user); 
         try {
             setLoading(true);
-
             const res = await Apis.post(endpoints["login"], { ...user });
-            cookies.save("token", res.data.token);
-
-            const p = await authApis().get(endpoints["profile"]);
-            cookies.save("user", p.data);
-
-            dispatch({ type: "LOGIN", payload: p.data });
-
-            const next = q.get("next");
-            if (next) {
-                navigate(next);
-            } else {
-                switch (p.data.role) {
-                    case "admin":      navigate("/admin");      break;
-                    case "doctor":     navigate("/doctor");     break;
-                    case "pharmacist": navigate("/pharmacist"); break;
-                    case "patient":    navigate("/");           break;
-                    default:           navigate("/");
-                }
-            }
+            await handleAfterLogin(res.data.token);
         } catch (ex) {
             console.error(ex);
             setError("Sai tên đăng nhập hoặc mật khẩu!");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const loginWithGoogle = async () => {
+        try {
+            setLoading(true);
+            const result = await signInWithPopup(auth, googleProvider);
+            const idToken = await result.user.getIdToken();
+
+            const res = await Apis.post(endpoints["google-login"], { idToken });
+            await handleAfterLogin(res.data.token);
+        } catch (ex) {
+            console.error(ex);
+            setError("Đăng nhập Google thất bại!");
         } finally {
             setLoading(false);
         }
@@ -72,14 +89,24 @@ const Login = () => {
                     </Form.Group>
                 ))}
 
-                <Form.Group className="mb-3">
-                    {loading
-                        ? <MySpinner />
-                        : <Button variant="primary" type="submit" className="w-100">Đăng nhập</Button>
-                    }
-                </Form.Group>
+                {loading ? <MySpinner /> : (
+                    <>
+                        <Button variant="primary" type="submit" className="w-100 mb-2">
+                            Đăng nhập
+                        </Button>
 
-                <div className="text-center">
+                        <Button
+                            variant="outline-danger"
+                            className="w-100"
+                            type="button"
+                            onClick={loginWithGoogle}
+                        >
+                            Đăng nhập bằng Google
+                        </Button>
+                    </>
+                )}
+
+                <div className="text-center mt-3">
                     Chưa có tài khoản? <Link to="/register">Đăng ký</Link>
                 </div>
             </Form>

@@ -13,7 +13,8 @@ export const endpoints = {
     'doctor-detail': doctorId => `/doctors/${doctorId}`,
     'slots': (doctorId, date) => `/doctors/${doctorId}/slots?date=${date}`,
     'booking': doctorId => `/secure/doctors/${doctorId}/appointments`,
-    'patient-appointments': '/secure/patients/current-user/appointments',  
+    'patient-appointments': '/secure/patients/current-user/appointments', 
+    'google-login': "/google-login", 
     // CUỘC HẸN CỦA BÁC SĨ 
     'doctor-appointments': '/secure/doctor-schedule',
     'doctor-schedule': '/secure/doctor-schedule',

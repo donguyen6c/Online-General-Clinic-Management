@@ -162,5 +162,27 @@ public class UserServiceImpl implements UserService {
     public List<UserDTO> searchPatients(String keyword) {
         return userRepo.searchByKeyword(keyword).stream() .map(UserMapper::toDTO).collect(Collectors.toList());
     }
+    
+    @Override
+    public UserDTO findOrCreateGoogleUser(String email, String fullName, String avatar, String uid) {
+        User existing = userRepo.getUserByUsername(email);
+        if (existing != null) {
+            return UserMapper.toDTO(existing);
+        }
+
+        User u = new User();
+        u.setEmail(email);
+        u.setFullName(fullName != null ? fullName : "Google User");
+        u.setAvatar(avatar);
+        u.setUsername(email);          
+        u.setPassword(passwordEncoder.encode(uid));
+        u.setRole("patient");
+        u.setProvider("google");
+        u.setProviderId(uid);
+        u.setActive(true);
+        u.setCreatedAt(new Date());
+
+        return UserMapper.toDTO(userRepo.addUser(u));
+    }
 
 }

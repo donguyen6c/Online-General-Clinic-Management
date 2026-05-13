@@ -20,4 +20,5 @@ public interface UserService extends UserDetailsService{
     boolean authenticate(String username, String password);
     UserDTO updateProfile(String username, Map<String, String> params, MultipartFile avatar);
     List<UserDTO> searchPatients(String keyword);
+    UserDTO findOrCreateGoogleUser(String email, String fullName, String avatar, String uid);
 }

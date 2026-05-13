@@ -4,10 +4,19 @@
  */
 package com.vudo.controllers;
 
+import com.google.auth.oauth2.GoogleCredentials;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.FirebaseOptions;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthException;
+import com.google.firebase.auth.FirebaseToken;
 import com.vudo.dto.UserDTO;
 import com.vudo.pojo.User;
 import com.vudo.services.UserService;
 import com.vudo.utils.JwtUtils;
+import jakarta.annotation.PostConstruct;
+import java.io.IOException;
+import java.io.InputStream;
 import java.security.Principal;
 import java.util.Collections;
 import java.util.Map;
@@ -76,6 +85,42 @@ public class ApiUserController {
             return ResponseEntity.ok(updated);
         } catch (RuntimeException ex) {
             return ResponseEntity.badRequest().body(Map.of("error", ex.getMessage()));
+        }
+    }
+    
+    @PostMapping("/google-login")
+    public ResponseEntity<?> googleLogin(@RequestBody Map<String, String> body) {
+        try {
+            // Khởi tạo Firebase ngay tại đây nếu chưa có
+            if (FirebaseApp.getApps().isEmpty()) {
+                InputStream serviceAccount = getClass()
+                    .getClassLoader()
+                    .getResourceAsStream("clinicapp-5adfa-firebase-adminsdk-fbsvc-c96748bd46.json");
+                FirebaseOptions options = FirebaseOptions.builder()
+                    .setCredentials(GoogleCredentials.fromStream(serviceAccount))
+                    .build();
+                FirebaseApp.initializeApp(options);
+            }
+
+            String idToken = body.get("idToken");
+            FirebaseToken decoded = FirebaseAuth.getInstance().verifyIdToken(idToken);
+
+            UserDTO userDTO = userService.findOrCreateGoogleUser(
+                decoded.getEmail(),
+                decoded.getName(),
+                decoded.getPicture(),
+                decoded.getUid()
+            );
+
+            String token = JwtUtils.generateToken(userDTO.getUsername());
+            return ResponseEntity.ok(Map.of("token", token));
+
+        } catch (FirebaseAuthException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("error", "Token Google không hợp lệ"));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", e.getMessage()));
         }
     }
     

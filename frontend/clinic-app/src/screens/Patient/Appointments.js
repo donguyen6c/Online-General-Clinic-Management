@@ -1,12 +1,5 @@
 import { useEffect, useState } from "react";
-import {
-    Container,
-    Table,
-    Badge,
-    Alert,
-    Button,
-    Modal
-} from "react-bootstrap";
+import { Container, Table, Badge, Alert, Button, Modal} from "react-bootstrap";
 import Apis, { endpoints } from "../../configs/Apis";
 import MySpinner from "../../components/MySpinner";
 

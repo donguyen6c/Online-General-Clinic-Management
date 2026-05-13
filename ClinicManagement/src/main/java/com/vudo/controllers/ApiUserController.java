@@ -91,7 +91,6 @@ public class ApiUserController {
     @PostMapping("/google-login")
     public ResponseEntity<?> googleLogin(@RequestBody Map<String, String> body) {
         try {
-            // Khởi tạo Firebase ngay tại đây nếu chưa có
             if (FirebaseApp.getApps().isEmpty()) {
                 InputStream serviceAccount = getClass()
                     .getClassLoader()
@@ -117,7 +116,7 @@ public class ApiUserController {
 
         } catch (FirebaseAuthException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(Map.of("error", "Token Google không hợp lệ"));
+                    .body(Map.of("error", "Token không hợp lệ"));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("error", e.getMessage()));

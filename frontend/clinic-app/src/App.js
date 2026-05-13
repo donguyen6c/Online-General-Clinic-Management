@@ -10,7 +10,7 @@ import AdminDashboard from "./screens/Admin/AdminDashboard/AdminDashboard";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import VideoCallPage from "./screens/VideoCall/VideoCallPage";
 import MyAppointments from "./screens/MyAppointments/MyAppointments";
-import DoctorSchedule from "./screens/DoctorSchedule/DoctorSchedule";
+import DoctorSchedule from "./screens/Doctor/DoctorSchedule";
 import Booking from "./screens/Patient/Booking";
 import Appointments from "./screens/Patient/Appointments";
 import Home from "./screens/Home/Home"
@@ -26,7 +26,7 @@ import RecordHistory from "./screens/Patient/RecordHistory";
 import Payment from "./screens/Patient/Payment";
 import PaymentResult from "./screens/Patient/PaymentResult";
 import PatientRecordHistory from "./screens/Doctor/PatientRecordHistory";
-import DoctorScheduleManagement from "./screens/Doctor/DoctorSchedule";
+import DoctorScheduleManagement from "./screens/Doctor/DoctorScheduleManagement";
 
 const App = () => {
   const [user, dispatch] = useReducer(MyUserReducer, cookies.load("user") || null);

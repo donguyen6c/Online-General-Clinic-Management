@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Apis, { endpoints } from "../../configs/Apis";
 import MySpinner from "../../components/MySpinner";
+import { ExportContext, pdfStrategy, excelStrategy } from "../../configs/strategy/ExportStrategy";
 
 const RecordHistory = () => {
     const [records, setRecords] = useState([]);
@@ -26,6 +27,11 @@ const RecordHistory = () => {
                 {record.paymentStatus === "failed"? "Thanh toán thất bại" : "Chưa thanh toán"}
             </button>
         );
+    };
+
+    const handleExport = (record, type) => {
+        const ctx = new ExportContext(type === "pdf" ? pdfStrategy : excelStrategy);
+        ctx.execute(record);
     };
 
     return (
@@ -79,16 +85,24 @@ const RecordHistory = () => {
                             </div>
                         )}
                     </div>
-                    {record.paymentStatus !== "paid" && (
-                        <div className="card-footer d-flex justify-content-end">
-                            <button
-                                className="btn btn-primary"
-                                onClick={() => navigate(`/payment/${record.recordId}`)}
-                            >
-                                Thanh toán ngay
+
+                    <div className="card-footer d-flex justify-content-between align-items-center">
+                        <div className="d-flex gap-2">
+                            <button className="btn btn-sm btn-outline-danger" onClick={() => handleExport(record, "pdf")}>
+                                Xuất PDF
+                            </button>
+                            <button className="btn btn-sm btn-outline-success" onClick={() => handleExport(record, "excel")}>
+                                Xuất Excel
                             </button>
                         </div>
-                    )}
+
+                        {record.paymentStatus !== "paid" && (
+                        <button className="btn btn-primary" onClick={() => navigate(`/payment/${record.recordId}`)}>
+                            Thanh toán ngay
+                        </button>
+                        )}
+
+                    </div>                       
                 </div>
             ))}
         </div>

@@ -41,6 +41,7 @@ const Header = () => {
                             ) : user?.role === 'doctor' ? (
                                 <>
                                 <Link to="/doctor-schedule" className="text-dark text-decoration-none fw-medium">Lịch Của Bác Sĩ</Link>
+                                <Link to="/doctor/schedules" className="text-dark text-decoration-none fw-medium">Quản Lý Lịch Của Bác Sĩ</Link>
                                 <Link to="/medical-record" className="text-dark text-decoration-none fw-medium">Tạo Hồ Sơ Bệnh Án</Link>
                                 <Link to="/patient-record-history" className="text-dark text-decoration-none fw-medium">Hồ Sơ Của Bệnh Nhân</Link>
                                 </>

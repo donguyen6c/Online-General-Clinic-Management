@@ -1,5 +1,14 @@
 import { useEffect, useState } from "react";
-import { Button, Card, Col, Container, Row, Table, Alert } from "react-bootstrap";
+import {
+    Button,
+    Card,
+    Col,
+    Container,
+    Row,
+    Table,
+    Alert,
+    ButtonGroup
+} from "react-bootstrap";
 import { useParams } from "react-router-dom";
 import Apis, { endpoints } from "../../configs/Apis";
 import MySpinner from "../../components/MySpinner";
@@ -11,6 +20,8 @@ const Payment = () => {
     const [loading, setLoading] = useState(true);
     const [paying, setPaying] = useState(false);
     const [error, setError] = useState("");
+
+    const [paymentMethod, setPaymentMethod] = useState("vnpay");
 
     useEffect(() => {
         Apis.get(endpoints["medical-record-payment"](recordId))
@@ -50,7 +61,12 @@ const Payment = () => {
     const handlePayment = () => {
         setPaying(true);
 
-        Apis.post(endpoints["create-payment"], {
+        const endpoint =
+            paymentMethod === "momo"
+                ? endpoints["create-momo-payment"]
+                : endpoints["create-vnpay-payment"];
+
+        Apis.post(endpoint, {
             medicalRecordId: recordId
         })
             .then(res => {
@@ -71,17 +87,27 @@ const Payment = () => {
                 <Col md={8}>
                     <Card className="mb-3 shadow-sm">
                         <Card.Header className="d-flex justify-content-between">
-                            <span className="fw-bold">#{record.recordId} — {record.doctorName}</span>
-                            <span className="text-muted small">{record.date}</span>
+                            <span className="fw-bold">
+                                #{record.recordId} — {record.doctorName}
+                            </span>
+
+                            <span className="text-muted small">
+                                {record.date}
+                            </span>
                         </Card.Header>
 
                         <Card.Body>
-                            <p><strong>Chẩn đoán:</strong> {record.diagnosis}</p>
+                            <p>
+                                <strong>Chẩn đoán:</strong> {record.diagnosis}
+                            </p>
                         </Card.Body>
                     </Card>
 
                     <Card className="mb-3 shadow-sm">
-                        <Card.Header className="fw-bold">Dịch vụ</Card.Header>
+                        <Card.Header className="fw-bold">
+                            Dịch vụ
+                        </Card.Header>
+
                         <Card.Body>
                             <Table bordered hover responsive>
                                 <thead>
@@ -92,17 +118,27 @@ const Payment = () => {
                                         <th>Thành tiền</th>
                                     </tr>
                                 </thead>
+
                                 <tbody>
-                                    {record.services?.length > 0 ? record.services.map((s, i) => (
-                                        <tr key={i}>
-                                            <td>{s.serviceName}</td>
-                                            <td>{s.quantity}</td>
-                                            <td>{formatMoney(s.priceAtTime)}</td>
-                                            <td>{formatMoney(s.priceAtTime * s.quantity)}</td>
-                                        </tr>
-                                    )) : (
+                                    {record.services?.length > 0 ? (
+                                        record.services.map((s, i) => (
+                                            <tr key={i}>
+                                                <td>{s.serviceName}</td>
+                                                <td>{s.quantity}</td>
+                                                <td>{formatMoney(s.priceAtTime)}</td>
+                                                <td>
+                                                    {formatMoney(
+                                                        s.priceAtTime * s.quantity
+                                                    )}
+                                                </td>
+                                            </tr>
+                                        ))
+                                    ) : (
                                         <tr>
-                                            <td colSpan="4" className="text-center text-muted">
+                                            <td
+                                                colSpan="4"
+                                                className="text-center text-muted"
+                                            >
                                                 Không có dịch vụ
                                             </td>
                                         </tr>
@@ -113,7 +149,10 @@ const Payment = () => {
                     </Card>
 
                     <Card className="shadow-sm">
-                        <Card.Header className="fw-bold">Đơn thuốc</Card.Header>
+                        <Card.Header className="fw-bold">
+                            Đơn thuốc
+                        </Card.Header>
+
                         <Card.Body>
                             <Table bordered hover responsive>
                                 <thead>
@@ -124,17 +163,23 @@ const Payment = () => {
                                         <th>Đơn giá</th>
                                     </tr>
                                 </thead>
+
                                 <tbody>
-                                    {record.prescriptions?.length > 0 ? record.prescriptions.map((p, i) => (
-                                        <tr key={i}>
-                                            <td>{p.medicineName}</td>
-                                            <td>{p.quantity}</td>
-                                            <td>{p.instruction}</td>
-                                            <td>{formatMoney(p.price)}</td>
-                                        </tr>
-                                    )) : (
+                                    {record.prescriptions?.length > 0 ? (
+                                        record.prescriptions.map((p, i) => (
+                                            <tr key={i}>
+                                                <td>{p.medicineName}</td>
+                                                <td>{p.quantity}</td>
+                                                <td>{p.instruction}</td>
+                                                <td>{formatMoney(p.price)}</td>
+                                            </tr>
+                                        ))
+                                    ) : (
                                         <tr>
-                                            <td colSpan="4" className="text-center text-muted">
+                                            <td
+                                                colSpan="4"
+                                                className="text-center text-muted"
+                                            >
                                                 Không có thuốc
                                             </td>
                                         </tr>
@@ -166,7 +211,40 @@ const Payment = () => {
 
                             <div className="d-flex justify-content-between fs-5 mb-3">
                                 <span>Tổng tiền:</span>
-                                <strong className="text-danger">{formatMoney(totalAmount)}</strong>
+
+                                <strong className="text-danger">
+                                    {formatMoney(totalAmount)}
+                                </strong>
+                            </div>
+
+                            <div className="mb-3">
+                                <div className="fw-bold mb-2">
+                                    Chọn phương thức thanh toán
+                                </div>
+
+                                <ButtonGroup className="w-100">
+                                    <Button
+                                        variant={
+                                            paymentMethod === "vnpay"
+                                                ? "primary"
+                                                : "outline-primary"
+                                        }
+                                        onClick={() => setPaymentMethod("vnpay")}
+                                    >
+                                        VNPay
+                                    </Button>
+
+                                    <Button
+                                        variant={
+                                            paymentMethod === "momo"
+                                                ? "danger"
+                                                : "outline-danger"
+                                        }
+                                        onClick={() => setPaymentMethod("momo")}
+                                    >
+                                        MoMo
+                                    </Button>
+                                </ButtonGroup>
                             </div>
 
                             <Button
@@ -183,7 +261,11 @@ const Payment = () => {
                                     ? "Đã thanh toán"
                                     : paying
                                         ? "Đang xử lý..."
-                                        : "Thanh toán VNPay"}
+                                        : `Thanh toán ${
+                                            paymentMethod === "momo"
+                                                ? "MoMo"
+                                                : "VNPay"
+                                        }`}
                             </Button>
                         </Card.Body>
                     </Card>

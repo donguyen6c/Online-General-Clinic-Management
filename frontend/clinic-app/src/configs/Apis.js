@@ -72,7 +72,8 @@ export const endpoints = {
     'patient-medical-records': (patientId) => `/secure/${patientId}/medical-records`,
     'appointments-doctor': '/secure/doctor-schedule',
     'medical-record-payment':(medicalRecordId) =>`/secure/patients/current-user/medical-records/${medicalRecordId}`, 
-    'create-payment':'/secure/payments/vnpay/create',
+    'create-momo-payment':'/secure/payments/momo/create',
+    'create-vnpay-payment':'/secure/payments/vnpay/create',
 }
 
 const Apis = axios.create({

@@ -10,7 +10,7 @@ import java.math.BigDecimal;
  *
  * @author ADMIN
  */
-public class VNPayCreatePaymentRequestDTO {
+public class CreatePaymentRequestDTO {
     private Integer medicalRecordId;
 
     /**

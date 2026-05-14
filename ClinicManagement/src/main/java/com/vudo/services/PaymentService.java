@@ -4,7 +4,7 @@
  */
 package com.vudo.services;
 
-import com.vudo.dto.VNPayCreatePaymentRequestDTO;
+import com.vudo.dto.CreatePaymentRequestDTO;
 import java.util.Map;
 
 /**
@@ -12,6 +12,9 @@ import java.util.Map;
  * @author ADMIN
  */
 public interface PaymentService {
-    Map<String, String> createVNPayPaymentUrl(VNPayCreatePaymentRequestDTO request, String clientIp);
+    Map<String, String> createVNPayPaymentUrl(CreatePaymentRequestDTO request, String clientIp);
     Map<String, String> handleVNPayCallback(Map<String, String> vnpParams);
+    Map<String, Object> createMomoPaymentUrl(CreatePaymentRequestDTO request);
+    Map<String, String> handleMomoIpn(Map<String, Object> body);
+    Map<String, String> handleMomoReturn(Map<String, String> params);
 }

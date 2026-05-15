@@ -7,7 +7,7 @@ import Header from "./components/Header"
 import Footer from "./components/Footer"
 import Patient from "./screens/Home/HealthCheck";
 import Pharmacist from "./screens/Pharmacist/Pharmacist";
-import Doctor from "./screens/Admin/Doctors/UpdateDoctor";
+import Doctor from "./screens/Doctor/Doctor";
 import AdminDashboard from "./screens/Admin/AdminDashboard/AdminDashboard";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import VideoCallPage from "./screens/VideoCall/VideoCallPage";

@@ -50,6 +50,10 @@ export const endpoints = {
     'unread-notification-count': '/secure/notifications/unread-count',
 
     'appointments': '/secure/patients/current-user/appointments',
+
+    'medical-records': '/secure/medical-records',
+    'medical-record-prescriptions': (medicalRecordId) => `/secure/medical-records/${medicalRecordId}/prescriptions`,
+    'medical-record-services': (medicalRecordId) => `/secure/medical-records/${medicalRecordId}/services`,
     'cancel-appointments': ap_id => `/secure/appointments/${ap_id}`
 }
 

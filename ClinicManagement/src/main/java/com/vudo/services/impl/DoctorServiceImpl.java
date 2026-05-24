@@ -47,8 +47,7 @@ public class DoctorServiceImpl implements DoctorService {
         List<Doctor> doctors = (List<Doctor>) repoData.get("data");
         boolean hasNext = (boolean) repoData.get("hasNext");
 
-        List<DoctorDTO> dtos = doctors.stream().map(DoctorMapper::toDTO)
-                .collect(Collectors.toList());
+        List<DoctorDTO> dtos = doctors.stream().map(DoctorMapper::toDTO).collect(Collectors.toList());
 
         Map<String, Object> result = new HashMap<>();
         result.put("data", dtos);

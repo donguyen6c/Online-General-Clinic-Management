@@ -4,16 +4,10 @@
  */
 package com.vudo.controllers;
 
-import com.vudo.dto.ClinicServiceDTO;
-import com.vudo.dto.DiseaseDTO;
-import com.vudo.pojo.Doctor;
-import com.vudo.services.DiseaseService;
-import com.vudo.services.DoctorService;
-import com.vudo.services.ServiceService;
 import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -25,6 +19,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.vudo.dto.ClinicServiceDTO;
+import com.vudo.dto.DiseaseDTO;
+import com.vudo.pojo.Doctor;
+import com.vudo.services.DiseaseService;
+import com.vudo.services.DoctorService;
+import com.vudo.services.ServiceService;
 
 /**
  *
@@ -45,9 +46,7 @@ public class ApiAdminController {
 
     @PutMapping("/diseases/{id}")
     @PreAuthorize("hasAuthority('admin')") 
-    public ResponseEntity<?> updateDisease(
-            @PathVariable("id") int id, 
-            @RequestBody DiseaseDTO requestDTO) {
+    public ResponseEntity<?> updateDisease(@PathVariable("id") int id, @RequestBody DiseaseDTO requestDTO) {
         try {
             DiseaseDTO updated = diseaseService.updateDisease(id, requestDTO);
             return ResponseEntity.ok(updated);
@@ -69,9 +68,7 @@ public class ApiAdminController {
 
     @PutMapping("/services/{id}")
     @PreAuthorize("hasAuthority('admin')")
-    public ResponseEntity<?> updateService(
-            @PathVariable("id") int id, 
-            @RequestBody ClinicServiceDTO requestDTO) {
+    public ResponseEntity<?> updateService(@PathVariable("id") int id, @RequestBody ClinicServiceDTO requestDTO) {
         try {
             ClinicServiceDTO updated = serviceService.updateService(id, requestDTO);
             return ResponseEntity.ok(updated);
@@ -144,6 +141,4 @@ public class ApiAdminController {
         this.docService.deleteDoctor(id);
     }
     
-    
-
 }

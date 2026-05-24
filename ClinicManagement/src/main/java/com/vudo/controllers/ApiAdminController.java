@@ -111,6 +111,7 @@ public class ApiAdminController {
     }
     
     @PostMapping(path = "/doctors")
+    @PreAuthorize("hasAuthority('admin')")
     public ResponseEntity<String> addDoctor(@ModelAttribute Doctor doctor) {
         try {
             doctor.getUserId().setRole("doctor");
@@ -124,6 +125,7 @@ public class ApiAdminController {
     }
     
     @PostMapping(path = "/doctors/{id}")
+    @PreAuthorize("hasAuthority('admin')")
     public ResponseEntity<String> updateDoctor(@PathVariable("id") int id,@ModelAttribute Doctor doctor) {
         try {
             doctor.setId(id);

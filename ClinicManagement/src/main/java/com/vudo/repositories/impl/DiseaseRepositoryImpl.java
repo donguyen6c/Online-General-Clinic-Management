@@ -60,29 +60,29 @@ public class DiseaseRepositoryImpl implements DiseaseRepository {
     @Override
     public List<Disease> getAllDiseases(Map<String, String> params) {
         Session session = this.factory.getObject().getCurrentSession();
-    CriteriaBuilder b = session.getCriteriaBuilder();
-    CriteriaQuery<Disease> q = b.createQuery(Disease.class);
-    Root<Disease> root = q.from(Disease.class);
-    q.select(root);
+        CriteriaBuilder b = session.getCriteriaBuilder();
+        CriteriaQuery<Disease> q = b.createQuery(Disease.class);
+        Root<Disease> root = q.from(Disease.class);
+        q.select(root);
 
-    if (params != null) {
-        String kw = params.get("kw");
-        if (kw != null && !kw.isEmpty()) {
-            q.where(b.like(root.get("name"), String.format("%%%s%%", kw)));
+        if (params != null) {
+            String kw = params.get("kw");
+            if (kw != null && !kw.isEmpty()) {
+                q.where(b.like(root.get("name"), String.format("%%%s%%", kw)));
+            }
         }
-    }
 
-    q.orderBy(b.desc(root.get("id")));
-    Query<Disease> query = session.createQuery(q);
+        q.orderBy(b.desc(root.get("id")));
+        Query<Disease> query = session.createQuery(q);
 
-    if (params != null && !params.containsKey("all")) {
-        int pageSize = this.env.getProperty("services_disease", Integer.class);
-        int page = Integer.parseInt(params.getOrDefault("page", "1"));
-        query.setMaxResults(pageSize);
-        query.setFirstResult((page - 1) * pageSize);
-    }
+        if (params != null && !params.containsKey("all")) {
+            int pageSize = this.env.getProperty("services_disease", Integer.class);
+            int page = Integer.parseInt(params.getOrDefault("page", "1"));
+            query.setMaxResults(pageSize);
+            query.setFirstResult((page - 1) * pageSize);
+        }
 
-    return query.getResultList();
+        return query.getResultList();
     }
 
     @Override

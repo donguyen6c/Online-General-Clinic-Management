@@ -15,6 +15,9 @@ export const endpoints = {
     'booking': doctorId => `/secure/doctors/${doctorId}/appointments`,
     'patient-appointments': '/secure/patients/current-user/appointments', 
     'google-login': "/google-login", 
+
+
+    'cancel-appointment': appointmentId => `/secure/appointments/${appointmentId}`,
     // CUỘC HẸN CỦA BÁC SĨ 
     'doctor-appointments': '/secure/doctor-schedule',
     'doctor-schedule': '/secure/doctor-schedule',

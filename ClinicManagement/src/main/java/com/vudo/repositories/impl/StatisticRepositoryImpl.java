@@ -48,14 +48,9 @@ public class StatisticRepositoryImpl implements StatisticRepository {
 
         Root<User> root = cq.from(User.class);
 
-        cq.multiselect(
-                root.get("gender"),
-                cb.count(root.get("id"))
-        );
+        cq.multiselect(root.get("gender"),cb.count(root.get("id")));
 
-        cq.where(
-                cb.equal(root.get("role"), "PATIENT")
-        );
+        cq.where(cb.equal(root.get("role"), "PATIENT"));
 
         cq.groupBy(root.get("gender"));
 
@@ -87,15 +82,9 @@ public class StatisticRepositoryImpl implements StatisticRepository {
                 .when(cb.between(dob, age60, age45), "46 - 60 tuổi")
                 .otherwise("Trên 60 tuổi");
 
-        cq.multiselect(
-                ageGroup,
-                cb.count(root.get("id"))
-        );
+        cq.multiselect(ageGroup, cb.count(root.get("id")));
 
-        cq.where(
-                cb.equal(root.get("role"), "PATIENT"),
-                cb.isNotNull(root.get("dateOfBirth"))
-        );
+        cq.where(cb.equal(root.get("role"), "PATIENT"),cb.isNotNull(root.get("dateOfBirth")));
 
         cq.groupBy(ageGroup);
 
@@ -115,14 +104,9 @@ public class StatisticRepositoryImpl implements StatisticRepository {
         Join<MedicalRecord, Doctor> doctorJoin = root.join("doctorId", JoinType.INNER);
         Join<Doctor, Specialty> specialtyJoin = doctorJoin.join("specialtyId", JoinType.LEFT);
 
-        cq.multiselect(
-                specialtyJoin.get("name"),
-                cb.countDistinct(patientJoin.get("id"))
-        );
+        cq.multiselect(specialtyJoin.get("name"), cb.countDistinct(patientJoin.get("id")));
 
-        cq.where(
-                cb.equal(patientJoin.get("role"), "PATIENT")
-        );
+        cq.where(cb.equal(patientJoin.get("role"), "PATIENT"));
 
         cq.groupBy(specialtyJoin.get("name"));
 
@@ -140,10 +124,7 @@ public class StatisticRepositoryImpl implements StatisticRepository {
 
         Join<MedicalRecordService, Service> serviceJoin = root.join("serviceId", JoinType.INNER);
 
-        cq.multiselect(
-                serviceJoin.get("name"),
-                cb.sum(root.get("quantity"))
-        );
+        cq.multiselect(serviceJoin.get("name"),cb.sum(root.get("quantity")));
 
         cq.groupBy(serviceJoin.get("name"));
 
@@ -161,15 +142,9 @@ public class StatisticRepositoryImpl implements StatisticRepository {
 
         Root<MedicalRecord> root = cq.from(MedicalRecord.class);
 
-        cq.multiselect(
-                root.get("diagnosis"),
-                cb.count(root.get("id"))
-        );
+        cq.multiselect(root.get("diagnosis"), cb.count(root.get("id")));
 
-        cq.where(
-                cb.isNotNull(root.get("diagnosis")),
-                cb.notEqual(root.get("diagnosis"), "")
-        );
+        cq.where(cb.isNotNull(root.get("diagnosis")));
 
         cq.groupBy(root.get("diagnosis"));
 

@@ -25,6 +25,7 @@ import com.vudo.repositories.MedicalRecordRepository;
 import com.vudo.repositories.PharmacyRepository;
 import com.vudo.repositories.ServicesRepository;
 import com.vudo.repositories.UserRepository;
+import com.vudo.services.AppointmentService;
 import com.vudo.services.MedicalRecordService;
 import com.vudo.services.NotificationService;
 import java.util.HashSet;
@@ -68,7 +69,10 @@ public class MedicalRecordServiceImpl implements MedicalRecordService {
     
     @Autowired
     private NotificationService notificationService;
-
+    
+    @Autowired
+    private AppointmentService appointmentService;
+    
     @Override
     @Transactional
     public List<MedicalRecordResponseDTO> getPatientHistory(int patientId) {
@@ -119,7 +123,7 @@ public class MedicalRecordServiceImpl implements MedicalRecordService {
         );
 
         record = medicalRecordRepo.create(record);
-
+        appointmentRepo.completed(appointment);
         String currentTime = new java.util.Date().toString();
         notificationService.createMedicinesNotification(patient, record, currentTime);
 

@@ -109,4 +109,11 @@ public class AppointmentRepositoryImpl implements AppointmentRepository {
         return appointment;
     }
 
+    @Override
+    public Appointment completed(Appointment appointment) {
+        Session session = this.factory.getObject().getCurrentSession();
+        session.merge(appointment);
+        return appointment;
+    }
+
 }

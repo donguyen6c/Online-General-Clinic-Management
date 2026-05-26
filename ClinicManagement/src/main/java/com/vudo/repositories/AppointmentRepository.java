@@ -20,4 +20,5 @@ public interface AppointmentRepository {
     Appointment getById(int id);
     List<Appointment> getAppointmentsByDoctorId(int doctorId, Map<String, String> params);
     Appointment cancel(Appointment appointment);
+    Appointment completed (Appointment appointment);
 }

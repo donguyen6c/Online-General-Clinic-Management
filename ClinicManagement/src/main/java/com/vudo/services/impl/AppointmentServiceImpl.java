@@ -223,4 +223,35 @@ public class AppointmentServiceImpl implements AppointmentService {
 
         return AppointmentMapper.toDTO(cancelled);
     }
+
+    @Override
+    public AppointmentResponseDTO completedAppointment(int appointmentId) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        User currentUser = userRepo.getUserByUsername(username);
+
+        if (currentUser == null) {
+            throw new RuntimeException("Không tìm thấy thông tin người dùng");
+        }
+
+        Appointment appointment = appointmentRepo.getById(appointmentId);
+        if (appointment == null) {
+            throw new RuntimeException("Không tìm thấy lịch hẹn");
+        }
+
+        boolean isDoctorOwner = appointment.getDoctorId() != null
+                && appointment.getDoctorId().getUserId() != null
+                && appointment.getDoctorId().getUserId().getId().equals(currentUser.getId());
+
+        if (!isDoctorOwner) {
+            throw new RuntimeException("Bạn không có quyền");
+        }
+
+        appointment.setStatus("completed");
+
+        Appointment completed = appointmentRepo.completed(appointment);
+
+        return AppointmentMapper.toDTO(completed);
+    }
+    
+    
 }

@@ -20,4 +20,6 @@ public interface StatisticRepository {
     List<Object[]> countMedicalServicesUsed();
     
     List<Object[]> countPopularDiseases();
+    
+    List<Object[]> revenueByPeriod(int year, String type);
 }

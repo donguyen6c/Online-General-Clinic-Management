@@ -7,6 +7,7 @@ package com.vudo.repositories.impl;
 import com.vudo.pojo.Doctor;
 import com.vudo.pojo.MedicalRecord;
 import com.vudo.pojo.MedicalRecordService;
+import com.vudo.pojo.Payment;
 import com.vudo.pojo.Service;
 import com.vudo.pojo.Specialty;
 import com.vudo.pojo.User;
@@ -48,7 +49,7 @@ public class StatisticRepositoryImpl implements StatisticRepository {
 
         Root<User> root = cq.from(User.class);
 
-        cq.multiselect(root.get("gender"),cb.count(root.get("id")));
+        cq.multiselect(root.get("gender"), cb.count(root.get("id")));
 
         cq.where(cb.equal(root.get("role"), "PATIENT"));
 
@@ -84,7 +85,7 @@ public class StatisticRepositoryImpl implements StatisticRepository {
 
         cq.multiselect(ageGroup, cb.count(root.get("id")));
 
-        cq.where(cb.equal(root.get("role"), "PATIENT"),cb.isNotNull(root.get("dateOfBirth")));
+        cq.where(cb.equal(root.get("role"), "PATIENT"), cb.isNotNull(root.get("dateOfBirth")));
 
         cq.groupBy(ageGroup);
 
@@ -124,7 +125,7 @@ public class StatisticRepositoryImpl implements StatisticRepository {
 
         Join<MedicalRecordService, Service> serviceJoin = root.join("serviceId", JoinType.INNER);
 
-        cq.multiselect(serviceJoin.get("name"),cb.sum(root.get("quantity")));
+        cq.multiselect(serviceJoin.get("name"), cb.sum(root.get("quantity")));
 
         cq.groupBy(serviceJoin.get("name"));
 
@@ -149,6 +150,37 @@ public class StatisticRepositoryImpl implements StatisticRepository {
         cq.groupBy(root.get("diagnosis"));
 
         cq.orderBy(cb.desc(cb.count(root.get("id"))));
+
+        return session.createQuery(cq).getResultList();
+    }
+
+    @Override
+    public List<Object[]> revenueByPeriod(int year, String type) {
+        Session session = factory.getObject().getCurrentSession();
+
+        CriteriaBuilder cb = session.getCriteriaBuilder();
+        CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+
+        Root<Payment> root = cq.from(Payment.class);
+
+        Expression<Integer> period;
+
+        if ("quarter".equalsIgnoreCase(type)) {
+            period = cb.function("QUARTER", Integer.class, root.get("createdAt"));
+        } else {
+            period = cb.function("MONTH", Integer.class, root.get("createdAt"));
+        }
+
+        Expression<Integer> paymentYear = cb.function("YEAR", Integer.class, root.get("createdAt"));
+
+        Expression<Number> revenue = cb.sum(root.get("amount"));
+
+        cq.multiselect(period, revenue);
+
+        cq.where(cb.equal(root.get("status"), "paid"), cb.equal(paymentYear, year));
+
+        cq.groupBy(period);
+        cq.orderBy(cb.asc(period));
 
         return session.createQuery(cq).getResultList();
     }

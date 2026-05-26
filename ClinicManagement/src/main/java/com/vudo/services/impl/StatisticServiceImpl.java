@@ -73,4 +73,54 @@ public class StatisticServiceImpl implements StatisticService {
         List<Object[]> results = statisticRepository.countPopularDiseases();
         return convertToChartData(results);
     }
+
+    @Override
+    public Map<String, Object> getRevenueChart(int year, String type) {
+        if (type == null || type.isBlank()) {
+            type = "month";
+        }
+
+        List<Object[]> results = statisticRepository.revenueByPeriod(year, type);
+
+        return convertRevenueToChartData(results, year, type);
+    }
+
+    private Map<String, Object> convertRevenueToChartData(List<Object[]> results, int year, String type) {
+        List<String> labels = new ArrayList<>();
+        List<Long> data = new ArrayList<>();
+
+        int totalPeriod = "quarter".equalsIgnoreCase(type) ? 4 : 12;
+
+        for (int i = 1; i <= totalPeriod; i++) {
+            if ("quarter".equalsIgnoreCase(type)) {
+                labels.add("Quý " + i + "/" + year);
+            } else {
+                labels.add("Tháng " + i + "/" + year);
+            }
+
+            data.add(0L);
+        }
+
+        for (Object[] row : results) {
+            int period = ((Number) row[0]).intValue();
+            long revenue = row[1] == null ? 0L : ((Number) row[1]).longValue();
+
+            data.set(period - 1, revenue);
+        }
+
+        long totalRevenue = 0L;
+
+        for (Long value : data) {
+            totalRevenue += value;
+        }
+
+        Map<String, Object> chartData = new HashMap<>();
+        chartData.put("year", year);
+        chartData.put("type", type);
+        chartData.put("totalRevenue", totalRevenue);
+        chartData.put("labels", labels);
+        chartData.put("data", data);
+
+        return chartData;
+    }
 }

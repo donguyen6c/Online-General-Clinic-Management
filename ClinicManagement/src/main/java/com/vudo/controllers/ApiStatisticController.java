@@ -14,11 +14,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/secure/statistics")
-@PreAuthorize("hasAuthority('admin')") 
+@RequestMapping("/api/statistics")
 public class ApiStatisticController {
 
     @Autowired
@@ -47,5 +47,13 @@ public class ApiStatisticController {
     @GetMapping("/diseases")
     public Map<String, Object> getPopularDiseases() {
         return statisticService.getPopularDiseasesChart();
+    }
+
+    @GetMapping("/revenue")
+    public Map<String, Object> getRevenue(
+            @RequestParam(name = "year") int year,
+            @RequestParam(name = "type", defaultValue = "month") String type
+    ) {
+        return statisticService.getRevenueChart(year, type);
     }
 }

@@ -21,4 +21,6 @@ public interface StatisticService {
     Map<String, Object> getMedicalServicesUsedChart();
     
     Map<String, Object> getPopularDiseasesChart();
+    
+    Map<String, Object> getRevenueChart(int year, String type);
 }

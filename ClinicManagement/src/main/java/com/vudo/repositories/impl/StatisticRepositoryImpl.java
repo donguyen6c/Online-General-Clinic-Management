@@ -109,7 +109,7 @@ public class StatisticRepositoryImpl implements StatisticRepository {
 
         Root<MedicalRecord> root = cq.from(MedicalRecord.class);
 
-        Join<MedicalRecord, User> patientJoin = root.join("patient", JoinType.INNER);
+        Join<MedicalRecord, User> patientJoin = root.join("patientId", JoinType.INNER);
         Join<MedicalRecord, Doctor> doctorJoin = root.join("doctor", JoinType.INNER);
         Join<Doctor, Specialty> specialtyJoin = doctorJoin.join("specialty", JoinType.LEFT);
 

@@ -19,6 +19,8 @@ import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import com.vudo.repositories.StatisticRepository;
+import jakarta.persistence.criteria.Path;
+import java.time.LocalDate;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -67,19 +69,20 @@ public class StatisticRepositoryImpl implements StatisticRepository {
 
         Root<User> root = cq.from(User.class);
 
-        Expression<Integer> age = cb.function(
-                "TIMESTAMPDIFF",
-                Integer.class,
-                cb.literal("YEAR"),
-                root.get("dateOfBirth"),
-                cb.currentDate()
-        );
+        LocalDate today = LocalDate.now();
+
+        LocalDate age18 = today.minusYears(18);
+        LocalDate age30 = today.minusYears(30);
+        LocalDate age45 = today.minusYears(45);
+        LocalDate age60 = today.minusYears(60);
+
+        Path<LocalDate> dob = root.get("dateOfBirth");
 
         Expression<String> ageGroup = cb.<String>selectCase()
-                .when(cb.lessThan(age, 18), "Dưới 18 tuổi")
-                .when(cb.between(age, 18, 30), "18 - 30 tuổi")
-                .when(cb.between(age, 31, 45), "31 - 45 tuổi")
-                .when(cb.between(age, 46, 60), "46 - 60 tuổi")
+                .when(cb.greaterThan(dob, age18), "Dưới 18 tuổi")
+                .when(cb.between(dob, age30, age18), "18 - 30 tuổi")
+                .when(cb.between(dob, age45, age30), "31 - 45 tuổi")
+                .when(cb.between(dob, age60, age45), "46 - 60 tuổi")
                 .otherwise("Trên 60 tuổi");
 
         cq.multiselect(

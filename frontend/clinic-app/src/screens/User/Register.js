@@ -21,14 +21,44 @@ const Register = () => {
     const navigate              = useNavigate();
 
     const validate = () => {
+        const phoneRegex = /^\d{9}$/;
+        const emailRegex = /^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,6}$/;
+    
+        if (!user.fullName || user.fullName.trim() === "") {
+            setErr("Họ và tên không được để trống.");
+            return false;
+        }
+    
+        if (!user.username || user.username.trim() === "") {
+            setErr("Tên đăng nhập không được để trống.");
+            return false;
+        }
+    
+        if (!user.password || user.password.length < 6) {
+            setErr("Mật khẩu phải có ít nhất 6 ký tự.");
+            return false;
+        }
+    
         if (user.password !== user.confirm) {
             setErr("Mật khẩu không khớp!");
             return false;
         }
+    
+        if (!user.email || !emailRegex.test(user.email)) {
+            setErr("Email không đúng định dạng.");
+            return false;
+        }
+    
+        if (!user.phone || !phoneRegex.test(user.phone)) {
+            setErr("Số điện thoại không hợp lệ! Vui lòng nhập đúng 9 chữ số.");
+            return false;
+        }
+    
         if (!avatar.current.files.length) {
             setErr("Vui lòng chọn ảnh đại diện!");
             return false;
         }
+    
         return true;
     };
 
@@ -54,7 +84,7 @@ const Register = () => {
                 navigate("/login");
         } catch (ex) {
             console.error(ex);
-            setErr("Hệ thống đang bận hoặc tên đăng nhập/email đã tồn tại.");
+            setErr('Lỗi');
         } finally {
             setLoading(false);
         }

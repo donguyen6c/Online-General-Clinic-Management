@@ -80,7 +80,7 @@ public class SpringSecurityConfigs {
                 .addFilterBefore(jwtFilter, org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class)
                 .formLogin(form -> form.loginPage("/admin/login") 
                         .loginProcessingUrl("/login") 
-                        .defaultSuccessUrl("/", true) 
+                        .defaultSuccessUrl("/admin/statistics", true) 
                         .failureUrl("/admin/login?error=true") 
                         .permitAll()
                 ).logout((logout) -> logout.logoutSuccessUrl("/admin/login").permitAll());

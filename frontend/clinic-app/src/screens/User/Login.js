@@ -33,7 +33,7 @@ const Login = () => {
         } else {
             switch (p.data.role) {
                 case "admin":      navigate("/admin");      break;
-                case "doctor":     navigate("/doctor");     break;
+                case "doctor":     navigate("/doctor-schedule");     break;
                 case "pharmacist": navigate("/pharmacist"); break;
                 default:           navigate("/");
             }

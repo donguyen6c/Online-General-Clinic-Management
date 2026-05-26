@@ -1,28 +1,47 @@
-<!doctype html>
+<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-    <head>
-        <title>Đăng nhập ĐA KHOA</title>
+<head>
+    <title>Đăng nhập – Phòng Khám Đa Khoa</title>
     <th:block th:replace="base :: css"></th:block>
 </head>
-<body>
-    <div th:replace="base :: header"></div>
+<body class="bg-light">
 
-    <section class="container">
-        <form method="post" th:action="@{/login}">
-            <div class="form-floating mb-3 mt-3">
-                <input type="text" class="form-control" id="username" placeholder="Tên đăng nhập" name="username" />
-                <label for="username">Tên đăng nhập</label>
-            </div>
-            <div class="form-floating mb-3 mt-3">
-                <input type="password" class="form-control" id="password" placeholder="Mật khẩu" name="password" />
-                <label for="username">Mật khẩu</label>
-            </div>
-            <div class="form-floating mb-3 mt-3">
-                <button class="btn btn-success">Đăng nhập</button>
-            </div>
-        </form>
-    </section>
+<div th:replace="base :: header"></div>
 
-    <div th:replace="base :: footer"></div>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <h5 class="card-title text-center mb-4">Đăng nhập quản trị</h5>
+
+                    <div th:if="${param.error}" class="alert alert-danger py-2 small">
+                        Sai tên đăng nhập hoặc mật khẩu.
+                    </div>
+                    <div th:if="${param.logout}" class="alert alert-success py-2 small">
+                        Đăng xuất thành công.
+                    </div>
+
+                    <form method="post" th:action="@{/login}">
+                        <div class="mb-3">
+                            <label for="username" class="form-label small fw-semibold">Tên đăng nhập</label>
+                            <input type="text" class="form-control" id="username" name="username" autofocus>
+                        </div>
+                        <div class="mb-4">
+                            <label for="password" class="form-label small fw-semibold">Mật khẩu</label>
+                            <input type="password" class="form-control" id="password" name="password">
+                        </div>
+                        <div class="d-grid">
+                            <button class="btn btn-primary">Đăng nhập</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:replace="base :: footer"></div>
+
 </body>
 </html>

@@ -123,7 +123,7 @@ public class MedicalRecordServiceImpl implements MedicalRecordService {
         );
 
         record = medicalRecordRepo.create(record);
-        appointmentRepo.completed(appointment);
+        appointmentService.completedAppointment(appointment.getId());
         String currentTime = new java.util.Date().toString();
         notificationService.createMedicinesNotification(patient, record, currentTime);
 

@@ -11,12 +11,14 @@ package com.vudo.controllers;
 import com.vudo.services.StatisticService;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/statistics")
+@RequestMapping("/api/secure/statistics")
+@PreAuthorize("hasAuthority('admin')") 
 public class ApiStatisticController {
 
     @Autowired

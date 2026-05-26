@@ -151,4 +151,30 @@ public class StatisticRepositoryImpl implements StatisticRepository {
 
         return session.createQuery(cq).getResultList();
     }
+
+    @Override
+    public List<Object[]> countPopularDiseases() {
+        Session session = factory.getObject().getCurrentSession();
+
+        CriteriaBuilder cb = session.getCriteriaBuilder();
+        CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+
+        Root<MedicalRecord> root = cq.from(MedicalRecord.class);
+
+        cq.multiselect(
+                root.get("diagnosis"),
+                cb.count(root.get("id"))
+        );
+
+        cq.where(
+                cb.isNotNull(root.get("diagnosis")),
+                cb.notEqual(root.get("diagnosis"), "")
+        );
+
+        cq.groupBy(root.get("diagnosis"));
+
+        cq.orderBy(cb.desc(cb.count(root.get("id"))));
+
+        return session.createQuery(cq).getResultList();
+    }
 }

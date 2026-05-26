@@ -36,9 +36,14 @@ public class ApiStatisticController {
     public Map<String, Object> getPatientsBySpecialty() {
         return statisticService.getPatientsBySpecialtyChart();
     }
-    
-    @GetMapping("/medical-services/used")
+
+    @GetMapping("/services")
     public Map<String, Object> getMedicalServicesUsed() {
         return statisticService.getMedicalServicesUsedChart();
+    }
+
+    @GetMapping("/diseases")
+    public Map<String, Object> getPopularDiseases() {
+        return statisticService.getPopularDiseasesChart();
     }
 }

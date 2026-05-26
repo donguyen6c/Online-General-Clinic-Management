@@ -18,4 +18,6 @@ public interface StatisticRepository {
     List<Object[]> countPatientsBySpecialty();
     
     List<Object[]> countMedicalServicesUsed();
+    
+    List<Object[]> countPopularDiseases();
 }

@@ -67,4 +67,10 @@ public class StatisticServiceImpl implements StatisticService {
         List<Object[]> results = statisticRepository.countMedicalServicesUsed();
         return convertToChartData(results);
     }
+
+    @Override
+    public Map<String, Object> getPopularDiseasesChart() {
+        List<Object[]> results = statisticRepository.countPopularDiseases();
+        return convertToChartData(results);
+    }
 }

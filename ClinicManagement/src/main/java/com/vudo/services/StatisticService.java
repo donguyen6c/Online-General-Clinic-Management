@@ -19,4 +19,6 @@ public interface StatisticService {
     Map<String, Object> getPatientsBySpecialtyChart();
     
     Map<String, Object> getMedicalServicesUsedChart();
+    
+    Map<String, Object> getPopularDiseasesChart();
 }

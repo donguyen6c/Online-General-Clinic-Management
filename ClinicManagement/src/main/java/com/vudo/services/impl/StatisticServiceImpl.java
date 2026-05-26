@@ -47,7 +47,12 @@ public class StatisticServiceImpl implements StatisticService {
 
         for (Object[] row : results) {
             labels.add(String.valueOf(row[0]));
-            data.add((Long) row[1]);
+
+            if (row[1] == null) {
+                data.add(0L);
+            } else {
+                data.add(((Number) row[1]).longValue());
+            }
         }
 
         Map<String, Object> chartData = new HashMap<>();
@@ -55,5 +60,11 @@ public class StatisticServiceImpl implements StatisticService {
         chartData.put("data", data);
 
         return chartData;
+    }
+
+    @Override
+    public Map<String, Object> getMedicalServicesUsedChart() {
+        List<Object[]> results = statisticRepository.countMedicalServicesUsed();
+        return convertToChartData(results);
     }
 }

@@ -6,6 +6,8 @@ package com.vudo.repositories.impl;
 
 import com.vudo.pojo.Doctor;
 import com.vudo.pojo.MedicalRecord;
+import com.vudo.pojo.MedicalRecordService;
+import com.vudo.pojo.Service;
 import com.vudo.pojo.Specialty;
 import com.vudo.pojo.User;
 import jakarta.persistence.criteria.CriteriaBuilder;
@@ -123,6 +125,29 @@ public class StatisticRepositoryImpl implements StatisticRepository {
         );
 
         cq.groupBy(specialtyJoin.get("name"));
+
+        return session.createQuery(cq).getResultList();
+    }
+
+    @Override
+    public List<Object[]> countMedicalServicesUsed() {
+        Session session = factory.getObject().getCurrentSession();
+
+        CriteriaBuilder cb = session.getCriteriaBuilder();
+        CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+
+        Root<MedicalRecordService> root = cq.from(MedicalRecordService.class);
+
+        Join<MedicalRecordService, Service> serviceJoin = root.join("serviceId", JoinType.INNER);
+
+        cq.multiselect(
+                serviceJoin.get("name"),
+                cb.sum(root.get("quantity"))
+        );
+
+        cq.groupBy(serviceJoin.get("name"));
+
+        cq.orderBy(cb.desc(cb.sum(root.get("quantity"))));
 
         return session.createQuery(cq).getResultList();
     }

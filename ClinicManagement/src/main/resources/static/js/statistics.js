@@ -5,6 +5,8 @@ document.getElementById('kpiSpecialty').textContent = spLabels.length;
 document.getElementById('kpiServices').textContent = svData.reduce((a,b)=>a+b,0);
 document.getElementById('kpiDiseases').textContent = dLabels.length;
 
+const intAxis = { y: { ticks: { stepSize: 1, precision: 0 } } };
+
 new Chart(document.getElementById('genderChart'), {
     type: 'pie',
     data: { labels: gLabels, datasets: [{ data: gData, backgroundColor: COLORS }] },
@@ -14,27 +16,42 @@ new Chart(document.getElementById('genderChart'), {
 new Chart(document.getElementById('ageChart'), {
     type: 'bar',
     data: { labels: aLabels, datasets: [{ data: aData, backgroundColor: aLabels.map((_,i) => COLORS[i % COLORS.length]) }] },
-    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: intAxis }
 });
 
 new Chart(document.getElementById('specialtyChart'), {
     type: 'bar',
     data: { labels: spLabels, datasets: [{ data: spData, backgroundColor: spLabels.map((_,i) => COLORS[i % COLORS.length]) }] },
-    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: intAxis }
 });
 
 new Chart(document.getElementById('servicesChart'), {
     type: 'bar',
     data: { labels: svLabels, datasets: [{ data: svData, backgroundColor: svLabels.map((_,i) => COLORS[i % COLORS.length]) }] },
-    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: intAxis }
 });
 
 new Chart(document.getElementById('diseasesChart'), {
     type: 'bar',
     data: { labels: dLabels, datasets: [{ data: dData, backgroundColor: dLabels.map((_,i) => COLORS[i % COLORS.length]) }] },
-    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: intAxis }
 });
 
+// Doanh thu
+if (typeof rvData !== 'undefined') {
+    document.getElementById('totalRevenue').textContent = rvTotal.toLocaleString('vi-VN');
+    new Chart(document.getElementById('revenueChart'), {
+        type: 'bar',
+        data: { labels: rvLabels, datasets: [{ label: 'Doanh thu (đ)', data: rvData, backgroundColor: rvLabels.map((_,i) => COLORS[i % COLORS.length]) }] },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: { y: { ticks: { callback: val => val.toLocaleString('vi-VN') + ' đ' } } }
+        }
+    });
+}
+
+// Bảng tổng hợp
 const total = spData.reduce((a,b)=>a+b,0) || 1;
 const tbody = document.getElementById('revTableBody');
 if (!spLabels.length) {

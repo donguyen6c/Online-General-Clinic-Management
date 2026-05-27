@@ -71,7 +71,6 @@ const Home = () => {
         </div>
       </section>
 
-      {/* ── DOCTORS ── */}
       <section className="py-5" style={{ background: "#f8fafc" }}>
         <div className="container">
           <div className="d-flex justify-content-between align-items-center mb-4">
@@ -143,7 +142,7 @@ const Home = () => {
               <button
                 className="btn text-white px-4"
                 style={{ background: "#0d9488" }}
-                onClick={() => navigate("/doctors")}
+                onClick={() => navigate("/health-check")}
               >
                 Tìm bác sĩ ngay
               </button>

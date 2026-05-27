@@ -27,8 +27,7 @@ public class StatsController {
     private StatisticService statisticService;
 
     @GetMapping
-    public String statistics(Model model, @RequestParam(name = "year", required = false) Integer year,
-            @RequestParam(name = "type", defaultValue = "month") String type) {
+    public String statistics(Model model, @RequestParam(name = "year", required = false) Integer year, @RequestParam(name = "type", defaultValue = "month") String type) {
         if (year == null) {
             year = LocalDate.now().getYear();
         }

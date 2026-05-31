@@ -1,75 +1,55 @@
-import React, { useState, useEffect } from 'react';
-import Apis, { endpoints } from "../../configs/Apis";
+import React, { useState, useEffect, useContext } from 'react';
+import { MyUserContext } from "../../configs/Contexts";
+import { db } from "../../configs/firebase";
+import { collection, query, where, orderBy, onSnapshot, doc, updateDoc } from "firebase/firestore";
 
 const NotificationBell = () => {
+    const [user] = useContext(MyUserContext);
     const [notifications, setNotifications] = useState([]);
     const [isOpen, setIsOpen] = useState(false);
-    const [page, setPage] = useState(1);
-    const [hasMore, setHasMore] = useState(true);
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
     const [totalUnread, setTotalUnread] = useState(0);
 
     useEffect(() => {
-        fetchUnreadCount();
-    }, []);
-
-    useEffect(() => {
-        fetchNotifications(page);
-    }, [page]);
-
-    const fetchUnreadCount = async () => {
-        try {
-            const response = await Apis.get(endpoints['unread-notification-count']);
-            setTotalUnread(response.data);
-        } catch (error) {
-            console.error("Lỗi khi tải số đếm thông báo:", error);
-        }
-    };
-
-    const fetchNotifications = async (currentPage) => {
-        setLoading(true);
-        try {
-            const response = await Apis.get(endpoints['notifications'], {
-                params: { page: currentPage }
-            });
-            
-            const newData = response.data;
-
-            if (newData.length === 0) {
-                setHasMore(false);
-            } else {
-                if (currentPage === 1) {
-                    setNotifications(newData);
-                } else {
-                    setNotifications(prev => [...prev, ...newData]);
-                }
-            }
-        } catch (error) {
-            console.error("Lỗi khi tải thông báo:", error);
-        } finally {
+        if (!user?.id) {
+            setNotifications([]);
+            setTotalUnread(0);
             setLoading(false);
+            return;
         }
-    };
 
-    const handleLoadMore = (e) => {
-        e.stopPropagation();
-        setPage(prev => prev + 1);
-    };
+        const notificationsQuery = query(
+            collection(db, 'notifications'),
+            where('userId', '==', user.id),
+            orderBy('createdAt', 'desc')
+        );
 
-    const handleNotificationClick = async (e,id, isRead) => {
+        const unsubscribe = onSnapshot(
+            notificationsQuery,
+            (snapshot) => {
+                const newNotifications = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+                setNotifications(newNotifications);
+                setTotalUnread(newNotifications.filter((notif) => !notif.isRead).length);
+                setLoading(false);
+            },
+            (error) => {
+                console.error("Lỗi realtime notification:", error);
+                setLoading(false);
+            }
+        );
+
+        return () => unsubscribe();
+    }, [user?.id]);
+
+    const handleNotificationClick = async (e, id, isRead) => {
         e.stopPropagation();
-        if (isRead) return; 
+        if (isRead) return;
 
         try {
-            await Apis.patch(endpoints['mark-notification-read'](id));
-            setNotifications(prevNotifications => 
-                prevNotifications.map(notif => 
-                    notif.id === id ? { ...notif, isRead: true } : notif
-                )
-            );
-            setTotalUnread(prev => (prev > 0 ? prev - 1 : 0));
+            const notificationRef = doc(db, 'notifications', id);
+            await updateDoc(notificationRef, { isRead: true });
         } catch (error) {
-            console.error("Error", error);
+            console.error("Error marking notification read:", error);
         }
     };
 
@@ -102,7 +82,6 @@ const NotificationBell = () => {
                 }}>
                     <h4 style={{ padding: '12px', margin: 0, borderBottom: '1px solid #ddd', backgroundColor: '#f8f9fa' }}>Thông báo</h4>
                     
-                    {/* Phần cuộn danh sách */}
                     <div style={{ overflowY: 'auto', flex: 1 }}>
                         {notifications.length === 0 && !loading ? (
                             <p style={{ padding: '20px', textAlign: 'center', color: '#888', margin: 0 }}>Không có thông báo nào</p>
@@ -130,21 +109,6 @@ const NotificationBell = () => {
                             </ul>
                         )}
 
-                        {/* NÚT LOAD MORE TẠI ĐÂY */}
-                        {hasMore && notifications.length > 0 && (
-                            <div style={{ padding: '10px', textAlign: 'center', borderTop: '1px solid #eee' }}>
-                                <button 
-                                    onClick={handleLoadMore} 
-                                    disabled={loading}
-                                    style={{
-                                        background: 'none', border: 'none', color: '#0d6efd',
-                                        cursor: loading ? 'wait' : 'pointer', fontSize: '14px', fontWeight: 'bold'
-                                    }}
-                                >
-                                    {loading ? 'Đang tải...' : 'Xem thêm'}
-                                </button>
-                            </div>
-                        )}
                     </div>
                 </div>
             )}

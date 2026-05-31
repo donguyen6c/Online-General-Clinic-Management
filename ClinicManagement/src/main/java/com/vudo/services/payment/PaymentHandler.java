@@ -12,12 +12,13 @@ import com.vudo.pojo.PrescribedMedicine;
 import com.vudo.pojo.User;
 import com.vudo.repositories.MedicalRecordRepository;
 import com.vudo.repositories.PaymentRepository;
-import com.vudo.services.NotificationService;
+import com.vudo.events.PaymentCompletedEvent;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 
 /**
  *
@@ -32,7 +33,7 @@ public abstract class PaymentHandler {
     protected PaymentRepository paymentRepo;
 
     @Autowired
-    protected NotificationService notificationService;
+    protected ApplicationEventPublisher eventPublisher;
 
     public abstract String getMethod();
 
@@ -108,7 +109,7 @@ public abstract class PaymentHandler {
             MedicalRecord mr = payment.getMedicalRecordId();
             User patient = mr.getPatientId();
             String currentTime = new Date().toString();
-            notificationService.createPaymentNotification(patient, mr, currentTime);
+            eventPublisher.publishEvent(new PaymentCompletedEvent(patient, mr, currentTime));
         } else {
             payment.setStatus("failed");
         }

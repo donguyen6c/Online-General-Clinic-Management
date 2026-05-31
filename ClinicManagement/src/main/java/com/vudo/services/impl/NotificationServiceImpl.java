@@ -4,6 +4,7 @@
  */
 package com.vudo.services.impl;
 
+import com.google.cloud.firestore.Firestore;
 import com.vudo.dto.NotificationDTO;
 import com.vudo.pojo.MedicalRecord;
 import com.vudo.pojo.Notification;
@@ -11,7 +12,9 @@ import com.vudo.pojo.User;
 import com.vudo.repositories.NotificationRepository;
 import com.vudo.services.NotificationService;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,6 +30,9 @@ public class NotificationServiceImpl implements NotificationService{
     
     @Autowired
     private NotificationRepository notificationRepository;
+    
+    @Autowired
+    private Firestore firestore;
 
     @Override
     public void createBookingNotification(User user, String doctorName, String time) {
@@ -39,6 +45,14 @@ public class NotificationServiceImpl implements NotificationService{
         n.setUserId(user);
 
         notificationRepository.add(n);
+        Map<String, Object> data = new HashMap<>();
+        data.put("userId", user.getId());
+        data.put("title", n.getTitle());
+        data.put("message", n.getMessage());
+        data.put("isRead", false);
+        data.put("createdAt", n.getCreatedAt().getTime());
+
+        firestore.collection("notifications").add(data);
     }
 
     @Override
@@ -52,6 +66,15 @@ public class NotificationServiceImpl implements NotificationService{
         n.setUserId(user);
 
         notificationRepository.add(n);
+        
+        Map<String, Object> data = new HashMap<>();
+        data.put("userId", user.getId());
+        data.put("title", n.getTitle());
+        data.put("message", n.getMessage());
+        data.put("isRead", false);
+        data.put("createdAt", n.getCreatedAt().getTime());
+
+        firestore.collection("notifications").add(data);
     }
 
     @Override
@@ -91,6 +114,15 @@ public class NotificationServiceImpl implements NotificationService{
         n.setUserId(user);
 
         notificationRepository.add(n);
+        
+        Map<String, Object> data = new HashMap<>();
+        data.put("userId", user.getId());
+        data.put("title", n.getTitle());
+        data.put("message", n.getMessage());
+        data.put("isRead", false);
+        data.put("createdAt", n.getCreatedAt().getTime());
+
+        firestore.collection("notifications").add(data);
     }
 
     @Override
@@ -104,5 +136,14 @@ public class NotificationServiceImpl implements NotificationService{
         n.setUserId(user);
 
         notificationRepository.add(n);
+        
+        Map<String, Object> data = new HashMap<>();
+        data.put("userId", user.getId());
+        data.put("title", n.getTitle());
+        data.put("message", n.getMessage());
+        data.put("isRead", false);
+        data.put("createdAt", n.getCreatedAt().getTime());
+
+        firestore.collection("notifications").add(data);
     }
 }

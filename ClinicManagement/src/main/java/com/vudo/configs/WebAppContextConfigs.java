@@ -27,7 +27,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
         basePackages = {
             "com.vudo.controllers",
             "com.vudo.repositories",
-            "com.vudo.services"
+            "com.vudo.services",
+            "com.vudo.listeners"
         }
 )
 @EnableWebMvc

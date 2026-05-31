@@ -5,7 +5,6 @@
 package com.vudo.configs;
 
 import com.cloudinary.Cloudinary;
-import com.cloudinary.utils.ObjectUtils;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -40,9 +39,6 @@ import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
         }
 )
 public class SpringSecurityConfigs {
-
-    @Autowired
-    private UserDetailsService userDetailsService;
     
     @Autowired
     private com.vudo.filters.JwtFilter jwtFilter;

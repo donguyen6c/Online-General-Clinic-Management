@@ -35,7 +35,6 @@ public class JwtFilter implements Filter {
 
         HttpServletRequest httpRequest = (HttpServletRequest) request;
 
-        // Chỉ xử lý API có chữ /secure/
         if (httpRequest.getRequestURI().contains("/api/secure/")) {
             String header = httpRequest.getHeader("Authorization");
 

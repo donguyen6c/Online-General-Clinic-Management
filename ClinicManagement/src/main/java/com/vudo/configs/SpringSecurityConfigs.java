@@ -107,7 +107,7 @@ public class SpringSecurityConfigs {
     @Bean
     public Cloudinary cloudinary() {
         return new Cloudinary(com.cloudinary.utils.ObjectUtils.asMap(
-                "cloud_name", "dsijwqliw", // Thay bằng cloud_name thật của bạn nếu cần
+                "cloud_name", "dsijwqliw",
                 "api_key", "695988562653643",
                 "api_secret", "3jUUQnOgoY4ELKhSYV2JNucKjww",
                 "secure", true

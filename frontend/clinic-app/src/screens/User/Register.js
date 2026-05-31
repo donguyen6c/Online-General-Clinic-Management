@@ -100,13 +100,7 @@ const Register = () => {
                 {userInfo.map(u => (
                     <Form.Group key={u.field} className="mb-3" controlId={u.field}>
                         <Form.Label>{u.label}</Form.Label>
-                        <Form.Control
-                            type={u.type}
-                            placeholder={u.label}
-                            value={user[u.field] || ""}
-                            onChange={e => setUser({ ...user, [u.field]: e.target.value })}
-                            required
-                        />
+                        <Form.Control type={u.type} placeholder={u.label} value={user[u.field] || ""} onChange={e => setUser({ ...user, [u.field]: e.target.value })} required/>
                     </Form.Group>
                 ))}
 
@@ -114,10 +108,7 @@ const Register = () => {
                     <Col md={6}>
                         <Form.Group className="mb-3">
                             <Form.Label>Giới tính</Form.Label>
-                            <Form.Select
-                                value={user.gender || "male"}
-                                onChange={e => setUser({ ...user, gender: e.target.value })}
-                            >
+                            <Form.Select value={user.gender || "male"} onChange={e => setUser({ ...user, gender: e.target.value })} >
                                 <option value="male">Nam</option>
                                 <option value="female">Nữ</option>
                                 <option value="other">Khác</option>

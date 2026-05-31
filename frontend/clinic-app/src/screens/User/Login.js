@@ -80,12 +80,7 @@ const Login = () => {
                 {userInfo.map(f => (
                     <Form.Group key={f.field} className="mb-3" controlId={f.field}>
                         <Form.Label>{f.label}</Form.Label>
-                        <Form.Control
-                            type={f.type}
-                            value={user[f.field] || ""}
-                            onChange={e => setUser({ ...user, [f.field]: e.target.value })}
-                            required
-                        />
+                        <Form.Control type={f.type} value={user[f.field] || ""} onChange={e => setUser({ ...user, [f.field]: e.target.value })} required/>
                     </Form.Group>
                 ))}
 
@@ -95,12 +90,7 @@ const Login = () => {
                             Đăng nhập
                         </Button>
 
-                        <Button
-                            variant="outline-danger"
-                            className="w-100"
-                            type="button"
-                            onClick={loginWithGoogle}
-                        >
+                        <Button variant="outline-danger" className="w-100" type="button" onClick={loginWithGoogle}>
                             Đăng nhập bằng Google
                         </Button>
                     </>

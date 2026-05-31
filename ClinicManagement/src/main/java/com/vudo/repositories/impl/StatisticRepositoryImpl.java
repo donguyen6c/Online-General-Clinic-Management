@@ -165,7 +165,9 @@ public class StatisticRepositoryImpl implements StatisticRepository {
 
         Expression<Integer> period;
 
-        if ("quarter".equalsIgnoreCase(type)) {
+        if ("year".equalsIgnoreCase(type)) {
+            period = cb.function("YEAR", Integer.class, root.get("createdAt"));
+        } else if ("quarter".equalsIgnoreCase(type)) {
             period = cb.function("QUARTER", Integer.class, root.get("createdAt"));
         } else {
             period = cb.function("MONTH", Integer.class, root.get("createdAt"));

@@ -38,7 +38,7 @@ public class VNPayHandler extends PaymentHandler {
     }
 
     @Override
-    public Map<String, Object> createPaymentUrl(CreatePaymentRequestDTO request, String clientIp) {
+    public Map<String, String> createPaymentUrl(CreatePaymentRequestDTO request, String clientIp) {
         MedicalRecord medicalRecord = this.getMedicalRecord(request);
 
         String tmnCode = env.getProperty("vnpay.tmnCode");
@@ -73,9 +73,8 @@ public class VNPayHandler extends PaymentHandler {
 
         this.savePendingPayment(medicalRecord, totalAmount, this.getMethod(), txRef);
 
-        Map<String, Object> response = new LinkedHashMap<>();
+        Map<String, String> response = new LinkedHashMap<>();
         response.put("paymentUrl", paymentUrl);
-        response.put("paymentCode", txRef);
         return response;
     }
 

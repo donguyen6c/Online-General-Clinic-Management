@@ -68,7 +68,7 @@ public class DoctorScheduleRepositoryImpl implements DoctorScheduleRepository {
         Session session = this.factory.getObject().getCurrentSession();
         DoctorSchedule schedule = session.get(DoctorSchedule.class, id);
         if (schedule == null) throw new RuntimeException("Không tìm thấy lịch với ID: " + id);
-        session.delete(schedule);
+        session.remove(schedule);
     }
 
 }

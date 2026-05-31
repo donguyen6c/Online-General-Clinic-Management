@@ -35,16 +35,13 @@ public class ApiAppointmentController {
     private AppointmentService appointmentService;
 
     @GetMapping("/doctors/{doctorId}/slots")
-    public ResponseEntity<AvailableSlotsResponseDTO> getAvailableSlots(
-            @PathVariable("doctorId") int doctorId, @RequestParam("date") String date) {
+    public ResponseEntity<AvailableSlotsResponseDTO> getAvailableSlots(@PathVariable("doctorId") int doctorId, @RequestParam("date") String date) {
         AvailableSlotsResponseDTO sl = appointmentService.getSlots(doctorId, date);
         return new ResponseEntity<>(sl, HttpStatus.OK);
     }
 
     @PostMapping("/secure/doctors/{doctorId}/appointments")
-    public ResponseEntity<?> createAppointment(
-            @PathVariable("doctorId") int doctorId,
-            @RequestBody AppointmentRequestDTO request) {
+    public ResponseEntity<?> createAppointment( @PathVariable("doctorId") int doctorId, @RequestBody AppointmentRequestDTO request) {
         try {
             AppointmentResponseDTO ap = appointmentService.createAppointment(doctorId, request);
             return new ResponseEntity<>(ap, HttpStatus.CREATED);
@@ -68,9 +65,7 @@ public class ApiAppointmentController {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", e.getMessage()));
             }
 
-            return ResponseEntity.badRequest()
-                    .header(HttpHeaders.CONTENT_TYPE, "application/json")
-                    .body(Map.of("error", e.getMessage()));
+            return ResponseEntity.badRequest().header(HttpHeaders.CONTENT_TYPE, "application/json").body(Map.of("error", e.getMessage()));
         }
     }
 }

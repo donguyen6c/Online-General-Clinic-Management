@@ -126,7 +126,6 @@ public class PharmacyRepositoryImpl implements PharmacyRepository{
 
         List<Inventory> results = query.getResultList();
 
-        // Convert sang DTO
         List<InventoryDTO> dtos = new ArrayList<>();
         for (Inventory inv : results) {
             InventoryDTO invDto = InventoryMapper.toDTO(inv); 
@@ -249,50 +248,57 @@ public class PharmacyRepositoryImpl implements PharmacyRepository{
         }
         return dtos;
     }
-
+    
     @Override
     @Transactional
     public void dispenseMedicine(int medicalRecordId) {
-        Session session = this.factory.getObject().getCurrentSession();
-        Query<PrescribedMedicine> q = session.createQuery(
-            "FROM PrescribedMedicine pm WHERE pm.medicalRecordId.id = :mrId", PrescribedMedicine.class);
-        q.setParameter("mrId", medicalRecordId);
-        List<PrescribedMedicine> prescribedList = q.getResultList();
+    Session session = this.factory.getObject().getCurrentSession();
+    CriteriaBuilder b = session.getCriteriaBuilder();
 
-        if (prescribedList.isEmpty()) {
-            throw new RuntimeException("Không tìm thấy thuốc nào được kê cho phiếu khám số " + medicalRecordId);
+    CriteriaQuery<PrescribedMedicine> Query = b.createQuery(PrescribedMedicine.class);
+    Root<PrescribedMedicine> Root = Query.from(PrescribedMedicine.class);
+
+    Query.select(Root).where(b.equal(Root.get("medicalRecordId").get("id"),medicalRecordId));
+
+    List<PrescribedMedicine> prescribedList = session.createQuery(Query).getResultList();
+
+    if (prescribedList.isEmpty()) {
+        throw new RuntimeException("Không tìm thấy thuốc nào được kê cho phiếu khám số " + medicalRecordId);
+    }
+
+    for (PrescribedMedicine pm : prescribedList) {
+        int requiredQty = pm.getQuantity();
+        Medicine medicine = pm.getMedicineId();
+
+        CriteriaQuery<Inventory> invQuery = b.createQuery(Inventory.class);
+        Root<Inventory> invRoot = invQuery.from(Inventory.class);
+
+        Predicate p1 = b.equal(invRoot.get("medicineId").get("id"),medicine.getId());
+        Predicate p2 = b.greaterThan(invRoot.get("quantity"),0);
+
+        invQuery.select(invRoot).where(b.and(p1, p2)).orderBy(b.asc(invRoot.get("expiryDate")));
+        List<Inventory> lots = session.createQuery(invQuery).getResultList();
+
+        for (Inventory lot : lots) {
+            if (requiredQty <= 0)
+                break;
+
+            int currentLotQty = lot.getQuantity();
+
+            if (currentLotQty >= requiredQty) {
+                lot.setQuantity(currentLotQty - requiredQty);
+                requiredQty = 0;
+            } else {
+                requiredQty -= currentLotQty;
+                lot.setQuantity(0);
+            }
+            session.merge(lot);
         }
 
-        // Duyệt từng loại thuốc trong đơn
-        for (PrescribedMedicine pm : prescribedList) {
-            int requiredQty = pm.getQuantity();
-            Medicine medicine = pm.getMedicineId();
-
-            // Tìm các lô hàng (inventory) còn hàng, ưu tiên lô hết hạn trước (FEFO)
-            Query<Inventory> invQuery = session.createQuery(
-                "FROM Inventory WHERE medicineId.id = :mId AND quantity > 0 ORDER BY expiryDate ASC", Inventory.class);
-            invQuery.setParameter("mId", medicine.getId());
-            List<Inventory> lots = invQuery.getResultList();
-
-            for (Inventory lot : lots) {
-                if (requiredQty <= 0) break;
-
-                int currentLotQty = lot.getQuantity();
-                if (currentLotQty >= requiredQty) {
-                    lot.setQuantity(currentLotQty - requiredQty);
-                    requiredQty = 0;
-                } else {
-                    requiredQty -= currentLotQty;
-                    lot.setQuantity(0);
-                }
-                session.merge(lot);
-            }
-
-            if (requiredQty > 0) {
-                throw new RuntimeException("Cảnh báo: Thuốc '" + medicine.getName() + "' trong kho không đủ (thiếu " + requiredQty + ")");
-            }
-        }    
+        if (requiredQty > 0) { throw new RuntimeException("Cảnh báo: Thuốc '"+ medicine.getName()+ "' trong kho không đủ (thiếu " + requiredQty + ")");
+        }
     }
+}
 
     @Override
     public Medicine getMedicineById(int id) {
@@ -307,12 +313,12 @@ public class PharmacyRepositoryImpl implements PharmacyRepository{
         }
 
         Session session = this.factory.getObject().getCurrentSession();
-        jakarta.persistence.criteria.CriteriaBuilder b = session.getCriteriaBuilder();
-        jakarta.persistence.criteria.CriteriaQuery<Medicine> q = b.createQuery(Medicine.class);
-        jakarta.persistence.criteria.Root<Medicine> root = q.from(Medicine.class);
+        CriteriaBuilder b = session.getCriteriaBuilder();
+        CriteriaQuery<Medicine> q = b.createQuery(Medicine.class);
+        Root<Medicine> root = q.from(Medicine.class);
 
         q.select(root);
-        jakarta.persistence.criteria.Predicate p = root.get("id").in(ids);
+        Predicate p = root.get("id").in(ids);
         q.where(p);
 
         return session.createQuery(q).getResultList();

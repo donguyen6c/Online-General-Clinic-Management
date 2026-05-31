@@ -12,7 +12,6 @@ import com.vudo.pojo.User;
 import com.vudo.repositories.UserRepository;
 import com.vudo.services.UserService;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;

@@ -54,7 +54,6 @@ public class ServicesRepositoryImpl implements ServicesRepository{
         q.orderBy(b.desc(root.get("id")));
         Query<Service> query = session.createQuery(q);
 
-        // Phân trang
         if (params != null && !params.containsKey("all")) {
             int pageSize = this.env.getProperty("services_disease", Integer.class);
             int page = Integer.parseInt(params.getOrDefault("page", "1"));

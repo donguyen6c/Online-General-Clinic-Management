@@ -19,9 +19,7 @@ const DoctorSchedule = () => {
                 setLoading(true);
 
                 const res = await Apis.get(endpoints["doctor-schedule"], {
-                    params: {
-                        page,
-                    },
+                    params: {page,},
                 });
 
                 const newData = res.data || [];
@@ -31,10 +29,7 @@ const DoctorSchedule = () => {
                 } else {
                     setSchedules(prev => {
                         const existingIds = new Set(prev.map(a => a.id));
-                        return [
-                            ...prev,
-                            ...newData.filter(a => !existingIds.has(a.id)),
-                        ];
+                        return [...prev,...newData.filter(a => !existingIds.has(a.id)),];
                     });
                 }
 
@@ -100,10 +95,7 @@ const DoctorSchedule = () => {
     const renderActionButton = (appt) => {
         if (checkReadyToJoin(appt.date, appt.time, appt.status)) {
             return (
-                <button
-                    className="btn btn-primary w-100 fw-bold"
-                    onClick={() => navigate(`/video-call/${appt.id}`)}
-                >
+                <button className="btn btn-primary w-100 fw-bold" onClick={() => navigate(`/video-call/${appt.id}`)}>
                     Vào phòng khám
                 </button>
             );
@@ -132,10 +124,7 @@ const DoctorSchedule = () => {
                         Chưa đến giờ
                     </button>
 
-                    <button
-                        className="btn btn-outline-danger w-50"
-                        onClick={() => cancelAppointment(appt.id)}
-                    >
+                    <button className="btn btn-outline-danger w-50" onClick={() => cancelAppointment(appt.id)}>
                         Hủy lịch
                     </button>
                 </div>
@@ -196,11 +185,7 @@ const DoctorSchedule = () => {
 
                     {hasMore && (
                         <div className="text-center mt-2">
-                            <button
-                                className="btn btn-outline-primary px-4"
-                                onClick={() => setPage(prev => prev + 1)}
-                                disabled={loading}
-                            >
+                            <button className="btn btn-outline-primary px-4" onClick={() => setPage(prev => prev + 1)} disabled={loading}>
                                 {loading ? "Đang tải..." : "Xem thêm"}
                             </button>
                         </div>

@@ -6,6 +6,9 @@ package com.vudo.repositories.impl;
 
 import com.vudo.pojo.Notification;
 import com.vudo.repositories.NotificationRepository;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
 import java.util.List;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
@@ -37,17 +40,25 @@ public class NotificationRepositoryImpl implements NotificationRepository{
 
     @Override
     public List<Notification> getNotificationsByUserId(int userId, int page) {
-    Session session = this.factory.getObject().getCurrentSession();
-        Query<Notification> query = session.createQuery(
-            "FROM Notification n WHERE n.userId.id = :userId ORDER BY n.createdAt DESC", Notification.class);
-        query.setParameter("userId", userId);
+        Session session = this.factory.getObject().getCurrentSession();
+        CriteriaBuilder cb = session.getCriteriaBuilder();
+        CriteriaQuery<Notification> cq = cb.createQuery(Notification.class);
+        Root<Notification> root = cq.from(Notification.class);
+        cq.select(root);
 
-        int start = (page - 1) * this.env.getProperty("notifications_page_size", Integer.class);
+        cq.where( cb.equal(root.get("userId").get("id"), userId));
+        cq.orderBy( cb.desc(root.get("createdAt")));
+
+        Query<Notification> query = session.createQuery(cq);
+
+        int pageSize = this.env.getProperty("notifications_page_size", Integer.class);
+        int start = (page - 1) * pageSize;
+
         query.setFirstResult(start);
-        query.setMaxResults(this.env.getProperty("notifications_page_size", Integer.class));
+        query.setMaxResults(pageSize);
 
         return query.getResultList();
-}
+    }
 
     @Override
     public boolean markAsRead(int notificationId) {
@@ -64,9 +75,13 @@ public class NotificationRepositoryImpl implements NotificationRepository{
     @Override
     public Long countUnreadByUserId(int userId) {
         Session session = this.factory.getObject().getCurrentSession();
-        Query<Long> query = session.createQuery(
-            "SELECT COUNT(n) FROM Notification n WHERE n.userId.id = :userId AND n.isRead = false", Long.class);
-        query.setParameter("userId", userId);
-        return query.uniqueResult();
+        CriteriaBuilder cb = session.getCriteriaBuilder();
+        CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+        Root<Notification> root = cq.from(Notification.class);
+
+        cq.select(cb.count(root));
+
+        cq.where( cb.and( cb.equal(root.get("userId").get("id"), userId), cb.isFalse(root.get("isRead"))));
+        return session.createQuery(cq).getSingleResult();
     }
 }

@@ -59,7 +59,7 @@ public class DoctorScheduleRepositoryImpl implements DoctorScheduleRepository {
     @Override
     public DoctorSchedule save(DoctorSchedule schedule) {
         Session session = this.factory.getObject().getCurrentSession();
-        session.saveOrUpdate(schedule);
+        session.merge(schedule);
         return schedule;
     }
 

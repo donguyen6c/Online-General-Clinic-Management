@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -39,11 +40,11 @@ public class ApiPaymentController {
     @PostMapping("/vnpay/create")
     public ResponseEntity<?> createPayment(@RequestBody CreatePaymentRequestDTO request, HttpServletRequest httpRequest) {
         try {
-            return ResponseEntity.ok(paymentService.createVNPayPaymentUrl(request, httpRequest.getRemoteAddr()));
+            return new ResponseEntity<>(paymentService.createVNPayPaymentUrl(request, httpRequest.getRemoteAddr()), HttpStatus.OK);
         } catch (IllegalArgumentException ex) {
-            return ResponseEntity.badRequest().body(Map.of("error", ex.getMessage()));
+            return new ResponseEntity<>(Map.of("error", ex.getMessage()), HttpStatus.BAD_REQUEST);
         } catch (IllegalStateException ex) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", ex.getMessage()));
+            return new ResponseEntity<>(Map.of("error", ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -68,26 +69,25 @@ public class ApiPaymentController {
                 + "&paymentCode=" + paymentCode
                 + "&responseCode=" + responseCode;
 
-        return ResponseEntity.status(HttpStatus.FOUND)
-                .location(URI.create(redirectUrl))
-                .build();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setLocation(URI.create(redirectUrl));
+        return new ResponseEntity<>(headers, HttpStatus.FOUND);
     }
 
     @PostMapping("/momo/create")
     public ResponseEntity<?> createMomoPayment(@RequestBody CreatePaymentRequestDTO request) {
         try {
-            return ResponseEntity.ok(paymentService.createMomoPaymentUrl(request));
+            return new ResponseEntity<>(paymentService.createMomoPaymentUrl(request), HttpStatus.OK);
         } catch (IllegalArgumentException ex) {
-            return ResponseEntity.badRequest().body(Map.of("error", ex.getMessage()));
+            return new ResponseEntity<>(Map.of("error", ex.getMessage()), HttpStatus.BAD_REQUEST);
         } catch (IllegalStateException ex) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("error", ex.getMessage()));
+            return new ResponseEntity<>(Map.of("error", ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @PostMapping("/momo/ipn")
     public ResponseEntity<?> momoIpn(@RequestBody Map<String, Object> body) {
-        return ResponseEntity.ok(paymentService.handleMomoIpn(body));
+        return new ResponseEntity<>(paymentService.handleMomoIpn(body), HttpStatus.OK);
     }
 
     @GetMapping("/momo-return")
@@ -103,9 +103,9 @@ public class ApiPaymentController {
                 result.get("responseCode")
         );
 
-        return ResponseEntity.status(HttpStatus.FOUND)
-                .location(URI.create(redirectUrl))
-                .build();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setLocation(URI.create(redirectUrl));
+        return new ResponseEntity<>(headers, HttpStatus.FOUND);
     }
 
 }

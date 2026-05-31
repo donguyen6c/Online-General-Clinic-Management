@@ -3,20 +3,16 @@ import Apis, { endpoints } from "../../configs/Apis";
 import MySpinner from "../MySpinner";
 
 const DispenseMedicine = () => {
-    // Input state
     const [patientId, setPatientId] = useState("");
     const [recordId, setRecordId] = useState("");
     
-    // Data state
     const [recordDetail, setRecordDetail] = useState(null); 
     const [prescription, setPrescription] = useState([]); 
     
-    // UI state
     const [loading, setLoading] = useState(false);
     const [dispensing, setDispensing] = useState(false);
-    const [step, setStep] = useState(1); // 1: Tìm kiếm, 2: Xác nhận xuất, 3: Thành công
+    const [step, setStep] = useState(1);
 
-    // BƯỚC 1: TÌM KIẾM ĐƠN THUỐC
     const handleSearch = async (e) => {
         e.preventDefault();
         if (!patientId || !recordId) return;
@@ -28,7 +24,7 @@ const DispenseMedicine = () => {
             
             setRecordDetail(detail);
             setPrescription(detail.prescribedMedicines || detail.prescriptions || []);
-            setStep(2); // Chuyển sang bước xem chi tiết
+            setStep(2); 
             
         } catch (error) {
             console.error("Lỗi tìm đơn thuốc", error);
@@ -42,7 +38,6 @@ const DispenseMedicine = () => {
         }
     };
 
-    // BƯỚC 2: XUẤT THUỐC
     const handleDispense = async () => {
         if (!window.confirm(`Xác nhận xuất thuốc cho bệnh nhân ${recordDetail?.patientName || 'này'}?`)) return;
 
@@ -59,7 +54,6 @@ const DispenseMedicine = () => {
         }
     };
 
-    // BƯỚC 3: LÀM LẠI TỪ ĐẦU (RESET)
     const handleReset = () => {
         setPatientId("");
         setRecordId("");
@@ -79,7 +73,6 @@ const DispenseMedicine = () => {
 
             <div className="card-body p-4 d-flex flex-column justify-content-center">
                 
-                {/* === BƯỚC 1: MÀN HÌNH TÌM KIẾM === */}
                 {step === 1 && (
                     <div className="row justify-content-center">
                         <div className="col-md-8 text-center">
@@ -118,7 +111,6 @@ const DispenseMedicine = () => {
                     </div>
                 )}
 
-                {/* === BƯỚC 2: MÀN HÌNH XEM ĐƠN VÀ XUẤT THUỐC === */}
                 {step === 2 && recordDetail && (
                     <div className="animation-fade-in">
                         <div className="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
@@ -181,7 +173,6 @@ const DispenseMedicine = () => {
                     </div>
                 )}
 
-                {/* === BƯỚC 3: MÀN HÌNH HOÀN TẤT === */}
                 {step === 3 && (
                     <div className="text-center animation-fade-in py-5">
                         <div className="display-1 text-success mb-3">

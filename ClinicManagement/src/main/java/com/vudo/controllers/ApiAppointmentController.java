@@ -55,17 +55,19 @@ public class ApiAppointmentController {
     public ResponseEntity<?> cancelAppointment(@PathVariable("id") Integer appointmentId) {
         try {
             AppointmentResponseDTO cancelled = appointmentService.cancelAppointment(appointmentId);
-            return ResponseEntity.ok(cancelled);
+            return new ResponseEntity<>(cancelled, HttpStatus.OK);
         } catch (RuntimeException e) {
             if ("Bạn không có quyền hủy lịch hẹn này".equals(e.getMessage())) {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error", e.getMessage()));
+                return new ResponseEntity<>(Map.of("error", e.getMessage()), HttpStatus.FORBIDDEN);
             }
 
             if ("Không tìm thấy lịch hẹn".equals(e.getMessage())) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", e.getMessage()));
+                return new ResponseEntity<>(Map.of("error", e.getMessage()), HttpStatus.NOT_FOUND);
             }
 
-            return ResponseEntity.badRequest().header(HttpHeaders.CONTENT_TYPE, "application/json").body(Map.of("error", e.getMessage()));
+            HttpHeaders headers = new HttpHeaders();
+            headers.add(HttpHeaders.CONTENT_TYPE, "application/json");
+            return new ResponseEntity<>(Map.of("error", e.getMessage()), headers, HttpStatus.BAD_REQUEST);
         }
     }
 }

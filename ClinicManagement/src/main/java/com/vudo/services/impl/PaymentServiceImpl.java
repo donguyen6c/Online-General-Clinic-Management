@@ -16,7 +16,7 @@ import com.vudo.pojo.PrescribedMedicine;
 import com.vudo.pojo.User;
 import com.vudo.repositories.MedicalRecordRepository;
 import com.vudo.repositories.PaymentRepository;
-import com.vudo.services.NotificationService;
+import com.vudo.events.PaymentCompletedEvent;
 import com.vudo.services.PaymentService;
 import com.vudo.utils.MomoUtils;
 import com.vudo.utils.VNPayUtils;
@@ -31,6 +31,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.TreeMap;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -53,7 +54,7 @@ public class PaymentServiceImpl implements PaymentService {
     private PaymentRepository paymentRepo;
 
     @Autowired
-    private NotificationService notificationService;
+    private ApplicationEventPublisher eventPublisher;
 
     @Override
     @Transactional
@@ -147,7 +148,7 @@ public class PaymentServiceImpl implements PaymentService {
             MedicalRecord mr = payment.getMedicalRecordId();
             User patient = mr.getPatientId();
             String currentTime = new java.util.Date().toString();
-            notificationService.createPaymentNotification(patient, mr, currentTime);
+            eventPublisher.publishEvent(new PaymentCompletedEvent(patient, mr, currentTime));
         } else {
             payment.setStatus("failed");
         }
@@ -299,7 +300,7 @@ public class PaymentServiceImpl implements PaymentService {
 
             String currentTime = new Date().toString();
 
-            notificationService.createPaymentNotification(patient, mr, currentTime);
+            eventPublisher.publishEvent(new PaymentCompletedEvent(patient, mr, currentTime));
         } else {
             payment.setStatus("failed");
         }

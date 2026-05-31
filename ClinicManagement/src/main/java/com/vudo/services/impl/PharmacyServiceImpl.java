@@ -8,13 +8,14 @@ import com.vudo.dto.InventoryDTO;
 import com.vudo.dto.MedicineDTO;
 import com.vudo.pojo.MedicalRecord;
 import com.vudo.pojo.User;
+import com.vudo.events.MedicineReadyEvent;
 import com.vudo.repositories.MedicalRecordRepository;
 import com.vudo.repositories.PharmacyRepository;
-import com.vudo.services.NotificationService;
 import com.vudo.services.PharmacyService;
 import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,7 +32,7 @@ public class PharmacyServiceImpl implements PharmacyService{
     private MedicalRecordRepository medicalRecordRepo;
     
     @Autowired
-    private NotificationService notificationService;
+    private ApplicationEventPublisher eventPublisher;
     
     @Override
     public List<MedicineDTO> getMedicines(Map<String, String> params) {
@@ -91,7 +92,7 @@ public class PharmacyServiceImpl implements PharmacyService{
         MedicalRecord mr = medicalRecordRepo.getMedicalRecordById(medicalRecordId);
         User patient = mr.getPatientId(); 
         String currentTime = new java.util.Date().toString();
-        notificationService.createMedicinesNotification(patient, mr, currentTime);
+        eventPublisher.publishEvent(new MedicineReadyEvent(patient, mr, currentTime));
     }
 
 }

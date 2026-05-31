@@ -36,7 +36,7 @@ public abstract class PaymentHandler {
 
     public abstract String getMethod();
 
-    public abstract Map<String, Object> createPaymentUrl(CreatePaymentRequestDTO request, String clientIp);
+    public abstract Map<String, String> createPaymentUrl(CreatePaymentRequestDTO request, String clientIp);
 
     public Map<String, String> handleReturn(Map<String, String> params) {
         throw new UnsupportedOperationException("Phương thức thanh toán không hỗ trợ callback này");

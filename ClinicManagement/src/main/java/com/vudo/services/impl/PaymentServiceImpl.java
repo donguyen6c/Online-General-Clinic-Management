@@ -11,7 +11,6 @@ package com.vudo.services.impl;
 import com.vudo.dto.CreatePaymentRequestDTO;
 import com.vudo.services.PaymentService;
 import com.vudo.services.payment.PaymentFactory;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,12 +25,7 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     @Transactional
     public Map<String, String> createVNPayPaymentUrl(CreatePaymentRequestDTO request, String clientIp) {
-        Map<String, Object> result = paymentFactory.getHandler("vnpay").createPaymentUrl(request, clientIp);
-        Map<String, String> response = new LinkedHashMap<>();
-
-        result.forEach((key, value) -> response.put(key, value == null ? null : value.toString()));
-
-        return response;
+        return paymentFactory.getHandler("vnpay").createPaymentUrl(request, clientIp);
     }
 
     @Override
@@ -42,7 +36,7 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     @Transactional
-    public Map<String, Object> createMomoPaymentUrl(CreatePaymentRequestDTO request) {
+    public Map<String, String> createMomoPaymentUrl(CreatePaymentRequestDTO request) {
         return paymentFactory.getHandler("momo").createPaymentUrl(request, null);
     }
 

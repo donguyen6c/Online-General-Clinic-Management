@@ -40,7 +40,7 @@ public class MomoHandler extends PaymentHandler {
     }
 
     @Override
-    public Map<String, Object> createPaymentUrl(CreatePaymentRequestDTO request, String clientIp) {
+    public Map<String, String> createPaymentUrl(CreatePaymentRequestDTO request, String clientIp) {
         MedicalRecord medicalRecord = this.getMedicalRecord(request);
         BigDecimal totalAmount = this.calculateTotalAmount(medicalRecord);
 
@@ -106,8 +106,8 @@ public class MomoHandler extends PaymentHandler {
 
         this.savePendingPayment(medicalRecord, totalAmount, this.getMethod(), orderId);
 
-        Map<String, Object> result = new LinkedHashMap<>();
-        result.put("paymentUrl", momoResponse.get("payUrl"));
+        Map<String, String> result = new LinkedHashMap<>();
+        result.put("paymentUrl", momoResponse.get("payUrl").toString());
 
         return result;
     }

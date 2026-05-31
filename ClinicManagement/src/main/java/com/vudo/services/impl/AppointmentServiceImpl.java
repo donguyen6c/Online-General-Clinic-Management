@@ -20,8 +20,8 @@ import com.vudo.repositories.DoctorRepository;
 import com.vudo.repositories.DoctorScheduleRepository;
 import com.vudo.repositories.DoctorWorkingPatternRepository;
 import com.vudo.repositories.UserRepository;
+import com.vudo.events.BookingCreatedEvent;
 import com.vudo.services.AppointmentService;
-import com.vudo.services.NotificationService;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -56,7 +57,7 @@ public class AppointmentServiceImpl implements AppointmentService {
     private DoctorRepository doctorRepo;
 
     @Autowired
-    private NotificationService notificationService;
+    private ApplicationEventPublisher eventPublisher;
 
     @Override
     public AvailableSlotsResponseDTO getSlots(int doctorId, String dateStr) {
@@ -164,11 +165,11 @@ public class AppointmentServiceImpl implements AppointmentService {
         Doctor doctor = doctorRepo.getDoctorById(doctorId);
         Appointment appointment = AppointmentMapper.toEntity(request, doctor, patient);
         Appointment saved = appointmentRepo.add(appointment);
-        notificationService.createBookingNotification(
+        eventPublisher.publishEvent(new BookingCreatedEvent(
                 patient,
                 doctor.getUserId().getFullName(),
                 request.getDate() + " " + request.getStartTime()
-        );
+        ));
         return AppointmentMapper.toDTO(saved);
     }
 

@@ -25,15 +25,16 @@ import com.vudo.repositories.MedicalRecordRepository;
 import com.vudo.repositories.PharmacyRepository;
 import com.vudo.repositories.ServicesRepository;
 import com.vudo.repositories.UserRepository;
+import com.vudo.events.MedicalRecordCompletedEvent;
 import com.vudo.services.AppointmentService;
 import com.vudo.services.MedicalRecordService;
-import com.vudo.services.NotificationService;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -68,7 +69,7 @@ public class MedicalRecordServiceImpl implements MedicalRecordService {
     private ServicesRepository servicesRepo;
     
     @Autowired
-    private NotificationService notificationService;
+    private ApplicationEventPublisher eventPublisher;
     
     @Autowired
     private AppointmentService appointmentService;
@@ -125,7 +126,7 @@ public class MedicalRecordServiceImpl implements MedicalRecordService {
         record = medicalRecordRepo.create(record);
         appointmentService.completedAppointment(appointment.getId());
         String currentTime = new java.util.Date().toString();
-        notificationService.createMedicinesNotification(patient, record, currentTime);
+        eventPublisher.publishEvent(new MedicalRecordCompletedEvent(patient, record, currentTime));
 
         return MedicalRecordMapper.toDTO(record);
     }

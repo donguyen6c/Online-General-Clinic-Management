@@ -18,18 +18,9 @@ import com.vudo.repositories.MedicalRecordRepository;
 import com.vudo.repositories.PaymentRepository;
 import com.vudo.events.PaymentCompletedEvent;
 import com.vudo.services.PaymentService;
-import com.vudo.utils.MomoUtils;
-import com.vudo.utils.VNPayUtils;
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.util.Date;
+import com.vudo.services.payment.PaymentFactory;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
-import java.util.TreeMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.env.Environment;
@@ -40,7 +31,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
 
 @Service
 public class PaymentServiceImpl implements PaymentService {
@@ -59,66 +49,11 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     @Transactional
     public Map<String, String> createVNPayPaymentUrl(CreatePaymentRequestDTO request, String clientIp) {
-        if (request.getMedicalRecordId() == null) {
-            throw new IllegalArgumentException("Thiếu thông tin thanh toán");
-        }
-
-        MedicalRecord medicalRecord = medicalRecordRepo.getMedicalRecordById(request.getMedicalRecordId());
-        if (medicalRecord == null) {
-            throw new IllegalArgumentException("Không tìm thấy hồ sơ bệnh án");
-        }
-
-        Set<Payment> payments = medicalRecord.getPaymentSet();
-        if (payments != null && !payments.isEmpty()) {
-            for (Payment p : payments) {
-                if ("paid".equals(p.getStatus())) {
-                    throw new IllegalArgumentException("Đã thanh toán rồi!");
-                }
-            }
-        }
-
-        String tmnCode = env.getProperty("vnpay.tmnCode");
-        String hashSecret = env.getProperty("vnpay.hashSecret");
-        String payUrl = env.getProperty("vnpay.payUrl");
-        String returnUrl = env.getProperty("vnpay.returnUrl");
-
-        String txRef = UUID.randomUUID().toString().replace("-", "").substring(0, 20);
-        LocalDateTime now = LocalDateTime.now(ZoneId.of("Asia/Ho_Chi_Minh"));
-        String createDate = now.format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
-        String expireDate = now.plusMinutes(15).format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
-        BigDecimal totalAmount = this.calculateTotalAmount(medicalRecord);
-
-        TreeMap<String, String> params = new TreeMap<>();
-        params.put("vnp_Version", "2.1.0");
-        params.put("vnp_Command", "pay");
-        params.put("vnp_TmnCode", tmnCode);
-        params.put("vnp_Amount", totalAmount.multiply(BigDecimal.valueOf(100)).toBigInteger().toString());
-        params.put("vnp_CurrCode", "VND");
-        params.put("vnp_TxnRef", txRef);
-        params.put("vnp_OrderInfo", "Thanh toan hoa don" + medicalRecord.getId());
-        params.put("vnp_OrderType", "other");
-        params.put("vnp_Locale", "vn");
-        params.put("vnp_IpAddr", (clientIp == null || clientIp.isBlank()) ? "127.0.0.1" : clientIp);
-        params.put("vnp_CreateDate", createDate);
-        params.put("vnp_ExpireDate", expireDate);
-        params.put("vnp_ReturnUrl", returnUrl);
-
-        String hashData = VNPayUtils.buildHashData(params);
-        String secureHash = VNPayUtils.hmacSHA512(hashSecret, hashData);
-        String paymentUrl = payUrl + "?" + hashData + "&vnp_SecureHash=" + secureHash;
-
-        Payment payment = new Payment();
-        payment.setMedicalRecordId(medicalRecord);
-        payment.setAmount(totalAmount);
-        payment.setPaymentMethod("vnpay");
-        payment.setPaymentCode(txRef);
-        payment.setStatus("pending");
-        payment.setCreatedAt(new Date());
-        paymentRepo.add(payment);
-
+        Map<String, Object> result = paymentFactory.getHandler("vnpay").createPaymentUrl(request, clientIp);
         Map<String, String> response = new LinkedHashMap<>();
-        response.put("paymentUrl", paymentUrl);
-        response.put("paymentCode", txRef);
+
+        result.forEach((key, value) -> response.put(key, value == null ? null : value.toString()));
+
         return response;
     }
 
@@ -182,102 +117,7 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     @Transactional
     public Map<String, Object> createMomoPaymentUrl(CreatePaymentRequestDTO request) {
-        if (request.getMedicalRecordId() == null) {
-            throw new IllegalArgumentException("Thiếu thông tin thanh toán");
-        }
-
-        MedicalRecord medicalRecord = medicalRecordRepo.getMedicalRecordById(request.getMedicalRecordId());
-
-        if (medicalRecord == null) {
-            throw new IllegalArgumentException("Không tìm thấy hồ sơ bệnh án");
-        }
-
-        Set<Payment> payments = medicalRecord.getPaymentSet();
-
-        if (payments != null && !payments.isEmpty()) {
-            for (Payment p : payments) {
-                if ("paid".equals(p.getStatus())) {
-                    throw new IllegalArgumentException("Đã thanh toán rồi!");
-                }
-            }
-        }
-
-        BigDecimal totalAmount = this.calculateTotalAmount(medicalRecord);
-
-        String partnerCode = env.getProperty("momo.partnerCode");
-        String accessKey = env.getProperty("momo.accessKey");
-        String secretKey = env.getProperty("momo.secretKey");
-        String endpoint = env.getProperty("momo.endpoint");
-        String requestType = env.getProperty("momo.requestType");
-        String redirectUrl = env.getProperty("momo.redirectUrl");
-        String ipnUrl = env.getProperty("momo.ipnUrl");
-
-        String requestId = UUID.randomUUID().toString();
-        String orderId = UUID.randomUUID().toString();
-        String orderInfo = "Thanh toan hoa don " + medicalRecord.getId();
-        String amount = totalAmount.toBigInteger().toString();
-        String extraData = "";
-
-        String rawSignature
-                = "accessKey=" + accessKey
-                + "&amount=" + amount
-                + "&extraData=" + extraData
-                + "&ipnUrl=" + ipnUrl
-                + "&orderId=" + orderId
-                + "&orderInfo=" + orderInfo
-                + "&partnerCode=" + partnerCode
-                + "&redirectUrl=" + redirectUrl
-                + "&requestId=" + requestId
-                + "&requestType=" + requestType;
-
-        String signature = MomoUtils.hmacSHA256(secretKey, rawSignature);
-
-        Map<String, Object> body = new LinkedHashMap<>();
-
-        body.put("partnerCode", partnerCode);
-        body.put("partnerName", "Momo Payment");
-        body.put("storeId", "MomoStore");
-        body.put("requestId", requestId);
-        body.put("amount", amount);
-        body.put("orderId", orderId);
-        body.put("orderInfo", orderInfo);
-        body.put("redirectUrl", redirectUrl);
-        body.put("ipnUrl", ipnUrl);
-        body.put("lang", "vi");
-        body.put("requestType", requestType);
-        body.put("autoCapture", true);
-        body.put("extraData", extraData);
-        body.put("signature", signature);
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
-        HttpEntity<Map<String, Object>> entity = new HttpEntity<>(body, headers);
-
-        RestTemplate restTemplate = new RestTemplate();
-
-        ResponseEntity<Map> response = restTemplate.exchange(endpoint, HttpMethod.POST, entity, Map.class);
-
-        Map<String, Object> momoResponse = response.getBody();
-
-        if (momoResponse == null || momoResponse.get("payUrl") == null) {
-            throw new IllegalStateException("Không tạo được link thanh toán MoMo");
-        }
-
-        Payment payment = new Payment();
-        payment.setMedicalRecordId(medicalRecord);
-        payment.setAmount(totalAmount);
-        payment.setPaymentMethod("momo");
-        payment.setPaymentCode(orderId);
-        payment.setStatus("pending");
-        payment.setCreatedAt(new Date());
-
-        paymentRepo.add(payment);
-
-        Map<String, Object> result = new LinkedHashMap<>();
-        result.put("paymentUrl", momoResponse.get("payUrl"));
-
-        return result;
+        return paymentFactory.getHandler("momo").createPaymentUrl(request, null);
     }
 
     @Override
@@ -316,25 +156,6 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public Map<String, String> handleMomoReturn(Map<String, String> params) {
-        String orderId = params.get("orderId");
-        String resultCode = params.get("resultCode");
-
-        if (orderId == null || resultCode == null) {
-            return Map.of(
-                    "status", "failed",
-                    "paymentCode", "",
-                    "responseCode", "99"
-            );
-        }
-
-        String status = "0".equals(resultCode) ? "paid" : "failed";
-        String responseCode = "0".equals(resultCode) ? "00" : resultCode;
-
-        return Map.of(
-                "status", status,
-                "paymentCode", orderId,
-                "responseCode", responseCode
-        );
+        return paymentFactory.getHandler("momo").handleReturn(params);
     }
-
 }

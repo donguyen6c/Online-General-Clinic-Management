@@ -59,12 +59,12 @@ public class ApiUserController {
         if (this.userService.authenticate(u.getUsername(), u.getPassword())) {
             try {
                 String token = JwtUtils.generateToken(u.getUsername());
-                return ResponseEntity.ok().body(Collections.singletonMap("token", token));
+                return new ResponseEntity<>(Collections.singletonMap("token", token), HttpStatus.OK);
             } catch (Exception e) {
-                return ResponseEntity.status(500).body("Error JWT");
+                return new ResponseEntity<>("Error JWT", HttpStatus.INTERNAL_SERVER_ERROR);
             }
         }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Wrong username or password");
+        return new ResponseEntity<>("Wrong username or password", HttpStatus.UNAUTHORIZED);
     }
 
     @GetMapping("/secure/profile")
@@ -80,9 +80,9 @@ public class ApiUserController {
             Principal principal) {
         try {
             UserDTO updated = userService.updateProfile(principal.getName(), params, avatar);
-            return ResponseEntity.ok(updated);
+            return new ResponseEntity<>(updated, HttpStatus.OK);
         } catch (RuntimeException ex) {
-            return ResponseEntity.badRequest().body(Map.of("error", ex.getMessage()));
+            return new ResponseEntity<>(Map.of("error", ex.getMessage()), HttpStatus.BAD_REQUEST);
         }
     }
     
@@ -110,14 +110,12 @@ public class ApiUserController {
             );
 
             String token = JwtUtils.generateToken(userDTO.getUsername());
-            return ResponseEntity.ok(Map.of("token", token));
+            return new ResponseEntity<>(Map.of("token", token), HttpStatus.OK);
 
         } catch (FirebaseAuthException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(Map.of("error", "Token không hợp lệ"));
+            return new ResponseEntity<>(Map.of("error", "Token không hợp lệ"), HttpStatus.UNAUTHORIZED);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("error", e.getMessage()));
+            return new ResponseEntity<>(Map.of("error", e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
     

@@ -40,7 +40,7 @@ public class ApiMedicalRecordController {
             MedicalRecordResponseDTO record = medicalRecordService.create(request);
             return new ResponseEntity<>(record, HttpStatus.CREATED);
         } catch (Exception ex) {
-            return ResponseEntity.badRequest().body(ex.getMessage());
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
     
@@ -70,10 +70,10 @@ public class ApiMedicalRecordController {
         try {
             medicalRecordService.addServicesToRecord(medicalRecordId, request);
             
-            return ResponseEntity.ok(Map.of("success","Đăng ký dịch vụ thành công"
-            ));
+            return new ResponseEntity<>(Map.of("success","Đăng ký dịch vụ thành công"
+            ), HttpStatus.OK);
         } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+            return new ResponseEntity<>(Map.of("error", e.getMessage()), HttpStatus.BAD_REQUEST);
         }
     }
     
@@ -83,10 +83,10 @@ public class ApiMedicalRecordController {
         try {
             medicalRecordService.addPrescriptionsToRecord(medicalRecordId, request);
             
-            return ResponseEntity.ok(Map.of("success","Kê đơn thuốc thành công"
-            ));
+            return new ResponseEntity<>(Map.of("success","Kê đơn thuốc thành công"
+            ), HttpStatus.OK);
         } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+            return new ResponseEntity<>(Map.of("error", e.getMessage()), HttpStatus.BAD_REQUEST);
         }
     }
 }

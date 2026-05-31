@@ -40,9 +40,9 @@ public class ApiDoctorScheduleController {
     @GetMapping("/schedules")
     public ResponseEntity<?> getMySchedules() {
         try {
-            return ResponseEntity.ok(doctorScheduleService.getMySchedules());
+            return new ResponseEntity<>(doctorScheduleService.getMySchedules(), HttpStatus.OK);
         } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+            return new ResponseEntity<>(Map.of("error", e.getMessage()), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -51,7 +51,7 @@ public class ApiDoctorScheduleController {
         try {
             return new ResponseEntity<>(doctorScheduleService.createSchedule(request), HttpStatus.CREATED);
         } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+            return new ResponseEntity<>(Map.of("error", e.getMessage()), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -59,18 +59,18 @@ public class ApiDoctorScheduleController {
     public ResponseEntity<?> deleteSchedule(@PathVariable("id") int id) {
         try {
             doctorScheduleService.deleteSchedule(id);
-            return ResponseEntity.noContent().build();
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+            return new ResponseEntity<>(Map.of("error", e.getMessage()), HttpStatus.BAD_REQUEST);
         }
     }
 
     @GetMapping("/working-patterns")
     public ResponseEntity<?> getMyWorkingPattern() {
         try {
-            return ResponseEntity.ok(doctorWorkingPatternService.getMyWorkingPatterns());
+            return new ResponseEntity<>(doctorWorkingPatternService.getMyWorkingPatterns(), HttpStatus.OK);
         } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+            return new ResponseEntity<>(Map.of("error", e.getMessage()), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -78,10 +78,9 @@ public class ApiDoctorScheduleController {
     public ResponseEntity<?> createWorkingPattern(@RequestBody DoctorWorkingPatternDTO request) {
         try {
             doctorWorkingPatternService.addOrUpdate(request);
-            return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(Map.of("message", "Tạo lịch làm việc thành công"));
+            return new ResponseEntity<>(Map.of("message", "Tạo lịch làm việc thành công"), HttpStatus.CREATED);
         } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+            return new ResponseEntity<>(Map.of("error", e.getMessage()), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -89,9 +88,9 @@ public class ApiDoctorScheduleController {
     public ResponseEntity<?> deleteWorkingPattern(@PathVariable("id") int id) {
         try {
             doctorWorkingPatternService.deleteMyWorkingPattern(id);
-            return ResponseEntity.noContent().build();
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+            return new ResponseEntity<>(Map.of("error", e.getMessage()), HttpStatus.BAD_REQUEST);
         }
     }
 }

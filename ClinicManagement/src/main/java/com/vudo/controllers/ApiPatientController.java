@@ -83,7 +83,7 @@ public class ApiPatientController {
     @GetMapping("/")
     @PreAuthorize("hasAuthority('doctor')")
     public ResponseEntity<List<UserDTO>> searchPatients(@RequestParam("kw") String kw) {
-        return ResponseEntity.ok(userService.searchPatients(kw));
+        return new ResponseEntity<>(userService.searchPatients(kw), HttpStatus.OK);
     }
     
 }

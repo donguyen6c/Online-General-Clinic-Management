@@ -49,9 +49,9 @@ public class ApiAdminController {
     public ResponseEntity<?> updateDisease(@PathVariable("id") int id, @RequestBody DiseaseDTO requestDTO) {
         try {
             DiseaseDTO updated = diseaseService.updateDisease(id, requestDTO);
-            return ResponseEntity.ok(updated);
+            return new ResponseEntity<>(updated, HttpStatus.OK);
         } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+            return new ResponseEntity<>(Map.of("error", e.getMessage()), HttpStatus.BAD_REQUEST);
         }
     }
     
@@ -62,7 +62,7 @@ public class ApiAdminController {
             DiseaseDTO created = diseaseService.createDisease(requestDTO);
             return new ResponseEntity<>(created, HttpStatus.CREATED);
         } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+            return new ResponseEntity<>(Map.of("error", e.getMessage()), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -71,9 +71,9 @@ public class ApiAdminController {
     public ResponseEntity<?> updateService(@PathVariable("id") int id, @RequestBody ClinicServiceDTO requestDTO) {
         try {
             ClinicServiceDTO updated = serviceService.updateService(id, requestDTO);
-            return ResponseEntity.ok(updated);
+            return new ResponseEntity<>(updated, HttpStatus.OK);
         } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+            return new ResponseEntity<>(Map.of("error", e.getMessage()), HttpStatus.BAD_REQUEST);
         }
     }
     
@@ -84,7 +84,7 @@ public class ApiAdminController {
             ClinicServiceDTO created = serviceService.createService(requestDTO);
             return new ResponseEntity<>(created, HttpStatus.CREATED);
         } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+            return new ResponseEntity<>(Map.of("error", e.getMessage()), HttpStatus.BAD_REQUEST);
         }
     }
     
@@ -93,9 +93,9 @@ public class ApiAdminController {
     public ResponseEntity<?> deleteDisease(@PathVariable("id") int id) {
         try {
             diseaseService.deleteDisease(id);
-            return ResponseEntity.noContent().build(); 
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+            return new ResponseEntity<>(Map.of("error", e.getMessage()), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -104,9 +104,9 @@ public class ApiAdminController {
     public ResponseEntity<?> deleteService(@PathVariable("id") int id) {
         try {
             serviceService.deleteService(id);
-            return ResponseEntity.noContent().build();
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+            return new ResponseEntity<>(Map.of("error", e.getMessage()), HttpStatus.BAD_REQUEST);
         }
     }
     

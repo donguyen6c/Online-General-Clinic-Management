@@ -9,6 +9,7 @@ import com.vudo.services.ServiceService;
 import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,6 +28,6 @@ public class ApiServiceController {
 
     @GetMapping
     public ResponseEntity<List<ClinicServiceDTO>> getAllServices(@RequestParam Map<String, String> params) {
-        return ResponseEntity.ok(serviceService.getAllServices(params));
+        return new ResponseEntity<>(serviceService.getAllServices(params), HttpStatus.OK);
     }
 }

@@ -30,10 +30,10 @@ public class AppointmentController {
     public ResponseEntity<?> getMeetingUrl(@PathVariable("id") Integer appointmentId, Principal principal) {
         try {
             String meetingUrl = callAppointmentService.getAuthorizedMeetingUrl(appointmentId, principal.getName());
-            return ResponseEntity.ok(new MeetingUrlDTO(meetingUrl));
+            return new ResponseEntity<>(new MeetingUrlDTO(meetingUrl), HttpStatus.OK);
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
 }

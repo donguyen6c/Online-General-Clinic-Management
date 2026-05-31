@@ -43,43 +43,72 @@ const MedicalRecord = () => {
         loadInitialData();
     }, []);
 
-    const updateForm = (key, value) => setForm(prev => ({ ...prev, [key]: value }));
-
-    const addServiceRow = () =>
-        setForm(prev => ({ ...prev, selectedServices: [...prev.selectedServices, { serviceId: "", serviceName: "", quantity: 1 }] }));
-
-    const addMedicineRow = () =>
-        setForm(prev => ({ ...prev, selectedMedicines: [...prev.selectedMedicines, { medicineId: "", medicineName: "", quantity: 1, usageInstruction: "" }] }));
-
-    const removeServiceRow = (idx) =>
-        setForm(prev => ({ ...prev, selectedServices: prev.selectedServices.filter((_, i) => i !== idx) }));
-
-    const removeMedicineRow = (idx) =>
-        setForm(prev => ({ ...prev, selectedMedicines: prev.selectedMedicines.filter((_, i) => i !== idx) }));
-
-    const updateServiceRow = (idx, key, value) =>
-        setForm(prev => ({
-            ...prev,
-            selectedServices: prev.selectedServices.map((row, i) => i === idx ? { ...row, [key]: value } : row)
-        }));
-
-    const updateMedicineRow = (idx, key, value) =>
-        setForm(prev => ({
-            ...prev,
-            selectedMedicines: prev.selectedMedicines.map((row, i) => i === idx ? { ...row, [key]: value } : row)
-        }));
-
-    const addDiseaseRow = () =>
-        setForm(prev => ({ ...prev, diseaseIds: [...prev.diseaseIds, { id: "", name: "" }] }));
-
-    const removeDiseaseRow = (idx) =>
-        setForm(prev => ({ ...prev, diseaseIds: prev.diseaseIds.filter((_, i) => i !== idx) }));
-
-    const updateDiseaseRow = (idx, item) =>
-        setForm(prev => ({
-            ...prev,
-            diseaseIds: prev.diseaseIds.map((d, i) => i === idx ? { id: String(item.id), name: item.name } : d)
-        }));
+    const updateForm = (key, value) => {
+        setForm({ ...form, [key]: value });
+    };
+    
+    const addServiceRow = () => {
+        const newService = { serviceId: "", serviceName: "", quantity: 1 };
+        setForm({ ...form, selectedServices: [...form.selectedServices, newService] });
+    };
+    
+    const addMedicineRow = () => {
+        const newMedicine = { medicineId: "", medicineName: "", quantity: 1, usageInstruction: "" };
+        setForm({ ...form, selectedMedicines: [...form.selectedMedicines, newMedicine] });
+    };
+    
+    const removeServiceRow = (index) => {
+        const newServices = form.selectedServices.filter((service, i) => i !== index);
+        setForm({ ...form, selectedServices: newServices });
+    };
+    
+    const removeMedicineRow = (index) => {
+        const newMedicines = form.selectedMedicines.filter((medicine, i) => i !== index);
+        setForm({ ...form, selectedMedicines: newMedicines });
+    };
+    
+    const updateServiceRow = (index, key, value) => {
+        const newServices = form.selectedServices.map((service, i) => {
+            if (i === index)
+                return { ...service, [key]: value };
+    
+            return service;
+        });
+    
+        setForm({ ...form, selectedServices: newServices });
+    };
+    
+    const updateMedicineRow = (index, key, value) => {
+        const newMedicines = form.selectedMedicines.map((medicine, i) => {
+            if (i === index)
+                return { ...medicine, [key]: value };
+    
+            return medicine;
+        });
+    
+        setForm({ ...form, selectedMedicines: newMedicines });
+    };
+    
+    const addDiseaseRow = () => {
+        const newDisease = { id: "", name: "" };
+        setForm({ ...form, diseaseIds: [...form.diseaseIds, newDisease] });
+    };
+    
+    const removeDiseaseRow = (index) => {
+        const newDiseases = form.diseaseIds.filter((disease, i) => i !== index);
+        setForm({ ...form, diseaseIds: newDiseases });
+    };
+    
+    const updateDiseaseRow = (index, item) => {
+        const newDiseases = form.diseaseIds.map((disease, i) => {
+            if (i === index)
+                return { id: String(item.id), name: item.name };
+    
+            return disease;
+        });
+    
+        setForm({ ...form, diseaseIds: newDiseases });
+    };
 
     const validate = () => {
         if (!form.symptoms.trim() || !form.diagnosis.trim())

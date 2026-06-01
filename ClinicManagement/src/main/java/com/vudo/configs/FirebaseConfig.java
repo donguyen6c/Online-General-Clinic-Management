@@ -24,19 +24,10 @@ public class FirebaseConfig {
 
     @Bean
     public FirebaseApp firebaseApp() throws IOException {
+        InputStream serviceAccount = new ClassPathResource( "clinicapp-5adfa-firebase-adminsdk-fbsvc-c96748bd46.json").getInputStream();
+        FirebaseOptions options = FirebaseOptions.builder().setCredentials(GoogleCredentials.fromStream(serviceAccount)).build();
 
-        InputStream serviceAccount =
-                new ClassPathResource(
-                        "clinicapp-5adfa-firebase-adminsdk-fbsvc-c96748bd46.json")
-                        .getInputStream();
-
-        FirebaseOptions options = FirebaseOptions.builder()
-                .setCredentials(GoogleCredentials.fromStream(serviceAccount))
-                .build();
-
-        if (FirebaseApp.getApps().isEmpty()) {
-            return FirebaseApp.initializeApp(options);
-        }
+        if (FirebaseApp.getApps().isEmpty()) { return FirebaseApp.initializeApp(options);}
 
         return FirebaseApp.getInstance();
     }

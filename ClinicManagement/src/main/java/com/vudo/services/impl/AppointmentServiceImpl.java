@@ -165,11 +165,7 @@ public class AppointmentServiceImpl implements AppointmentService {
         Doctor doctor = doctorRepo.getDoctorById(doctorId);
         Appointment appointment = AppointmentMapper.toEntity(request, doctor, patient);
         Appointment saved = appointmentRepo.add(appointment);
-        eventPublisher.publishEvent(new BookingCreatedEvent(
-                patient,
-                doctor.getUserId().getFullName(),
-                request.getDate() + " " + request.getStartTime()
-        ));
+        eventPublisher.publishEvent(new BookingCreatedEvent( patient, doctor.getUserId().getFullName(), request.getDate() + " " + request.getStartTime()));
         return AppointmentMapper.toDTO(saved);
     }
 

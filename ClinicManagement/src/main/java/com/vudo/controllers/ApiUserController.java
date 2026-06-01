@@ -47,15 +47,13 @@ public class ApiUserController {
     private UserService userService;
 
     @PostMapping(path = "/users", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<UserDTO> create(@RequestParam Map<String, String> params,
-            @RequestParam(value = "avatar") MultipartFile avatar) {
+    public ResponseEntity<UserDTO> create(@RequestParam Map<String, String> params, @RequestParam(value = "avatar") MultipartFile avatar) {
         UserDTO u = this.userService.addUser(params, avatar);
         return new ResponseEntity<>(u, HttpStatus.CREATED);
     }
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody User u) {
-
         if (this.userService.authenticate(u.getUsername(), u.getPassword())) {
             try {
                 String token = JwtUtils.generateToken(u.getUsername());
@@ -74,10 +72,7 @@ public class ApiUserController {
     }
     
     @PatchMapping(path = "/secure/profile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> updateProfile(
-            @RequestParam Map<String, String> params,
-            @RequestParam(value = "avatar", required = false) MultipartFile avatar,
-            Principal principal) {
+    public ResponseEntity<?> updateProfile(@RequestParam Map<String, String> params, @RequestParam(value = "avatar", required = false) MultipartFile avatar, Principal principal) {
         try {
             UserDTO updated = userService.updateProfile(principal.getName(), params, avatar);
             return new ResponseEntity<>(updated, HttpStatus.OK);

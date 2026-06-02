@@ -28,6 +28,7 @@ import com.vudo.repositories.UserRepository;
 import com.vudo.events.MedicalRecordCompletedEvent;
 import com.vudo.services.AppointmentService;
 import com.vudo.services.MedicalRecordService;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -118,14 +119,13 @@ public class MedicalRecordServiceImpl implements MedicalRecordService {
         if (request.getDiseaseIds() != null && !request.getDiseaseIds().isEmpty()) {
             diseases = new HashSet<>(diseaseRepo.getAllById(request.getDiseaseIds()));
         }
-        System.out.println(diseases.size());
         MedicalRecord record = MedicalRecordMapper.toEntity(
                 request, doctor, patient, appointment, diseases
         );
 
         record = medicalRecordRepo.create(record);
         appointmentService.completedAppointment(appointment.getId());
-        String currentTime = new java.util.Date().toString();
+        String currentTime = new Date().toString();
         eventPublisher.publishEvent(new MedicalRecordCompletedEvent(patient, record, currentTime));
 
         return MedicalRecordMapper.toDTO(record);

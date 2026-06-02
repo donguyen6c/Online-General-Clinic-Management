@@ -130,9 +130,9 @@ public class UserServiceImpl implements UserService {
         if (u == null) throw new RuntimeException("Không tìm thấy user");
 
         if (params.get("fullName") != null) u.setFullName(params.get("fullName"));
-        if (params.get("email")    != null) u.setEmail(params.get("email"));
-        if (params.get("phone")    != null) u.setPhone(params.get("phone"));
-        if (params.get("gender")   != null) u.setGender(params.get("gender"));
+        if (params.get("email") != null) u.setEmail(params.get("email"));
+        if (params.get("phone") != null) u.setPhone(params.get("phone"));
+        if (params.get("gender") != null) u.setGender(params.get("gender"));
 
         if (params.get("dateOfBirth") != null) {
             try {

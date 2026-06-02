@@ -95,38 +95,23 @@ const DoctorSchedule = () => {
     const renderActionButton = (appt) => {
         if (checkReadyToJoin(appt.date, appt.time, appt.status)) {
             return (
-                <button className="btn btn-primary w-100 fw-bold" onClick={() => navigate(`/video-call/${appt.id}`)}>
-                    Vào phòng khám
-                </button>
+                <button className="btn btn-primary w-100 fw-bold" onClick={() => navigate(`/video-call/${appt.id}`)}>Vào phòng khám</button>
             );
         }
 
         if (appt.status === "completed") {
-            return (
-                <button className="btn btn-success w-100" disabled>
-                    Đã hoàn thành
-                </button>
-            );
+            return (<button className="btn btn-success w-100" disabled>Đã hoàn thành</button>);
         }
 
         if (appt.status === "cancelled") {
-            return (
-                <button className="btn btn-secondary w-100" disabled>
-                    Đã hủy
-                </button>
-            );
+            return (<button className="btn btn-secondary w-100" disabled>Đã hủy</button>);
         }
 
         if (canCancelAppointment(appt.date, appt.time, appt.status)) {
             return (
                 <div className="d-flex gap-2">
-                    <button className="btn btn-warning w-50" disabled>
-                        Chưa đến giờ
-                    </button>
-
-                    <button className="btn btn-outline-danger w-50" onClick={() => cancelAppointment(appt.id)}>
-                        Hủy lịch
-                    </button>
+                    <button className="btn btn-warning w-50" disabled>Chưa đến giờ</button>
+                    <button className="btn btn-outline-danger w-50" onClick={() => cancelAppointment(appt.id)}>Hủy lịch</button>
                 </div>
             );
         }
@@ -145,9 +130,7 @@ const DoctorSchedule = () => {
             <h2 className="text-center mb-4">Lịch Khám Của Bác Sĩ</h2>
 
             {schedules.length === 0 ? (
-                <div className="alert alert-info text-center">
-                    Hôm nay không có lịch khám nào.
-                </div>
+                <div className="alert alert-info text-center">Hôm nay không có lịch khám nào.</div>
             ) : (
                 <>
                     <div className="row">
@@ -155,27 +138,11 @@ const DoctorSchedule = () => {
                             <div className="col-md-6 mb-4" key={appt.id}>
                                 <div className="card shadow-sm h-100 border-primary">
                                     <div className="card-body">
-                                        <h5 className="card-title text-danger">
-                                            Tư vấn khám bệnh
-                                        </h5>
-
-                                        <p className="mb-1">
-                                            <strong>Mã cuộc hẹn:</strong> {appt.id}
-                                        </p>
-
-                                        <p className="mb-1">
-                                            <strong>Lý do khám:</strong>{" "}
-                                            {appt.reason || "Không ghi rõ"}
-                                        </p>
-
-                                        <p className="mb-1">
-                                            <strong>Ngày:</strong> {appt.date}
-                                        </p>
-
-                                        <p className="mb-3">
-                                            <strong>Giờ:</strong> {appt.time}
-                                        </p>
-
+                                        <h5 className="card-title text-danger">Tư vấn khám bệnh</h5>
+                                        <p className="mb-1"> <strong>Mã cuộc hẹn:</strong> {appt.id} </p>
+                                        <p className="mb-1"> <strong>Lý do khám:</strong>{" "} {appt.reason || "Không ghi rõ"} </p>
+                                        <p className="mb-1"> <strong>Ngày:</strong> {appt.date} </p>
+                                        <p className="mb-3"> <strong>Giờ:</strong> {appt.time} </p>
                                         {renderActionButton(appt)}
                                     </div>
                                 </div>

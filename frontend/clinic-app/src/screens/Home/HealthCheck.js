@@ -1,13 +1,5 @@
 import { useEffect, useState } from "react";
-import {
-    Container,
-    Row,
-    Col,
-    Form,
-    Card,
-    Button,
-    Alert
-} from "react-bootstrap";
+import { Container, Row, Col, Form, Card, Button, Alert} from "react-bootstrap";
 import MySpinner from "../../components/MySpinner";
 import Apis, { endpoints } from "../../configs/Apis";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -87,12 +79,7 @@ const HealthCheck = () => {
 
             <Row className="mb-4">
                 <Col md={6} className="mb-2">
-                    <Form.Control
-                        type="text"
-                        placeholder="Tìm theo tên bác sĩ..."
-                        value={kw}
-                        onChange={handleSearchKw}
-                    />
+                    <Form.Control type="text" placeholder="Tìm theo tên bác sĩ..." value={kw} onChange={handleSearchKw}/>
                 </Col>
 
                 <Col md={6}>
@@ -101,35 +88,23 @@ const HealthCheck = () => {
                         onChange={handleSearchSpecialty}
                     >
                         <option value="">-- Tất cả chuyên khoa --</option>
-                        {specialties.map((s) => (
-                            <option key={s.id} value={s.id}>
-                                {s.name}
-                            </option>
-                        ))}
+                        {specialties.map((s) => ( <option key={s.id} value={s.id}> {s.name} </option> ))}
                     </Form.Select>
                 </Col>
             </Row>
 
             <Row>
                 {!loading && doctors.length === 0 && (
-                    <Alert variant="warning" className="text-center">
-                        Không có bác sĩ nào
-                    </Alert>
+                    <Alert variant="warning" className="text-center"> Không có bác sĩ nào </Alert>
                 )}
 
                 {doctors.map((d) => (
                     <Col md={4} className="mb-4" key={d.id}>
                         <Card className="h-100 shadow-sm">
-                            <Card.Img
-                                variant="top"
-                                src={d.user.avatar}
-                                style={{ height: "220px", objectFit: "cover" }}
-                            />
+                            <Card.Img variant="top" src={d.user.avatar} style={{ height: "220px", objectFit: "cover" }}/>
 
                             <Card.Body>
-                                <Card.Title>
-                                    {d.user?.fullName}
-                                </Card.Title>
+                                <Card.Title> {d.user?.fullName} </Card.Title>
 
                                 <p className="mb-1">
                                     <strong>Chuyên khoa:</strong> {d.specialty?.name}
@@ -141,10 +116,7 @@ const HealthCheck = () => {
                             </Card.Body>
 
                             <Card.Footer className="bg-white border-0">
-                                <Button variant="outline-primary" className="w-100" 
-                                onClick={() => navigate(`/doctors/${d.id}/booking`)}>
-                                    Đặt lịch
-                                </Button>
+                                <Button variant="outline-primary" className="w-100" onClick={() => navigate(`/doctors/${d.id}/booking`)}>Đặt lịch</Button>
                             </Card.Footer>
                         </Card>
                     </Col>
@@ -152,17 +124,11 @@ const HealthCheck = () => {
             </Row>
 
             {loading && (
-                <div className="text-center">
-                    <MySpinner />
-                </div>
+                <div className="text-center"> <MySpinner /> </div>
             )}
 
             {!loading && doctors.length > 0 && hasMore && (
-                <div className="text-center mt-3">
-                    <Button variant="outline-primary" onClick={handleLoadMore}>
-                        Xem thêm
-                    </Button>
-                </div>
+                <div className="text-center mt-3"> <Button variant="outline-primary" onClick={handleLoadMore}>Xem thêm</Button> </div>
             )}
         </Container>
     );

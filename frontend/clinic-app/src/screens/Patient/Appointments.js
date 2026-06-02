@@ -69,9 +69,7 @@ const Appointments = () => {
         try {
             setCancelLoading(true);
 
-            await Apis.delete(
-                endpoints["cancel-appointments"](selectedAppointment.id)
-            );
+            await Apis.delete( endpoints["cancel-appointments"](selectedAppointment.id));
 
             setAppointments(prev =>
                 prev.map(item =>

@@ -14,12 +14,12 @@ const userInfo = [
 ];
 
 const Login = () => {
-    const [user, setUser]       = useState({});
+    const [user, setUser] = useState({});
     const [loading, setLoading] = useState(false);
-    const [error, setError]     = useState("");
-    const [, dispatch]          = useContext(MyUserContext);
-    const [q]                   = useSearchParams();
-    const navigate              = useNavigate();
+    const [error, setError] = useState("");
+    const [, dispatch] = useContext(MyUserContext);
+    const [q] = useSearchParams();
+    const navigate = useNavigate();
 
     const handleAfterLogin = async (token) => {
         cookies.save("token", token);
@@ -86,19 +86,13 @@ const Login = () => {
 
                 {loading ? <MySpinner /> : (
                     <>
-                        <Button variant="primary" type="submit" className="w-100 mb-2">
-                            Đăng nhập
-                        </Button>
+                        <Button variant="primary" type="submit" className="w-100 mb-2"> Đăng nhập </Button>
 
-                        <Button variant="outline-danger" className="w-100" type="button" onClick={loginWithGoogle}>
-                            Đăng nhập bằng Google
-                        </Button>
+                        <Button variant="outline-danger" className="w-100" type="button" onClick={loginWithGoogle}> Đăng nhập bằng Google </Button>
                     </>
                 )}
 
-                <div className="text-center mt-3">
-                    Chưa có tài khoản? <Link to="/register">Đăng ký</Link>
-                </div>
+                <div className="text-center mt-3"> Chưa có tài khoản? <Link to="/register">Đăng ký</Link> </div>
             </Form>
         </Container>
     );

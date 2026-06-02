@@ -40,7 +40,6 @@ const MedicineManagement = () => {
         const timer = setTimeout(() => fetchMedicines(), 300);
         return () => clearTimeout(timer);
         
-    // Đưa biến 'refresh' vào để lắng nghe sự thay đổi
     }, [kw, page, refresh]);
 
     const handleSearch = (e) => {
@@ -75,7 +74,6 @@ const MedicineManagement = () => {
             }
             setShowModal(false);
             
-            // Ép Load lại bảng từ trang 1 để đồng bộ data mới nhất
             setPage(1); 
             setRefresh(prev => prev + 1);
             
@@ -91,7 +89,6 @@ const MedicineManagement = () => {
             await Apis.delete(endpoints['medicine-detail'](id));
             alert("Xóa thành công!");
             
-            // Ép Load lại bảng từ trang 1 thay vì dùng filter
             setPage(1);
             setRefresh(prev => prev + 1);
             

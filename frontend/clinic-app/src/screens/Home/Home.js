@@ -38,16 +38,11 @@ const Home = () => {
         style={{ background: "linear-gradient(135deg, #0a6e6e, #06b6d4)" }}
       >
         <div className="container py-3">
-          <h1 className="fw-bold mb-2" style={{ fontSize: "2.2rem" }}>
-            Đặt lịch khám nhanh &amp; tiện lợi
-          </h1>
-          <p className="mb-4 opacity-75">
-            Kết nối với đội ngũ bác sĩ chuyên khoa — mọi lúc, mọi nơi.
-          </p>
+          <h1 className="fw-bold mb-2" style={{ fontSize: "2.2rem" }}> Đặt lịch khám nhanh &amp; tiện lợi </h1>
+          <p className="mb-4 opacity-75"> Kết nối với đội ngũ bác sĩ chuyên khoa — mọi lúc, mọi nơi. </p>
         </div>
       </section>
 
-      {/* ── SPEC ── */}
       <section className="py-5 bg-white">
         <div className="container">
           <h4 className="fw-bold mb-1" style={{ color: "#0a6e6e" }}>Chuyên khoa</h4>
@@ -56,8 +51,7 @@ const Home = () => {
           <div className="row g-3">
             {specialties.map((spec, idx) => (
               <div key={spec.id} className="col-6 col-sm-4 col-md-3 col-lg-2">
-                <div
-                  className="border rounded-3 text-center p-3 h-100"
+                <div className="border rounded-3 text-center p-3 h-100"
                   style={{ cursor: "pointer", transition: "box-shadow .2s" }}
                   onClick={() => navigate(`/health-check?specialtyId=${spec.id}`)}
                   onMouseEnter={e => e.currentTarget.style.boxShadow = "0 4px 16px rgba(13,148,136,.18)"}
@@ -101,7 +95,6 @@ const Home = () => {
         </div>
       </section>
 
-      {/* ── DỊCH VỤ ── */}
       <section className="py-5 bg-white">
         <div className="container">
           <div className="d-flex justify-content-between align-items-center mb-4">
@@ -109,12 +102,7 @@ const Home = () => {
               <h4 className="fw-bold mb-1" style={{ color: "#0a6e6e" }}>Dịch vụ y tế</h4>
               <p className="text-muted mb-0">Đội ngũ chuyên gia giàu kinh nghiệm</p>
             </div>
-            <button
-              className="btn btn-outline-secondary btn-sm"
-              onClick={() => navigate("/services")}
-            >
-              Xem tất cả →
-            </button>
+            <button className="btn btn-outline-secondary btn-sm" onClick={() => navigate("/services")}> Xem tất cả → </button>
           </div>
           <div className="row g-3">
             {services.map((svc, i) => (
@@ -132,24 +120,18 @@ const Home = () => {
         </div>
       </section>
 
-      {/* ── ABOUT + CTA ── */}
       <section className="p-3" style={{ background: "#f0fdfa" }}>
-          {/* CTA */}
           <div className="text-center mt-5">
             <h5 className="fw-bold mb-2">Sẵn sàng đặt lịch khám?</h5>
             <p className="text-muted mb-3">Đăng ký ngay để trải nghiệm dịch vụ y tế hiện đại</p>
             <div className="d-flex justify-content-center gap-3 flex-wrap">
-              <button
-                className="btn text-white px-4"
+              <button className="btn text-white px-4"
                 style={{ background: "#0d9488" }}
-                onClick={() => navigate("/health-check")}
-              >
+                onClick={() => navigate("/health-check")}>
                 Tìm bác sĩ ngay
               </button>
-              <button
-                className="btn btn-outline-secondary px-4"
-                onClick={() => navigate("/register")}
-              >
+              <button className="btn btn-outline-secondary px-4"
+                onClick={() => navigate("/register")}>
                 Đăng ký tài khoản
               </button>
             </div>

@@ -8,10 +8,7 @@ const InventoryAlerts = () => {
     useEffect(() => {
         const fetchAlerts = async () => {
             try {
-                const [resExp, resLow] = await Promise.all([
-                    Apis.get(endpoints['inventory-expiring']),
-                    Apis.get(endpoints['inventory-low-stock'])
-                ]);
+                const [resExp, resLow] = await Promise.all([ Apis.get(endpoints['inventory-expiring']), Apis.get(endpoints['inventory-low-stock'])]);
                 setExpiring(resExp.data || []);
                 setLowStock(resLow.data || []);
             } catch (error) {

@@ -24,10 +24,7 @@ const MedicalRecord = () => {
 
     const [message, setMessage] = useState({ type: "", text: "" });
 
-    const appointmentOptions = useMemo(
-        () => appointments.filter(a => a.status !== "cancelled"),
-        [appointments]
-    );
+    const appointmentOptions = useMemo(() => appointments.filter(a => a.status !== "cancelled"),[appointments]);
 
     useEffect(() => {
         const loadInitialData = async () => {
@@ -183,7 +180,6 @@ const MedicalRecord = () => {
 
             <form className="card shadow-sm" onSubmit={handleSubmit}>
                 <div className="card-body">
-                    {/* Nguồn tạo phiếu */}
                     <div className="mb-3">
                         <label className="form-label fw-bold d-block">Nguồn tạo phiếu</label>
                         <div className="form-check form-check-inline">
@@ -213,7 +209,6 @@ const MedicalRecord = () => {
                         </div>
                     )}
 
-                    {/* Triệu chứng & Chẩn đoán */}
                     <div className="row">
                         <div className="col-md-6 mb-3">
                             <label className="form-label">Triệu chứng *</label>
@@ -230,7 +225,6 @@ const MedicalRecord = () => {
                         <textarea className="form-control" rows="2" value={form.prescriptionNotes} onChange={(e) => updateForm("prescriptionNotes", e.target.value)} />
                     </div>
 
-                    {/* Bệnh liên quan */}
                     <div className="mb-3">
                         <div className="d-flex justify-content-between align-items-center mb-2">
                             <label className="form-label mb-0">Bệnh liên quan</label>
@@ -239,11 +233,7 @@ const MedicalRecord = () => {
                         {form.diseaseIds.map((disease, idx) => (
                             <div className="row g-2 mb-2" key={`disease-row-${idx}`}>
                                 <div className="col-md-10">
-                                    <SearchableSelect
-                                        endpoint={endpoints["diseases"]}
-                                        placeholder="Tìm bệnh..."
-                                        onChange={(item) => updateDiseaseRow(idx, item)}
-                                    />
+                                    <SearchableSelect endpoint={endpoints["diseases"]} placeholder="Tìm bệnh..." onChange={(item) => updateDiseaseRow(idx, item)}/>
                                 </div>
                                 <div className="col-md-2">
                                     <button type="button" className="btn btn-outline-danger w-100" onClick={() => removeDiseaseRow(idx)}>Xóa</button>
@@ -252,7 +242,6 @@ const MedicalRecord = () => {
                         ))}
                     </div>
 
-                    {/* Dịch vụ */}
                     <div className="mb-3">
                         <div className="d-flex justify-content-between align-items-center mb-2">
                             <label className="form-label mb-0">Dịch vụ chỉ định</label>
@@ -278,7 +267,6 @@ const MedicalRecord = () => {
                         ))}
                     </div>
 
-                    {/* Thuốc */}
                     <div className="mb-3">
                         <div className="d-flex justify-content-between align-items-center mb-2">
                             <label className="form-label mb-0">Thuốc kê toa</label>

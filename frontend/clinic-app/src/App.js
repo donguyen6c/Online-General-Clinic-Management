@@ -44,10 +44,6 @@ const App = () => {
         <Route path="/health-check" element={<HealthCheck />} />
         <Route path="/services" element={<Services/>}/>
 
-        <Route element={<ProtectedRoute />}>
-            <Route path="/profile" element={<Profile />} />
-        </Route>
-
         <Route element={<ProtectedRoute roles={'patient'} />}>
             <Route path="/doctors/:doctorId/booking" element={<Booking />} />
             <Route path="/appointments" element={<Appointments />} />
@@ -55,10 +51,6 @@ const App = () => {
             <Route path="/record-history" element={<RecordHistory />} />
             <Route path="/payment/:recordId" element={<Payment />} />
             <Route path="/payment-result" element={<PaymentResult />} />
-        </Route>
-
-        <Route element={<ProtectedRoute roles={'pharmacist'} />}>
-            <Route path="/pharmacist" element={<Pharmacist />} />
         </Route>
 
         <Route element={<ProtectedRoute roles={'doctor'} />}>
@@ -69,11 +61,16 @@ const App = () => {
             <Route path="/doctor/schedules" element={<DoctorScheduleManagement />}/>
         </Route>
 
+        <Route element={<ProtectedRoute roles={'pharmacist'} />}>
+            <Route path="/pharmacist" element={<Pharmacist />} />
+        </Route>
+
         <Route element={<ProtectedRoute roles={'admin'} />}>
             <Route path="/admin" element={<AdminDashboard />} />
         </Route>
 
         <Route element={<ProtectedRoute/>}>
+            <Route path="/profile" element={<Profile />} />
             <Route path="/video-call/:id" element={<VideoCallPage />} />
         </Route>s
 

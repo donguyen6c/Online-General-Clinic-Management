@@ -63,7 +63,6 @@ export const endpoints = {
     'notifications': '/secure/notifications/',
     'mark-notification-read': (id) => `/secure/notifications/${id}/read`,
     'unread-notification-count': '/secure/notifications/unread-count',
-
     'appointments': '/secure/patients/current-user/appointments',
     'cancel-appointments': ap_id => `/secure/appointments/${ap_id}`,
 
@@ -74,6 +73,7 @@ export const endpoints = {
     'current-user-medical-records': '/secure/patients/current-user/medical-records', 
     'patient-medical-records': (patientId) => `/secure/${patientId}/medical-records`,
     'appointments-doctor': '/secure/doctor-schedule',
+    
     'medical-record-payment':(medicalRecordId) =>`/secure/patients/current-user/medical-records/${medicalRecordId}`, 
     'create-momo-payment':'/secure/payments/momo/create',
     'create-vnpay-payment':'/secure/payments/vnpay/create',

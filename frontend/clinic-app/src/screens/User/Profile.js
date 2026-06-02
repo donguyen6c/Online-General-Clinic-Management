@@ -6,10 +6,10 @@ import MySpinner from "../../components/MySpinner";
 import cookies from "react-cookies";
 
 const profileFields = [
-    { field: "fullName", label: "Họ và Tên",      type: "text"  },
-    { field: "email",    label: "Email",            type: "email" },
-    { field: "phone",    label: "Số điện thoại",    type: "tel"   },
-    { field: "dateOfBirth", label: "Ngày sinh",         type: "date"  }
+    { field: "fullName", label: "Họ và Tên", type: "text" },
+    { field: "email", label: "Email", type: "email" },
+    { field: "phone", label: "Số điện thoại", type: "tel" },
+    { field: "dateOfBirth", label: "Ngày sinh", type: "date"  }
 ];
 
 const Profile = () => {
@@ -18,17 +18,17 @@ const Profile = () => {
 
     const [user, setUser] = useState(cookies.load("user"));
     const [isEditing, setIsEditing] = useState(false);
-    const [form,      setForm]      = useState({
+    const [form, setForm] = useState({
         fullName: user?.fullName || "",
-        email:    user?.email    || "",
-        phone:    user?.phone    || "",
-        gender:   user?.gender   || "",
+        email: user?.email || "",
+        phone: user?.phone || "",
+        gender: user?.gender || "",
         dateOfBirth: user?.dateOfBirth
         ? new Date(user.dateOfBirth).toISOString().split("T")[0]
         : "", 
     });
     const [avatarPreview, setAvatarPreview] = useState(null);
-    const [loading,       setLoading]       = useState(false);
+    const [loading, setLoading] = useState(false);
 
     const handleLogout = () => {
     cookies.remove("user");
@@ -47,9 +47,9 @@ const Profile = () => {
     const handleCancel = () => {
         setForm({
             fullName: user?.fullName || "",
-            email:    user?.email    || "",
-            phone:    user?.phone    || "",
-            gender:   user?.gender   || "",
+            email: user?.email || "",
+            phone: user?.phone || "",
+            gender: user?.gender || "",
             dateOfBirth: user?.dateOfBirth
             ? new Date(user.dateOfBirth).toISOString().split("T")[0]
             : "",

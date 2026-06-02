@@ -7,8 +7,7 @@ class ExportStrategy {
 
 class PDFExportStrategy extends ExportStrategy {
     export(record) {
-        const paymentText = record.paymentStatus === "paid" ? "Đã thanh toán" :
-                            record.paymentStatus === "failed" ? "Thất bại" : "Chưa thanh toán";
+        const paymentText = record.paymentStatus === "paid" ? "Đã thanh toán" : record.paymentStatus === "failed" ? "Thất bại" : "Chưa thanh toán";
 
         const content = `
             <div style="font-family: Arial, sans-serif; padding: 32px; font-size: 13px; color: #333;">
@@ -96,8 +95,7 @@ class ExcelExportStrategy extends ExportStrategy {
         rows.push(["Bác sĩ", record.doctorName]);
         rows.push(["Ngày", record.date?.slice(0, 10)]);
         rows.push(["Chẩn đoán", record.diagnosis]);
-        rows.push(["Thanh toán", record.paymentStatus === "paid" ? "Đã thanh toán" :
-                                  record.paymentStatus === "failed" ? "Thất bại" : "Chưa thanh toán"]);
+        rows.push(["Thanh toán", record.paymentStatus === "paid" ? "Đã thanh toán" : record.paymentStatus === "failed" ? "Thất bại" : "Chưa thanh toán"]);
 
         if (record.prescriptions?.length > 0) {
             rows.push([]);
@@ -128,9 +126,9 @@ class ExcelExportStrategy extends ExportStrategy {
 
         const ws = XLSX.utils.aoa_to_sheet(rows);
         ws['!cols'] = [
-            { wch: 25 },  // cột A
-            { wch: 50 },  // cột B
-            { wch: 65 },  // cột C
+            { wch: 25 }, 
+            { wch: 50 }, 
+            { wch: 65 }, 
         ];
         XLSX.utils.book_append_sheet(wb, ws, "Ho so benh an");
         XLSX.writeFile(wb, `HoSoBenhAn_${record.recordId}.xlsx`);

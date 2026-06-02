@@ -1,14 +1,5 @@
 import { useEffect, useState } from "react";
-import {
-    Button,
-    Card,
-    Col,
-    Container,
-    Row,
-    Table,
-    Alert,
-    ButtonGroup
-} from "react-bootstrap";
+import { Button, Card, Col, Container, Row, Table, Alert, ButtonGroup} from "react-bootstrap";
 import { useParams } from "react-router-dom";
 import Apis, { endpoints } from "../../configs/Apis";
 import MySpinner from "../../components/MySpinner";

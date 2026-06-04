@@ -4,11 +4,25 @@
  */
 package com.vudo.services.impl;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.vudo.dto.AppointmentRequestDTO;
 import com.vudo.dto.AppointmentResponseDTO;
 import com.vudo.dto.AvailableSlotsResponseDTO;
 import com.vudo.dto.TimeSlotDTO;
 import com.vudo.dto.WorkingTimeDTO;
+import com.vudo.events.BookingCreatedEvent;
 import com.vudo.mapper.AppointmentMapper;
 import com.vudo.pojo.Appointment;
 import com.vudo.pojo.Doctor;
@@ -20,19 +34,7 @@ import com.vudo.repositories.DoctorRepository;
 import com.vudo.repositories.DoctorScheduleRepository;
 import com.vudo.repositories.DoctorWorkingPatternRepository;
 import com.vudo.repositories.UserRepository;
-import com.vudo.events.BookingCreatedEvent;
 import com.vudo.services.AppointmentService;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
@@ -159,14 +161,20 @@ public class AppointmentServiceImpl implements AppointmentService {
         if (!validSlot) {
             throw new IllegalArgumentException("Khung giờ này không khả dụng");
         }
+
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
 
         User patient = userRepo.getUserByUsername(username);
         Doctor doctor = doctorRepo.getDoctorById(doctorId);
         Appointment appointment = AppointmentMapper.toEntity(request, doctor, patient);
-        Appointment saved = appointmentRepo.add(appointment);
-        eventPublisher.publishEvent(new BookingCreatedEvent( patient, doctor.getUserId().getFullName(), request.getDate() + " " + request.getStartTime()));
-        return AppointmentMapper.toDTO(saved);
+        
+        try {
+            Appointment saved = appointmentRepo.add(appointment);
+            eventPublisher.publishEvent(new BookingCreatedEvent(patient, doctor.getUserId().getFullName(), request.getDate() + " " + request.getStartTime()));
+            return AppointmentMapper.toDTO(saved);
+        } catch (org.hibernate.exception.ConstraintViolationException e) {
+            throw new IllegalArgumentException("Khung giờ này đã được đặt bởi bệnh nhân khác");
+        }
     }
 
     @Override

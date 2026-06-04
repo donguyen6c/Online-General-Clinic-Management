@@ -42,9 +42,7 @@ public class ApiPatientController {
     
     @GetMapping("/current-user/appointments")
     @PreAuthorize("hasAuthority('patient')")
-    public ResponseEntity<List<AppointmentResponseDTO>> getCurrentUserAppointments(
-            Principal principal,
-            @RequestParam(value = "page", defaultValue = "1") int page) {
+    public ResponseEntity<List<AppointmentResponseDTO>> getCurrentUserAppointments(Principal principal, @RequestParam(value = "page", defaultValue = "1") int page) {
         int patientId = userService.getUserByUsername(principal.getName()).getId();
         List<AppointmentResponseDTO> appointments = appointmentService.getPatientAppointments(patientId, page);
         return new ResponseEntity<>(appointments == null ? new ArrayList<>() : appointments, HttpStatus.OK);
@@ -64,9 +62,7 @@ public class ApiPatientController {
     
     @GetMapping("/current-user/medical-records/{recordId}")
     @PreAuthorize("hasAuthority('patient')")
-    public ResponseEntity<MedicalRecordResponseDTO> getCurrentUserMedicalRecordDetail(
-            @PathVariable("recordId") int recordId, 
-            Principal principal) {
+    public ResponseEntity<MedicalRecordResponseDTO> getCurrentUserMedicalRecordDetail(@PathVariable("recordId") int recordId, Principal principal) {
         
         String username = principal.getName();
         int patientId = userService.getUserByUsername(username).getId();

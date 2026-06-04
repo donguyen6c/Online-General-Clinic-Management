@@ -4,6 +4,11 @@
  */
 package com.vudo.pojo;
 
+import java.io.Serializable;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.Set;
+
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -17,19 +22,21 @@ import jakarta.persistence.NamedQueries;
 import jakarta.persistence.NamedQuery;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import java.io.Serializable;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.Set;
 
 /**
  *
  * @author ADMIN
  */
 @Entity
-@Table(name = "appointment")
+@Table(name = "appointment", uniqueConstraints = {
+    @UniqueConstraint(
+        name = "UK_doctor_appointment_time",
+        columnNames = {"doctor_id", "appointment_date", "start_time", "end_time"}
+    )
+})
 @NamedQueries({
     @NamedQuery(name = "Appointment.findAll", query = "SELECT a FROM Appointment a"),
     @NamedQuery(name = "Appointment.findById", query = "SELECT a FROM Appointment a WHERE a.id = :id"),

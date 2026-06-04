@@ -35,6 +35,7 @@ import com.vudo.repositories.DoctorScheduleRepository;
 import com.vudo.repositories.DoctorWorkingPatternRepository;
 import com.vudo.repositories.UserRepository;
 import com.vudo.services.AppointmentService;
+import org.hibernate.exception.ConstraintViolationException;
 
 /**
  *
@@ -172,7 +173,7 @@ public class AppointmentServiceImpl implements AppointmentService {
             Appointment saved = appointmentRepo.add(appointment);
             eventPublisher.publishEvent(new BookingCreatedEvent(patient, doctor.getUserId().getFullName(), request.getDate() + " " + request.getStartTime()));
             return AppointmentMapper.toDTO(saved);
-        } catch (org.hibernate.exception.ConstraintViolationException e) {
+        } catch (ConstraintViolationException e) {
             throw new IllegalArgumentException("Khung giờ này đã được đặt bởi bệnh nhân khác");
         }
     }

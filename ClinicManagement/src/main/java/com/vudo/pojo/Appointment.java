@@ -33,7 +33,7 @@ import jakarta.validation.constraints.Size;
 @Entity
 @Table(name = "appointment", uniqueConstraints = {
     @UniqueConstraint(
-        name = "UK_doctor_appointment_time",
+        name = "doctor_appointment_time",
         columnNames = {"doctor_id", "appointment_date", "start_time", "end_time"}
     )
 })

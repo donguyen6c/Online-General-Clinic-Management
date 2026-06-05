@@ -84,8 +84,7 @@ public class AppointmentServiceImpl implements AppointmentService {
         } else {
             int dayOfWeek = date.getDayOfWeek().getValue();
 
-            DoctorWorkingPattern pattern = workingPatternRepo
-                    .getByDoctorIdAndDayOfWeek(doctorId, dayOfWeek);
+            DoctorWorkingPattern pattern = workingPatternRepo.getByDoctorIdAndDayOfWeek(doctorId, dayOfWeek);
 
             if (pattern == null) {
                 return this.buildEmptyResponse(doctorId, dateStr);

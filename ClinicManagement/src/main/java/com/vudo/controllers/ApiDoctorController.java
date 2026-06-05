@@ -4,10 +4,9 @@
  */
 package com.vudo.controllers;
 
-import com.vudo.dto.DoctorDTO;
-import com.vudo.services.AppointmentService;
-import com.vudo.services.DoctorService;
+import java.util.List;
 import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +16,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.vudo.dto.DoctorDTO;
+import com.vudo.services.AppointmentService;
+import com.vudo.services.DoctorService;
 
 /**
  *
@@ -33,7 +36,7 @@ public class ApiDoctorController {
     private AppointmentService appointmentService;
 
     @GetMapping("/doctors")
-    public ResponseEntity<?> list(@RequestParam Map<String, String> params) {
+    public ResponseEntity<List<DoctorDTO>> list(@RequestParam Map<String, String> params) {
         return new ResponseEntity<>(this.docService.getDoctors(params), HttpStatus.OK);
     }
 

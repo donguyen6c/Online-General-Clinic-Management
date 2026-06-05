@@ -32,7 +32,7 @@ public class DoctorRepositoryImpl implements DoctorRepository {
     private Environment env;
 
     @Override
-    public Map<String, Object> getDoctors(Map<String, String> params) {
+    public List<Doctor> getDoctors(Map<String, String> params) {
         Session session = this.factory.getObject().getCurrentSession();
         CriteriaBuilder b = session.getCriteriaBuilder();
         CriteriaQuery<Doctor> q = b.createQuery(Doctor.class);
@@ -59,29 +59,17 @@ public class DoctorRepositoryImpl implements DoctorRepository {
 
         Query<Doctor> query = session.createQuery(q);
 
-        boolean hasNext = false;
         int pageSize = this.env.getProperty("doctors.page_size", Integer.class, 6);
 
         if (params != null) {
             int page = Integer.parseInt(params.getOrDefault("page", "1"));
             int start = (page - 1) * pageSize;
 
-            query.setMaxResults(pageSize + 1);
+            query.setMaxResults(pageSize);
             query.setFirstResult(start);
         }
 
-        List<Doctor> doctors = query.getResultList();
-
-        if (doctors.size() > pageSize) {
-            hasNext = true;
-            doctors.remove(doctors.size() - 1);
-        }
-
-        Map<String, Object> result = new HashMap<>();
-        result.put("data", doctors);
-        result.put("hasNext", hasNext);
-
-        return result;
+        return query.getResultList();
     }
 
     @Override

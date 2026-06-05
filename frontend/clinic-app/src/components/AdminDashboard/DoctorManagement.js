@@ -48,7 +48,7 @@ const DoctorManagement = () => {
                     params: { page, kw } 
                 });
                 
-                const newData = res.data.data || [];
+                const newData = Array.isArray(res.data) ? res.data : res.data.data || [];
                 
                 if (page === 1) {
                     setDoctors(newData);
@@ -56,7 +56,8 @@ const DoctorManagement = () => {
                     setDoctors(prev => [...prev, ...newData]);
                 }
 
-                setHasMore(res.data.hasNext);
+                const pageSize = 6;
+                setHasMore(newData.length >= pageSize);
 
             } catch (error) {
                 console.error("Lỗi tải danh sách bác sĩ", error);

@@ -14,7 +14,7 @@ import java.util.Map;
  * @author ASUS
  */
 public interface DoctorService {
-    public Map<String, Object> getDoctors(Map<String, String> params);
+    public List<DoctorDTO> getDoctors(Map<String, String> params);
     List<Doctor> getDoctorEntities(Map<String, String> params);
     DoctorDTO getDoctorById(int id);
     Doctor getDoctorEntityById(int id);

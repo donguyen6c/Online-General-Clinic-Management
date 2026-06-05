@@ -38,15 +38,15 @@ const HealthCheck = () => {
                 if (specialtyId) url += `&specialtyId=${specialtyId}`;
 
                 const res = await Apis.get(url);
-                console.info(res.data.data)
-
+                const data = Array.isArray(res.data) ? res.data : res.data.data || [];
+                
                 if (page === 1) {
-                    setDoctors(res.data.data);
+                    setDoctors(data);
                 } else {
-                    setDoctors(prev => [...prev, ...res.data.data]);
+                    setDoctors(prev => [...prev, ...data]);
                 }
-
-                setHasMore(res.data.hasNext);
+                const pageSize = 6;
+                setHasMore(data.length >= pageSize);
             } catch (ex) {
                 console.log(ex);
             } finally {

@@ -41,19 +41,9 @@ public class DoctorServiceImpl implements DoctorService {
     private BCryptPasswordEncoder passwordEncoder;
 
     @Override
-    public Map<String, Object> getDoctors(Map<String, String> params) {
-        Map<String, Object> repoData = this.docRepo.getDoctors(params);
-
-        List<Doctor> doctors = (List<Doctor>) repoData.get("data");
-        boolean hasNext = (boolean) repoData.get("hasNext");
-
-        List<DoctorDTO> dtos = doctors.stream().map(DoctorMapper::toDTO).collect(Collectors.toList());
-
-        Map<String, Object> result = new HashMap<>();
-        result.put("data", dtos);
-        result.put("hasNext", hasNext);
-
-        return result;
+    public List<DoctorDTO> getDoctors(Map<String, String> params) {
+        List<Doctor> doctors = this.docRepo.getDoctors(params);
+        return doctors.stream().map(DoctorMapper::toDTO).collect(Collectors.toList());
     }
 
     @Override
